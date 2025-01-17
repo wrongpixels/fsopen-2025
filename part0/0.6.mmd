@@ -1,0 +1,17 @@
+sequenceDiagram
+    participant browser
+    participant server
+
+    Note right of browser: The browser prevents the form's default POST/GET behavior
+    Note right of browser: The browser uses the text in the form and current date to create  a new note 
+    Note right of browser: The browser locally adds the note to its own notes list and repaints it
+
+    Note right of browser: The browser sends the same note data to the server as a JSON string
+    browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+    activate server
+    Note left of server: The server uses the JSON data to create and add the actual note
+
+    server-->>browser: Status Code 201: Created
+    deactivate server
+
+    Note right of browser: The browser doesn't need to refresh or read the changes in the server
