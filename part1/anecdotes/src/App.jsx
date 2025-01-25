@@ -24,7 +24,6 @@ const App = () => {
     const setRandomAnecdote = () => {
         const index = getRandomInRange(0, anecdotes.length-1);
         setSelected(index);
-        //console.log('Random number was',index);
     }
     const voteCurrentAnecdote = () => {
         const [...newVotes] = votes;
@@ -32,26 +31,51 @@ const App = () => {
         setVotes(newVotes);
     }
     const currentVotes = votes[selected];
-
+    let mostVoted = -1;
+    votes.map((value, index) => {
+        if (value > 0)
+        {
+            if (mostVoted === -1)
+            {
+                mostVoted = index;
+            }
+            if (value > votes[mostVoted])
+            {
+                mostVoted = index;
+            }
+        }
+    })
     return (
         <div style={{textAlign: 'center'}}>
-        <h4>
-            <b>"</b>{anecdotes[selected]}<b>"</b>
-            </h4>
+            <h1>Anecdote of the Day:</h1>
+            <DrawQuote anecdotes={anecdotes} index={selected} mostVotedMode={false}/>
             <p>
                 <i>(Voted <b>{currentVotes}</b> times)</i>
             </p>
             <p>
-                <DrawButton action={voteCurrentAnecdote} text={'Vote this Anecdote!'} />
-                <DrawButton action={setRandomAnecdote} text={'Get next Anecdote'} />
+                <DrawButton action={voteCurrentAnecdote} text={'Vote this Anecdote!'}/>
+                <DrawButton action={setRandomAnecdote} text={'Get next Anecdote'}/>
             </p>
+            <h1>Most Voted Anecdote:</h1>
+            <DrawQuote anecdotes={anecdotes} index={mostVoted} mostVotedMode={true}/>
         </div>
     )
 }
-
-const DrawButton = ({action, text}) =>{
+const DrawButton = ({action, text}) => {
     return (
         <button onClick={action}>{text}</button>
+    )
+}
+
+const DrawQuote = ({anecdotes, index, mostVotedMode}) =>{
+    if (mostVotedMode && index === -1)
+    {
+        return (
+            <>No votes yet!</>
+        )
+    }
+    return (
+        <h4><b>"</b>{anecdotes[index]}<b>"</b></h4>
     )
 }
 
