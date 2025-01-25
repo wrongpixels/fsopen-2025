@@ -19,12 +19,19 @@ const App = () => {
         'The only way to go fast, is to go well.'
     ]
 
-    const [selected, setSelected] = useState(0)
+    const [selected, setSelected] = useState(0);
+    const [votes, setVotes] = useState(new Array(anecdotes.length).fill(0));
     const setRandomAnecdote = () => {
         const index = getRandomInRange(0, anecdotes.length-1);
         setSelected(index);
         //console.log('Random number was',index);
     }
+    const voteCurrentAnecdote = () => {
+        const [...newVotes] = votes;
+        newVotes[selected] += 1;
+        setVotes(newVotes);
+    }
+    const currentVotes = votes[selected];
 
     return (
         <div style={{textAlign: 'center'}}>
@@ -32,9 +39,19 @@ const App = () => {
             <b>"</b>{anecdotes[selected]}<b>"</b>
             </h4>
             <p>
-                <button onClick={setRandomAnecdote}> Get next anecdote < /button>
+                <i>(Voted <b>{currentVotes}</b> times)</i>
+            </p>
+            <p>
+                <DrawButton action={voteCurrentAnecdote} text={'Vote this Anecdote!'} />
+                <DrawButton action={setRandomAnecdote} text={'Get next Anecdote'} />
             </p>
         </div>
+    )
+}
+
+const DrawButton = ({action, text}) =>{
+    return (
+        <button onClick={action}>{text}</button>
     )
 }
 
