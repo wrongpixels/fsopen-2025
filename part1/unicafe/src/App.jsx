@@ -12,24 +12,24 @@ const Statistics = (props) => {
         )
     }
     return (
-        <>
-            <h1>Statistics so far:</h1>
-            <div>
-                <StatisticLine text={'Good'} value={props.good} />
-                <StatisticLine text={'Neutral'} value={props.neutral} />
-                <StatisticLine text={'Bad'} value={props.bad} />
-                <p>
-                    <StatisticLine text={'Total Feedback'} value={props.total} />
-                    <StatisticLine text={'Average Score'} value={props.average} />
-                    <StatisticLine text={'Positive'} value={props.percentage+'%'} />
-                </p>
-            </div></>
+        <><h1>Statistics so far:</h1>
+            <table style={{margin: '0 auto'}}>
+                <tbody>
+                <StatisticLine text={'Good'} value={props.good}/>
+                <StatisticLine text={'Neutral'} value={props.neutral}/>
+                <StatisticLine text={'Bad'} value={props.bad}/>
+                <StatisticLine text={'Total Feedback'} value={props.total}/>
+                <StatisticLine text={'Average Score'} value={props.average}/>
+                <StatisticLine text={'Positive'} value={props.percentage + '%'}/>
+                </tbody>
+            </table>
+        </>
     )
 }
 
 const StatisticLine = ({text, value}) => {
     return (<>
-        <b>{text}:</b> {value}<br/></>
+        <tr><th><b>{text}:</b></th><td>{value}</td></tr></>
     )
 }
 const Button = ({action, text}) => {
