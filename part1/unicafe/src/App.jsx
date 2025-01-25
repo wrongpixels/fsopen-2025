@@ -15,15 +15,26 @@ const Statistics = (props) => {
         <>
             <h1>Statistics so far:</h1>
             <div>
-                <b>Good:</b> {props.good}<br/>
-                <b>Neutral:</b> {props.neutral}<br/>
-                <b>Bad:</b> {props.bad}<br/>
+                <StatisticLine text={'Good'} value={props.good} />
+                <StatisticLine text={'Neutral'} value={props.neutral} />
+                <StatisticLine text={'Bad'} value={props.bad} />
                 <p>
-                    <b>Total Feedback:</b> {props.total}<br/>
-                    <b>Average Score: </b> {props.average}<br/>
-                    <b>Positive: </b> {props.percentage}%
+                    <StatisticLine text={'Total Feedback'} value={props.total} />
+                    <StatisticLine text={'Average Score'} value={props.average} />
+                    <StatisticLine text={'Positive'} value={props.percentage+'%'} />
                 </p>
             </div></>
+    )
+}
+
+const StatisticLine = ({text, value}) => {
+    return (<>
+        <b>{text}:</b> {value}<br/></>
+    )
+}
+const Button = ({action, text}) => {
+    return (
+        <button onClick={action}>{text}</button>
     )
 }
 const App = () => {
@@ -55,18 +66,14 @@ const App = () => {
             <h1>We value your feedback!</h1>
             <h3>How was your experience?</h3>
             <div>
-                <DrawButton action={() => addFeedback(1)} text={'Good!'}/>
-                <DrawButton action={() => addFeedback(0)} text={'Neutral'}/>
-                <DrawButton action={() => addFeedback(-1)} text={'It was bad'}/>
+                <Button action={() => addFeedback(1)} text={'Good!'}/>
+                <Button action={() => addFeedback(0)} text={'Neutral'}/>
+                <Button action={() => addFeedback(-1)} text={'It was bad'}/>
             </div>
             <Statistics good={good} neutral={neutral} bad={bad} average={average} percentage={percentage} total={total} />
         </div>
     )
 }
 
-const DrawButton = ({action, text}) => {
-    return (
-        <button onClick={action}>{text}</button>
-    )
-}
+
 export default App
