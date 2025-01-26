@@ -2,6 +2,7 @@ jsconfig.json
 tsconfig.json
 runweb.bat
 create-project.bat
+create-TEST-project.bat
 eslint.config.js
 .idea/
 /Tests/
