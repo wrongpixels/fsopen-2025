@@ -1,4 +1,4 @@
-const Header = ({name}) => <h1>{name}</h1>
+const Header = ({name}) => <h2>{name}</h2>
 const Content = ({parts}) => {
 
     return (
@@ -18,11 +18,11 @@ const Total = ({parts}) => {
 const Part = ({part}) => <p>{part.name} {part.exercises}</p>
 const Course = ({course}) => {
     return (
-        <div style={{textAlign: 'center'}}>
+        <>
             <Header name={course.name} />
             <Content parts={course.parts} />
             <Total parts={course.parts} />
-        </div>
+        </>
     )
 }
 export default Course
