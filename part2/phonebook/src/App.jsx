@@ -71,23 +71,40 @@ function App() {
   return (
       <>
           <h2>Phonebook</h2>
-         Filter by name: <input value={filter} onChange={handleTypeFilter}/>
-      <h3>
-          Add contact
-      </h3>
-          <form>
-              Name: <input value={newName} onChange={handleTypeName}/>
-              <div>
-              Number <input value={newNumber} onChange={handleTypeNumber} />
-              </div>
-              <button type="submit" onClick={handleAddPerson}>Add</button>
-          </form>
+         <Filter filter={filter} handleTypeFilter={handleTypeFilter} />
+          <AddContactForm newName={newName} handleTypeName={handleTypeName} newNumber={newNumber} handleTypeNumber={handleTypeNumber} handleAddPerson={handleAddPerson} />
+
           <h2>Numbers</h2>
           <Entries persons={filteredPersons} />
       </>
   )
 }
-const Entries = ({persons}) =>{
+const Filter = ({filter, handleTypeFilter}) => {
+    return (
+        <div>
+            Filter by name: <input value={filter} onChange={handleTypeFilter}/>
+        </div>
+    )
+}
+const AddContactForm = (props) => {
+    return (
+        <div>
+            <h3>
+                Add contact
+            </h3>
+            <form>
+                Name: <input value={props.newName} onChange={props.handleTypeName}/>
+                <div>
+                    Number <input value={props.newNumber} onChange={props.handleTypeNumber}/>
+                </div>
+                <button type="submit" onClick={props.handleAddPerson}>Add</button>
+            </form>
+
+        </div>
+    )
+
+}
+const Entries = ({persons}) => {
     return (
         <ul>
             {persons.map(person =>
