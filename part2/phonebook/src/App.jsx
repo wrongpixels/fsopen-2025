@@ -8,9 +8,19 @@ function App() {
         setNewName(event.target.value);
     }
 
+    const alertMessage = `'${newName}' is already in the Phonebook!`
+    const preventSameName = () => {
+        if (persons.find(person => person.name === newName))
+        {
+            alert(alertMessage);
+            return true;
+        }
+        return false;
+    }
+
     const handleAddPerson = (event) => {
         event.preventDefault();
-        if (newName === '')
+        if (newName === '' || preventSameName())
         {
             return;
         }
