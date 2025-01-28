@@ -1,4 +1,3 @@
-
 import {useState, useEffect} from 'react'
 import phonebookservices from "./services/phonebookservices.js";
 
@@ -6,7 +5,7 @@ function App() {
     const [persons, setPersons] = useState([])
     const [newName, setNewName] = useState('');
     const [newNumber, setNewNumber] = useState('');
-    const[filter, setFilter] = useState('');
+    const [filter, setFilter] = useState('');
 
     useEffect(() => {
         phonebookservices.getContacts().then(result => setPersons(result))
@@ -17,41 +16,51 @@ function App() {
     const handleTypeFilter = ({target}) => setFilter(target.value);
     const activeFilter = filter.toLowerCase();
 
-    const alertMessageName = `'${newName}' is already in the Phonebook!`;
-    const alertMessageNumber = `'${newNumber}' is a number already in the Phonebook!`;
+    const alertMessageSame = `'${newName}' with number ${newNumber} is already in the Phonebook!`
+    const alertMessageName = `'${newName}' is already in the Phonebook!\n\nUpdate ${newName}'s number to '${newNumber}'?`;
+    const alertMessageNumber = `'${newNumber}' is a already in the Phonebook!\n\nUpdate its contact name to '${newName}'?`;
     const emptyAlert = 'You need to add a Name and a Number!';
+
+    const preventSameContact = () => {
+        const personExists = persons.find(person => person.name === newName && person.number === newNumber);
+        if (personExists) {
+            alert(alertMessageSame);
+            return true;
+        }
+        return false;
+    }
     const preventSameName = () => {
-        if (persons.find(person => person.name === newName))
-        {
-            alert(alertMessageName);
+        const personExists = persons.find(person => person.name === newName);
+        if (personExists) {
+            if (window.confirm(alertMessageName)) {
+                handleEditPerson({...personExists, number: newNumber});
+            }
             return true;
         }
         return false;
     }
     const preventSameNumber = () => {
-        if (persons.find(person => person.number === newNumber))
-        {
-            alert(alertMessageNumber);
+        const personExists = persons.find(person => person.number === newNumber);
+        if (personExists) {
+            if (window.confirm(alertMessageNumber)) {
+                handleEditPerson({...personExists, name: newName});
+            }
             return true;
         }
         return false;
     }
-    const preventSamePerson = () => preventSameName() || preventSameNumber();
+    const preventSamePerson = () => preventSameContact() || preventSameName() || preventSameNumber();
 
     const preventEmpty = () => {
         const emptyName = newName === '';
         const emptyNumber = newNumber === '';
         let message = emptyAlert;
-        if (!emptyName && !emptyNumber)
-        {
+        if (!emptyName && !emptyNumber) {
             return false;
         }
-        if (!emptyName)
-        {
+        if (!emptyName) {
             message = 'Number cannot be empty!';
-        }
-        else if (!emptyNumber)
-        {
+        } else if (!emptyNumber) {
             message = 'Name cannot be empty!';
         }
         alert(message);
@@ -59,44 +68,56 @@ function App() {
     }
     const handleAddPerson = (event) => {
         event.preventDefault();
-        if (preventEmpty() || preventSamePerson())
-        {
+        if (preventEmpty() || preventSamePerson()) {
             return;
         }
         const newPerson = {name: newName, number: newNumber};
-        phonebookservices.addNumber(newPerson).then(result => setPersons(persons.concat(result)))
-        setNewName('');
-        setNewNumber('');
+        phonebookservices.addNumber(newPerson).then(
+            result => {
+                setPersons(persons.concat(result))
+                setNewName('');
+                setNewNumber('');
+            })
+    }
+    const handleEditPerson = (person) => {
+        phonebookservices.editContact(person).then(
+            result => {
+                setPersons(persons.map(existing => existing.id === result.id ? result : existing))
+                setNewName('');
+                setNewNumber('');
+            }
+        )
     }
     const handleDeletePerson = (id) => {
         const personToRemove = persons.find(person => person.id === id);
-        if (!personToRemove)
-        {
+        if (!personToRemove) {
             return;
         }
         const message = `Do you really want to remove '${personToRemove.name}'?`
-        if (window.confirm(message))
-        {
+        if (window.confirm(message)) {
             phonebookservices.deleteNumber(id)
                 .then(() => removeByID(id))
                 .catch(() => removeByID(id));
         }
     };
+
     const removeByID = (id) => setPersons(persons.filter(person => person.id !== id));
 
-    const filteredPersons = filter === ''? persons:persons.filter(person => person.name.toLowerCase().includes(activeFilter));
+    const filteredPersons = filter === '' ? persons : persons.filter(person => person.name.toLowerCase().includes(activeFilter));
 
     return (
-      <>
-          <h2>Phonebook</h2>
-         <Filter filter={filter} handleTypeFilter={handleTypeFilter} />
-          <AddContactForm newName={newName} handleTypeName={handleTypeName} newNumber={newNumber} handleTypeNumber={handleTypeNumber} handleAddPerson={handleAddPerson} />
+        <>
+            <h1>Phonebook</h1>
+            <Filter filter={filter} handleTypeFilter={handleTypeFilter}/>
+            <AddContactForm newName={newName} handleTypeName={handleTypeName} newNumber={newNumber}
+                            handleTypeNumber={handleTypeNumber} handleAddPerson={handleAddPerson}/>
 
-          <h2>Numbers</h2>
-          <Entries persons={filteredPersons} handleDeletePerson={handleDeletePerson}/>
-      </>
-  )
+            <h2>Numbers</h2>
+            <Entries persons={filteredPersons} handleDeletePerson={handleDeletePerson}/>
+        </>
+    )
 }
+
 const Filter = ({filter, handleTypeFilter}) => {
     return (
         <div>
@@ -107,9 +128,9 @@ const Filter = ({filter, handleTypeFilter}) => {
 const AddContactForm = (props) => {
     return (
         <div>
-            <h3>
+            <h2>
                 Add contact
-            </h3>
+            </h2>
             <form>
                 Name: <input value={props.newName} onChange={props.handleTypeName}/>
                 <div>
@@ -117,7 +138,6 @@ const AddContactForm = (props) => {
                 </div>
                 <button type="submit" onClick={props.handleAddPerson}>Add</button>
             </form>
-
         </div>
     )
 
@@ -128,8 +148,10 @@ const Entries = ({persons, handleDeletePerson}) => {
         <ul>
             {
                 persons.map(person =>
-                <li key={person.id}>{person.name}: {person.number}<button style={{marginLeft: 10}} onClick={()=>handleDeletePerson(person.id)}>Delete</button></li>
-            )}
+                    <li key={person.id}><b>{person.name}:</b> {person.number}
+                        <button style={{marginLeft: 10}} onClick={() => handleDeletePerson(person.id)}>Delete</button>
+                    </li>
+                )}
         </ul>
     )
 }
