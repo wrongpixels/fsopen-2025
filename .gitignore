@@ -1,6 +1,7 @@
 jsconfig.json
 tsconfig.json
 runweb.bat
+run-json-server.bat
 create-project.bat
 create-TEST-project.bat
 eslint.config.js

@@ -1,7 +1,6 @@
 
 import {useState, useEffect} from 'react'
-import axios from "axios";
-const url ='http://localhost:3001/';
+import phonebookservices from "./services/phonebookservices.js";
 
 function App() {
     const [persons, setPersons] = useState([])
@@ -10,10 +9,7 @@ function App() {
     const[filter, setFilter] = useState('');
 
     useEffect(() => {
-        axios.get(url + 'persons').then(response =>{
-            setPersons(response.data)
-        })
-
+        phonebookservices.getContacts().then(result => setPersons(result))
     }, []);
 
     const handleTypeName = ({target}) => setNewName(target.value);
@@ -67,8 +63,8 @@ function App() {
         {
             return;
         }
-        const newPerson = {name: newName, number: newNumber, id: String(persons.length + 1)};
-        setPersons(persons.concat(newPerson));
+        const newPerson = {name: newName, number: newNumber};
+        phonebookservices.addNumber(newPerson).then(result => setPersons(persons.concat(result)))
         setNewName('');
         setNewNumber('');
     }
@@ -113,7 +109,7 @@ const Entries = ({persons}) => {
     return (
         <ul>
             {persons.map(person =>
-                <li key={person.id}>{person.name} : {person.number}</li>
+                <li key={person.id}>{person.name}: {person.number}</li>
             )}
         </ul>
     )
