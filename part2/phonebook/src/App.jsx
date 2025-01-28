@@ -68,15 +68,32 @@ function App() {
         setNewName('');
         setNewNumber('');
     }
+    const handleDeletePerson = (id) => {
+        const personToRemove = persons.find(person => person.id === id);
+        if (!personToRemove)
+        {
+            return;
+        }
+        const message = `Do you really want to remove '${personToRemove.name}'?`
+        if (window.confirm(message))
+        {
+            phonebookservices.deleteNumber(id)
+                .then(() => removeByID(id))
+                .catch(() => removeByID(id));
+        }
+    };
+    const removeByID = (id) => setPersons(persons.filter(person => person.id !== id));
+
     const filteredPersons = filter === ''? persons:persons.filter(person => person.name.toLowerCase().includes(activeFilter));
-  return (
+
+    return (
       <>
           <h2>Phonebook</h2>
          <Filter filter={filter} handleTypeFilter={handleTypeFilter} />
           <AddContactForm newName={newName} handleTypeName={handleTypeName} newNumber={newNumber} handleTypeNumber={handleTypeNumber} handleAddPerson={handleAddPerson} />
 
           <h2>Numbers</h2>
-          <Entries persons={filteredPersons} />
+          <Entries persons={filteredPersons} handleDeletePerson={handleDeletePerson}/>
       </>
   )
 }
@@ -105,11 +122,13 @@ const AddContactForm = (props) => {
     )
 
 }
-const Entries = ({persons}) => {
+const Entries = ({persons, handleDeletePerson}) => {
+
     return (
         <ul>
-            {persons.map(person =>
-                <li key={person.id}>{person.name}: {person.number}</li>
+            {
+                persons.map(person =>
+                <li key={person.id}>{person.name}: {person.number}<button style={{marginLeft: 10}} onClick={()=>handleDeletePerson(person.id)}>Delete</button></li>
             )}
         </ul>
     )
