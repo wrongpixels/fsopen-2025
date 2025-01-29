@@ -1,11 +1,16 @@
 import {useState, useEffect} from 'react'
+import AddContactForm from "./components/AddContactForm.jsx";
+import Entries from "./components/Entries.jsx";
+import Filter from "./components/Filter.jsx";
 import phonebookservices from "./services/phonebookservices.js";
+import Notification from "./components/Notification.jsx";
 
 function App() {
     const [persons, setPersons] = useState([])
     const [newName, setNewName] = useState('');
     const [newNumber, setNewNumber] = useState('');
     const [filter, setFilter] = useState('');
+    const [notification, setNotification] = useState({message:'', isError: false});
 
     useEffect(() => {
         phonebookservices.getContacts().then(result => setPersons(result))
@@ -20,6 +25,22 @@ function App() {
     const alertMessageName = `'${newName}' is already in the Phonebook!\n\nUpdate ${newName}'s number to '${newNumber}'?`;
     const alertMessageNumber = `'${newNumber}' is a already in the Phonebook!\n\nUpdate its contact name to '${newName}'?`;
     const emptyAlert = 'You need to add a Name and a Number!';
+    const runNotification = (message, isError = false) => {
+        const newNotification = {message, isError};
+        setNotification(newNotification);
+        setTimeout(() => setNotification({message: '', isError: false}), 5000);
+    }
+    const runAddError = (name) => {
+        runNotification(`Error: '${name}' couldn't be added (server error)`, true);
+    }
+    const runAccessError = (name) => {
+        runNotification(`Error: '${name}' was already removed from the server`, true);
+    }
+
+    const resetContactForm = () => {
+        setNewNumber('');
+        setNewName('');
+    }
 
     const preventSameContact = () => {
         const personExists = persons.find(person => person.name === newName && person.number === newNumber);
@@ -75,19 +96,23 @@ function App() {
         phonebookservices.addNumber(newPerson).then(
             result => {
                 setPersons(persons.concat(result))
-                setNewName('');
-                setNewNumber('');
-            })
+                runNotification(`Contact '${newName}' was added!`);
+                resetContactForm();
+            }).catch(() => runAddError(newName))
     }
     const handleEditPerson = (person) => {
         phonebookservices.editContact(person).then(
             result => {
                 setPersons(persons.map(existing => existing.id === result.id ? result : existing))
-                setNewName('');
-                setNewNumber('');
+                runNotification(`Contact '${person.name}' was updated!`);
+                resetContactForm();
             }
-        )
+        ).catch(() => {
+            runAccessError(person.name);
+            removeByID(person.id);
+        })
     }
+
     const handleDeletePerson = (id) => {
         const personToRemove = persons.find(person => person.id === id);
         if (!personToRemove) {
@@ -96,8 +121,14 @@ function App() {
         const message = `Do you really want to remove '${personToRemove.name}'?`
         if (window.confirm(message)) {
             phonebookservices.deleteNumber(id)
-                .then(() => removeByID(id))
-                .catch(() => removeByID(id));
+                .then(() => {
+            removeByID(id);
+            runNotification(`Contact '${personToRemove.name}' was removed`);
+        })
+                .catch(() => {
+                    runAccessError(personToRemove.name);
+                    removeByID(id);
+                })
         }
     };
 
@@ -111,6 +142,7 @@ function App() {
             <Filter filter={filter} handleTypeFilter={handleTypeFilter}/>
             <AddContactForm newName={newName} handleTypeName={handleTypeName} newNumber={newNumber}
                             handleTypeNumber={handleTypeNumber} handleAddPerson={handleAddPerson}/>
+            <Notification notification={notification} />
 
             <h2>Numbers</h2>
             <Entries persons={filteredPersons} handleDeletePerson={handleDeletePerson}/>
@@ -118,42 +150,7 @@ function App() {
     )
 }
 
-const Filter = ({filter, handleTypeFilter}) => {
-    return (
-        <div>
-            Filter by name: <input value={filter} onChange={handleTypeFilter}/>
-        </div>
-    )
-}
-const AddContactForm = (props) => {
-    return (
-        <div>
-            <h2>
-                Add contact
-            </h2>
-            <form>
-                Name: <input value={props.newName} onChange={props.handleTypeName}/>
-                <div>
-                    Number <input value={props.newNumber} onChange={props.handleTypeNumber}/>
-                </div>
-                <button type="submit" onClick={props.handleAddPerson}>Add</button>
-            </form>
-        </div>
-    )
 
-}
-const Entries = ({persons, handleDeletePerson}) => {
 
-    return (
-        <ul>
-            {
-                persons.map(person =>
-                    <li key={person.id}><b>{person.name}:</b> {person.number}
-                        <button style={{marginLeft: 10}} onClick={() => handleDeletePerson(person.id)}>Delete</button>
-                    </li>
-                )}
-        </ul>
-    )
-}
 
 export default App 
