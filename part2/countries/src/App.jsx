@@ -5,7 +5,8 @@ function App() {
 
     const [typeValue, setTypeValue] = useState('');
     const [countries, setCountries] = useState([]);
-    const [filteredCountries, setFilteredCountries] = useState([])
+    const [filteredCountries, setFilteredCountries] = useState([]);
+    const [visibleCountries, setVisibleCountries] = useState([]);
 
     useEffect(() => {
             countriesServices.getAllCountries().then(result => {
@@ -16,8 +17,18 @@ function App() {
         updateFilteredCountries();
     }, [typeValue]);
 
+    const setVisible = (index) => {
+        if (visibleCountries && visibleCountries.length >= index-1)
+        {
+            setVisibleCountries(visibleCountries.map((country, i) => i === index ? !country:country))
+        }
+    }
+
     const updateFilteredCountries = () => {
-        setFilteredCountries(typeValue?countries.filter(country => country.name.common.toLowerCase().includes(typeValue.toLowerCase())):[]);
+        const filtered = typeValue?countries.filter(country => country.name.common.toLowerCase().includes(typeValue.toLowerCase())):[];
+        setFilteredCountries(filtered);
+        setVisibleCountries(new Array (filtered.length).fill(false))
+
     }
     const handleTypeCountry = (event) => {
         setTypeValue(event.target.value);
@@ -25,24 +36,28 @@ function App() {
     return (
         <div>
             Find countries: <input value={typeValue} onChange={handleTypeCountry}/>
-            <CountryMatch countries={filteredCountries} />
+            <CountryMatch countries={filteredCountries} visibility={visibleCountries} setVisible={setVisible}/>
         </div>
     )
 }
-const CountryMatch = ({countries}) => {
+const CountryMatch = ({countries, visibility, setVisible}) => {
     if (countries.length === 1)
     {
-        const country = countries[0];
         return (
-           <CountryEntry country={country} />
+           <CountryEntry country={countries[0]} />
         )
     }
     if (countries.length <= 10)
     {
         return (
                 <ul>
-                    {countries.map(country => <li key={country.cca2}><b>{country.name.common}</b></li>)}
+                    {countries.map((country, index) =>
+                        <li key={country.cca2}><b>{country.name.common}</b><button
+                            onClick={() => setVisible(index)}>{visibility[index]?'Hide':'Show'}</button> {visibility[index] && <CountryEntry country={country} />}
+                        </li>)}
+
                 </ul>
+
         )
     }
     return (
