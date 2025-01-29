@@ -1,3 +1,3 @@
-# Exercises 2.6-2.11
+# Exercises 2.6-2.17
 
 The Phonebook
