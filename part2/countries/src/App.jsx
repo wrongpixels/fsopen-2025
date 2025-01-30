@@ -1,5 +1,6 @@
 import countriesServices from "./services/countriesServices.js";
 import {useState, useEffect} from "react";
+import CountryMatch from "./components/CountryMatch.jsx";
 
 function App() {
 
@@ -9,12 +10,21 @@ function App() {
     const [visibleCountries, setVisibleCountries] = useState([]);
 
     useEffect(() => {
-            countriesServices.getAllCountries().then(result => {
+        if (!countries || countries.length === 0)
+        {
+            countriesServices.getAllCountries().then(result =>
+            {
                 setCountries(result);
-            })
-    }, []);
-    useEffect(() => {
-        updateFilteredCountries();
+                if (result && result.length > 0)
+                {
+                    updateFilteredCountries(result);
+                }
+        }
+        )}
+        else if (countries && countries.length > 0)
+        {
+            updateFilteredCountries(countries);
+        }
     }, [typeValue]);
 
     const setVisible = (index) => {
@@ -24,7 +34,7 @@ function App() {
         }
     }
 
-    const updateFilteredCountries = () => {
+    const updateFilteredCountries = (countries) => {
         const filtered = typeValue?countries.filter(country => country.name.common.toLowerCase().includes(typeValue.toLowerCase())):[];
         setFilteredCountries(filtered);
         setVisibleCountries(new Array (filtered.length).fill(false))
@@ -38,63 +48,6 @@ function App() {
             Find countries: <input value={typeValue} onChange={handleTypeCountry}/>
             <CountryMatch countries={filteredCountries} visibility={visibleCountries} setVisible={setVisible}/>
         </div>
-    )
-}
-const CountryMatch = ({countries, visibility, setVisible}) => {
-    if (countries.length === 1)
-    {
-        return (
-           <CountryEntry country={countries[0]} />
-        )
-    }
-    if (countries.length <= 10)
-    {
-        return (
-                <ul>
-                    {countries.map((country, index) =>
-                        <li key={country.cca2}><b>{country.name.common}</b><button
-                            onClick={() => setVisible(index)}>{visibility[index]?'Hide':'Show'}</button> {visibility[index] && <CountryEntry country={country} />}
-                        </li>)}
-
-                </ul>
-
-        )
-    }
-    return (
-        <>
-        <h3>Too many matches!</h3>
-            Please specify another filter.
-        </>
-    )
-}
-
-const CountryEntry = ({country}) =>
-{
-    return (
-        <>
-        <h1>
-            {country.name.common}
-        </h1>
-            <b>Capital:</b> {country.capital}<br/>
-            <b>Area: </b> {country.area}
-            <h2>Languages</h2>
-            <ObjectList list={country.languages} />
-            <DrawFlag country={country} />
-        </>
-    )
-}
-
-const ObjectList = ({list}) => {
-    const listValues = Object.values(list);
-    return (
-        <ul>
-            {listValues.map(element => <li key={element}>{element}</li>)}
-        </ul>
-    )
-}
-const DrawFlag = ({country}) => {
-    return (
-        <img src={country.flags.png} alt={country.flags.alt}/>
     )
 }
 export default App 
