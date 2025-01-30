@@ -11,8 +11,11 @@ Submissions for the Full Stack Open course.
 - Part 6: Advanced state management
 - Part 7: React router, custom hooks, styling app with CSS and webpack
 - Part 8: GraphQL
-- Part 9: TypeScript
-- Part 10: React Native
-- Part 11: CI/CD
-- Part 12: Containers
-- Part 13: Using relational databases
+
+
+
+- _Part 9: TypeScript_
+- _Part 10: React Native_
+- _Part 11: CI/CD_
+- _Part 12: Containers_
+- _Part 13: Using relational databases_
