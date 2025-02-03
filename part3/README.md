@@ -1,6 +1,6 @@
 ## Part 3 - Programming a server with NodeJS and Express
 
-Part 3 exercises are in a separate repository as required by the course:
+Part 3 exercises are in a separate repository as recommended by the course:
 [wrongpixels/fsopen-part3](https://github.com/wrongpixels/fsopen-part3)
 
 The phonebook application is deployed at:
