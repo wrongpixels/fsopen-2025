@@ -7,3 +7,4 @@ create-TEST-project.bat
 eslint.config.js
 .idea/
 /Tests/
+node_modules/
