@@ -1,0 +1,14 @@
+@url = http://localhost:3003/api/blogs/
+
+###TRY GET ALL
+GET {{url}}
+
+###TRY ADD
+POST {{url}}
+Content-Type: application/json
+
+{
+  "title": "Portal News UK",
+  "author": "Mac Allister",
+  "url": "www.portalnews.co.uk"
+}
