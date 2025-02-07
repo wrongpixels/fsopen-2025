@@ -92,3 +92,9 @@ describe('favorite blog', () => {
         deepEquals(listHelper.favoriteBlog(blogs), { title: "Canonical string reduction", author: "Edsger W. Dijkstra", likes: 12 })
     })
 })
+
+describe('most blogs', () => {
+    test('of a full list', () => {
+        deepEquals(listHelper.mostBlogs(blogs), {author: "Robert C. Martin", blogs: 3})
+    })
+})

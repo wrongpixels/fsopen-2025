@@ -13,4 +13,30 @@ const favoriteBlog = (blogs) => {
     return mostLiked;
 }
 
-module.exports = {dummy, totalLikes, favoriteBlog};
+const mostBlogs = (blogs) => {
+    let authors = [];
+    blogs.forEach(b => {
+        let existing = authors.find(blog => blog.author === b.author);
+        if (existing)
+        {
+            log("updating", authors)
+        }
+        else
+        {
+            authors.push({author: b.author, blogs: 1})
+        }
+    } )
+    let mostBlogged = null;
+    if (authors)
+    {
+        authors.forEach(author => {
+            if (!mostBlogged || author.blogs > mostBlogged.blogs)
+            {
+                mostBlogged = author;
+            }
+        })
+    }
+    return mostBlogged;
+}
+
+module.exports = {dummy, totalLikes, favoriteBlog, mostBlogs};
