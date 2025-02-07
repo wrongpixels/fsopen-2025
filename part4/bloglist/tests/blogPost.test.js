@@ -1,5 +1,6 @@
 const {test, describe} = require("node:test")
 const equals = require("assert").strictEqual
+const deepEquals = require("assert").deepStrictEqual
 const listHelper = require("../utils/list_helper")
 const {log, error} = require("../utils/logger")
 
@@ -75,5 +76,19 @@ describe('total likes', () => {
     test('of a bigger list is calculated right', () => {
         const result = listHelper.totalLikes(blogs);
         equals(result, 36);
+    })
+})
+
+describe('favorite blog', () => {
+    test('of an empty list is null', () => {
+        deepEquals(listHelper.favoriteBlog([]), null)
+    })
+    test('of a single blog list is itself', () => {
+        deepEquals(listHelper.favoriteBlog(listWithOneBlog), {title: 'Go To Statement Considered Harmful',
+            author: 'Edsger W. Dijkstra',
+            likes: 5,})
+    })
+    test('of a full list works right', () => {
+        deepEquals(listHelper.favoriteBlog(blogs), { title: "Canonical string reduction", author: "Edsger W. Dijkstra", likes: 12 })
     })
 })
