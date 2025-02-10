@@ -36,5 +36,18 @@ test.only('_id is indeed id', async () => {
     assert(!_id && id)
 
 })
+test.only('we can actually add a blog', async () => {
+    const originalLength = initialBlogs.length
+    const newBlog = {
+        title: 'Bob Log\'s Blogs Blog',
+        author: 'Bob Log',
+        url: 'http://boblogsblogsblog.ogg'
+    }
+    await api.post('/api/blogs').send(newBlog).expect(201)
+    const newBlogs = await Blog.find({})
+    const addedBlog = newBlogs.find(b => b.title === newBlog.title)
+    assert.strictEqual(originalLength + 1, newBlogs.length)
+    assert(addedBlog)
+})
 
 after( async () => await mongoose.connection.close())
