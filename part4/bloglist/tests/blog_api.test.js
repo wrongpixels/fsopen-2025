@@ -80,4 +80,27 @@ test.only('likes are 0 if empty', async () => {
     const newBlog = await api.post('/api/blogs').send({title: 'A Bob\'s Life', author: 'Bob', url: 'www.boblogsblogsblogbob.bob'}).expect(201).expect('Content-type', /application\/json/)
     assert.strictEqual(newBlog.body.likes, 0)
 })
+
+describe('deletions', () => {
+    test.only('we can delete existing blog', async () => {
+        const allBlogs = await getAllBlogsInDB()
+        const firstBlog = allBlogs[0]
+        await api.delete(`/api/blogs/${firstBlog.id}`).expect(204)
+        const newBlogs = await getAllBlogsInDB()
+        assert.strictEqual(newBlogs.find(b => b.id === firstBlog.id), undefined)
+        assert.strictEqual(allBlogs.length -1, newBlogs.length)
+    })
+    test.only('we get error 400 and no deletion from wrong id format', async () =>{
+        const allBlogs = await getAllBlogsInDB()
+        await api.delete('/api/blogs/68').expect(400)
+        const newBlogs = await getAllBlogsInDB()
+        assert.deepStrictEqual(allBlogs, newBlogs)
+    } )
+    test.only('we get error 404 and no deletion from non existing blog', async () =>{
+        const allBlogs = await getAllBlogsInDB()
+        await api.delete('/api/blogs/5a422b3a1b54a676234d17f4').expect(404)
+        const newBlogs = await getAllBlogsInDB()
+        assert.deepStrictEqual(allBlogs, newBlogs)
+    } )
+})
 after( async () => await mongoose.connection.close())

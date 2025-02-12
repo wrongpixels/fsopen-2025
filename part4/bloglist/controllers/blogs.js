@@ -23,10 +23,25 @@ const alreadyExists = async (blog) => {
     return existing;
 };
 
-router.get('/', async (request, response) => {
-    const blogs = await Blog.find({})
-    response.json(blogs)
+router.get('/:id', async (request, response) => {
+    const id = response.params.id
+
+        const blog = await Blog.findById(id)
+        if (blog)
+        {
+            return response.json(blog)
+        }
+        else
+        {
+            return response.status(404).end()
+        }
+
 })
+
+router.get('/', async (request, response) => {
+    const blogs = await Blog.find({});
+    response.json(blogs);
+});
 
 router.post('/', async (request, response) => {
 
@@ -38,9 +53,20 @@ router.post('/', async (request, response) => {
             });
         }
         const savedBlog = await blog.save();
-
         response.status(201).json(savedBlog);
     }
 )
+
+router.delete('/:id', async (request, response) => {
+    const id = request.params.id
+
+        const blog = await Blog.findByIdAndDelete(id)
+        if (blog)
+        {
+            return response.status(204).end()
+        }
+        return response.status(404).json({Error: 'Entry doesn\'t exist in server'})
+})
+
 
 module.exports = router;
