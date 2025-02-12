@@ -2,21 +2,20 @@ const {test, beforeEach, after} = require("node:test")
 const assert = require("node:assert")
 const mongoose = require("mongoose")
 const supertest = require("supertest")
-const {initialBlogs} = require("./test_helpers")
+const {initialBlogs} = require("../utils/list_helper")
 const app = require("../app")
 const Blog = require("../models/blog")
+const {getAllBlogsInDB} = require('./test_helpers')
 
 const api = supertest(app)
 
 beforeEach( async () => {
-    console.time("beforeEachTime")
     await Blog.deleteMany({})
     for (const b of initialBlogs)
     {
         const newBlog = new Blog(b)
         await newBlog.save()
     }
-    console.timeEnd("beforeEachTime")
 })
 
 const getAllBlogs = async () => await api
@@ -44,10 +43,15 @@ test.only('we can actually add a blog', async () => {
         url: 'http://boblogsblogsblog.ogg'
     }
     await api.post('/api/blogs').send(newBlog).expect(201)
-    const newBlogs = await Blog.find({})
+    const newBlogs = await getAllBlogsInDB()
     const addedBlog = newBlogs.find(b => b.title === newBlog.title)
     assert.strictEqual(originalLength + 1, newBlogs.length)
     assert(addedBlog)
+})
+
+test.only('likes are 0 if empty', async () => {
+    const newBlog = await api.post('/api/blogs').send({title: 'A Bob\'s Life', author: 'Bob', url: 'www.boblogsblogsblogbob.bob'}).expect(201).expect('Content-type', /application\/json/)
+    assert.strictEqual(newBlog.body.likes, 0)
 })
 
 after( async () => await mongoose.connection.close())

@@ -1,9 +1,9 @@
 const {test, describe} = require("node:test")
 const equals = require("assert").strictEqual
 const deepEquals = require("assert").deepStrictEqual
+const {initialBlogs} = require("../utils/list_helper")
 const listHelper = require("../utils/list_helper")
 const {log, error} = require("../utils/logger")
-const {initialBlogs} = require("./test_helpers")
 
 
 const blogs2 = [
