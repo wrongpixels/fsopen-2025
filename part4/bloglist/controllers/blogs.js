@@ -38,6 +38,7 @@ router.post('/', async (request, response) => {
             });
         }
         const savedBlog = await blog.save();
+
         response.status(201).json(savedBlog);
     }
 )
