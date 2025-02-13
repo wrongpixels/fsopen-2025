@@ -103,4 +103,36 @@ describe('deletions', () => {
         assert.deepStrictEqual(allBlogs, newBlogs)
     } )
 })
+
+describe('editing blogs', () =>
+{
+    test.only('an existing blog can be replaced', async () => {
+        const allBlogs = await getAllBlogsInDB()
+        const firstBlog = allBlogs[0]
+        const newBlog = {
+            author: 'Bob Log',
+            title: 'Bob\'s Log Blogs',
+            url: 'http://boblogsblogsblog.ogg'
+        }
+        await api.put(`/api/blogs/${firstBlog.id}`)
+            .send(newBlog)
+            .expect(200)
+            .expect('Content-type', /application\/json/)
+        const updatedBlog = await Blog.findById(firstBlog.id)
+        assert.strictEqual(updatedBlog.title, newBlog.title)
+    })
+
+    test.only('likes can be edited independently', async () => {
+        const allBlogs = await getAllBlogsInDB()
+        const firstBlog = allBlogs[0]
+        await api.put(`/api/blogs/${firstBlog.id}`)
+            .send({likes: 50})
+            .expect(200)
+            .expect('Content-type', /application\/json/)
+        const updatedBlog = await Blog.findById(firstBlog.id)
+        assert.strictEqual(updatedBlog.likes, 50)
+        assert.strictEqual(updatedBlog.title, firstBlog.title)
+    })
+})
+
 after( async () => await mongoose.connection.close())

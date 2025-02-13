@@ -68,5 +68,20 @@ router.delete('/:id', async (request, response) => {
         return response.status(404).json({Error: 'Entry doesn\'t exist in server'})
 })
 
+router.put('/:id', async (request, response) => {
+    const id = request.params.id
+    const updatedInfo = request.body
+    if (!updatedInfo)
+    {
+        return response.status(400).json({Error: 'Updated data can\'t be empty'})
+    }
+    const updatedBlog = await Blog.findByIdAndUpdate(id, updatedInfo, {new: true, runValidators: true, context: 'query'})
+    if (updatedBlog)
+    {
+        return response.status(200).json(updatedBlog)
+    }
+    response.status(404).json({Error: `Blog to update was not found.`})
+})
+
 
 module.exports = router;
