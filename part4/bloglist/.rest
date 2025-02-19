@@ -1,4 +1,4 @@
-@url = http://localhost:3003/api/blogs/
+@url = http://localhost:3003/api/
 
 ###TRY GET ALL
 GET {{url}}
@@ -11,4 +11,14 @@ Content-Type: application/json
   "title": "Portal News UK",
   "author": "Mac Allister",
   "url": "www.portalnews.co.uk"
+}
+
+###TRY ADD USER
+POST {{url}}/users
+Content-Type: application/json
+
+{
+  "username": "wrongPixel",
+  "name": "Álvaro Moreno Twin",
+  "password": "absoldoesntrules"
 }

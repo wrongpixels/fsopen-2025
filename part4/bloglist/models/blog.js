@@ -16,14 +16,18 @@ const blogSchema = new mongoose.Schema({
     likes: {
         type: Number,
         default: 0
+    },
+    userId: {
+        type: String,
+        required: true
     }
 })
 
 blogSchema.set('toJSON', {
     transform: (doc, ret) => {
         ret.id = doc._id.toString();
-        delete ret._id;
-        delete ret.__v;
+        delete ret._id
+        delete ret.__v
     }
 })
 

@@ -5,7 +5,8 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const middlewares = require("./utils/middlewares");
 const {log, error} = require("./utils/logger");
-const router = require("./controllers/blogs");
+const blogsRouter = require("./controllers/blogs");
+const usersRouter = require("./controllers/users");
 
 mongoose.connect(config.MONGODB_URL)
     .then(() => log('Connected to Mongoose'))
@@ -19,8 +20,9 @@ app.use(express.json())
 if (process.env.NODE_ENV !=='test') {
     app.use(middlewares.morganLogger());
 }
-app.use('/api/blogs', router);
-app.use(middlewares.badRequestHandler);
-app.use(middlewares.errorHandler);
+app.use('/api/users', usersRouter)
+app.use('/api/blogs', blogsRouter)
+app.use(middlewares.badRequestHandler)
+app.use(middlewares.errorHandler)
 
 module.exports = app;
