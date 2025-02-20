@@ -6,7 +6,11 @@ router.post('/', async (req, res) => {
     const user = req.body
     if (!user)
     {
-        return res.status(401).json({error: "User data is missing"})
+        return res.status(400).json({error: 'User data is missing'})
+    }
+    if (!user.password || user.password.length <= 2)
+    {
+        return res.status(400).json({error: 'Password must be at least 3 characters long'})
     }
     const passHash = await bcrypt.hash(user.password, 10)
     const userToAdd = new User({

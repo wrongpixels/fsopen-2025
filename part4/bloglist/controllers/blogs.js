@@ -49,7 +49,7 @@ router.post('/', async (request, response) => {
         const existing = await alreadyExists(blog);
         if (existing.blog) {
             return response.status(400).json({
-                Error: `Blog already exists with same ${existing.match}`
+                error: `Blog already exists with same ${existing.match}`
             });
         }
         const savedBlog = await blog.save();
@@ -65,7 +65,7 @@ router.delete('/:id', async (request, response) => {
         {
             return response.status(204).end()
         }
-        return response.status(404).json({Error: 'Entry doesn\'t exist in server'})
+        return response.status(404).json({error: 'Entry doesn\'t exist in server'})
 })
 
 router.put('/:id', async (request, response) => {
@@ -73,14 +73,14 @@ router.put('/:id', async (request, response) => {
     const updatedInfo = request.body
     if (!updatedInfo)
     {
-        return response.status(400).json({Error: 'Updated data can\'t be empty'})
+        return response.status(400).json({error: 'Updated data can\'t be empty'})
     }
     const updatedBlog = await Blog.findByIdAndUpdate(id, updatedInfo, {new: true, runValidators: true, context: 'query'})
     if (updatedBlog)
     {
         return response.status(200).json(updatedBlog)
     }
-    response.status(404).json({Error: `Blog to update was not found.`})
+    response.status(404).json({error: `Blog to update was not found.`})
 })
 
 

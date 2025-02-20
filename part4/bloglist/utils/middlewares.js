@@ -1,4 +1,3 @@
-const {log, error} = require("../utils/logger");
 const morgan = require("morgan");
 
 morgan.token('body', (req) => req.body ? JSON.stringify(req.body) : '');
@@ -6,26 +5,32 @@ const morganFilter = (':method :url :status :res[content-length] - :response-tim
 
 const morganLogger = () => morgan(morganFilter);
 const errorHandler = (error, req, res, next) => {
+
+    const errorToSend = {code: error.status, message:error.message};
+
     if (error?.name === 'CastError') {
-        return res.status(400).json({ 'Error': 'Wrong entry ID format' });
+        errorToSend.message = 'Wrong entry ID format'
+        errorToSend.code = 400
     }
-    if (error?.name === 'ReferenceError') {
-        return res.status(404).json({ 'Error': 'Entry doesn\'t exist' });
+    else if (error?.name === 'ReferenceError') {
+       errorToSend.message = 'Entry doesn\'t exist'
+       errorToSend.code = 404
     }
-    if (error?.name === 'ValidationError') {
-        return res.status(400).json(unPackErrorsAsString(error));
+    else if (error?.name === "MongoServerError" && error?.message.includes('E11000 duplicate key error collection')) {
+        errorToSend.message = 'User already exists'
+        errorToSend.code = 400
     }
-    const status = error?.status || 500;
-    if (error?.json) {
-        return res.status(status).json(error.json);
+    else if (error?.name === 'ValidationError') {
+        errorToSend.message = unPackErrorsAsString(error)
+        errorToSend.code = 400
     }
-    res.status(status).json({ 'Error': 'An unexpected error occurred' });
+    res.status(errorToSend.code).json({error: errorToSend.message})
     next(error);
 };
 
 const badRequestHandler = (req, res) =>
 {
-    res.status(404).json({ 'Error 404': 'Unknown endpoint' })
+    res.status(404).json({ error: 'Unknown endpoint' })
 }
 /*
 const unPackErrors = (error) => {
@@ -46,7 +51,7 @@ const unPackErrorsAsString = (error) => {
         );
         message = errorMessages.join(' ');
     }
-    return { [error.name]: message.trim() };
+    return message.trim();
 };
 
 module.exports = { errorHandler, morganLogger, badRequestHandler }

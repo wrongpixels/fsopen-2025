@@ -18,7 +18,7 @@ POST {{url}}/users
 Content-Type: application/json
 
 {
-  "username": "wrongPixel",
-  "name": "Álvaro Moreno Twin",
-  "password": "absoldoesntrules"
+  "username": "wrongPixelss",
+  "name": "Álvaro Moreno Double Twin",
+  "password": "abs"
 }
