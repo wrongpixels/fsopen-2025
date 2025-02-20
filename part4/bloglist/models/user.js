@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const Blog = require('./blog')
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -18,7 +17,8 @@ const userSchema = new mongoose.Schema({
     },
     blogs: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: Blog
+        ref: 'Blog',
+        required: true
     }]
 })
 

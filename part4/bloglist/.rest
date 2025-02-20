@@ -3,14 +3,24 @@
 ###TRY GET ALL
 GET {{url}}
 
+###TRY GET ALL BLOGS
+GET {{url}}blogs
+
+###TRY GET ALL USERS
+GET {{url}}users
+
+###TRY INJECT USERS
+GET {{url}}blogs/injectUsers
+
+
 ###TRY ADD
-POST {{url}}
+POST {{url}}blogs
 Content-Type: application/json
 
 {
-  "title": "Portal News UK",
+  "title": "Portales New News UKs",
   "author": "Mac Allister",
-  "url": "www.portalnews.co.uk"
+  "url": "www.portalnewnewses.co.uks"
 }
 
 ###TRY ADD USER
@@ -18,7 +28,7 @@ POST {{url}}/users
 Content-Type: application/json
 
 {
-  "username": "wrongPixelss",
-  "name": "Álvaro Moreno Double Twin",
-  "password": "abs"
+  "username": "maximMaximus",
+  "name": "Max Maxime",
+  "password": "wdewd"
 }

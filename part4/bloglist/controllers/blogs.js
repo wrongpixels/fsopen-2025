@@ -1,5 +1,6 @@
-const router = require("express").Router();
-const Blog = require("../models/blog");
+const router = require("express").Router()
+const Blog = require("../models/blog")
+const User = require('../models/user')
 const {log, error} = require("../utils/logger")
 
 const alreadyExists = async (blog) => {
@@ -23,6 +24,34 @@ const alreadyExists = async (blog) => {
     return existing;
 };
 
+router.get('/injectUsers', async (req, res) => {
+    const allUsers = await User.find({})
+    for (const user of allUsers)
+    {
+        user.blogs = []
+        await user.save()
+    }
+    let userIndex = 0
+    const allBlogs = await Blog.find({})
+    for (const blog of allBlogs) {
+        const user = allUsers[allUsers.length-1-userIndex]
+        blog.user = user._id
+        userIndex += 1
+        if (userIndex >= allUsers.length) {
+            userIndex = 0
+        }
+        await blog.save()
+        user.blogs = user.blogs.concat(blog._id)
+        await user.save()
+
+    }
+    res.status(200).json({ message: 'Users injected successfully' })
+})
+router.get('/', async (request, response) => {
+    const blogs = await Blog.find({}).populate('user', {blogs: 0});
+    response.json(blogs);
+});
+
 router.get('/:id', async (request, response) => {
     const id = response.params.id
 
@@ -35,17 +64,16 @@ router.get('/:id', async (request, response) => {
         {
             return response.status(404).end()
         }
-
 })
-
-router.get('/', async (request, response) => {
-    const blogs = await Blog.find({});
-    response.json(blogs);
-});
-
 router.post('/', async (request, response) => {
-
-        const blog = new Blog(request.body)
+        if (!request.body)
+        {
+            return response.status(400).json({error: 'Missing blog data'})
+        }
+        const anyUser = await User.findOne({})
+        const blogToAd = request.body
+        blogToAd.user = anyUser._id
+        const blog = new Blog(blogToAd)
         const existing = await alreadyExists(blog);
         if (existing.blog) {
             return response.status(400).json({
@@ -53,6 +81,8 @@ router.post('/', async (request, response) => {
             });
         }
         const savedBlog = await blog.save();
+        anyUser.blogs = anyUser.blogs.concat(savedBlog._id)
+        await anyUser.save()
         response.status(201).json(savedBlog);
     }
 )
