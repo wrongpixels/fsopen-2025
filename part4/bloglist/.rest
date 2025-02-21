@@ -15,23 +15,28 @@ GET {{url}}blogs/injectUsers
 
 ###TRY ADD
 POST {{url}}blogs
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1heGltTWF4aW11cyIsImlkIjoiNjdiNzViN2QxYWVmOWFiNzZkMDNjZGE3IiwiaWF0IjoxNzQwMTQ3MjE4LCJleHAiOjE3NDAxNTA4MTh9._GG-JlIRTPzRbHA_FX56rbYkmbyYOYvUh8ppHEOKdSo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtldmFwIiwiaWQiOiI2N2I4OTE1MDBkMGY4ZDRmZDNhNGY1MTMiLCJpYXQiOjE3NDAxNTAwMDIsImV4cCI6MTc0MDE1MzYwMn0.N3vDOMQ4b0hpPKcTMA7ccCKRexRvStqU8EQ-hk_NAVA
 Content-Type: application/json
 
 {
-  "title": "Kitchen Heaven",
+  "title": "Kitchen Heavens",
   "author": "Ramdon Gatsby",
-  "url": "www.kitcheaven.hol"
+  "url": "www.kitcheaven.hola"
 }
+
+###TRY DELETE BLOG
+DELETE {{url}}blogs/67b8950db30baccdc6ae9ff2
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtldmFwIiwiaWQiOiI2N2I4OTE1MDBkMGY4ZDRmZDNhNGY1MTMiLCJpYXQiOjE3NDAxNTAwMDIsImV4cCI6MTc0MDE1MzYwMn0.N3vDOMQ4b0hpPKcTMA7ccCKRexRvStqU8EQ-hk_NAVA
+
 
 ###TRY ADD USER
 POST {{url}}/users
 Content-Type: application/json
 
 {
-  "username": "maximMaximus",
-  "name": "Max Maxime",
-  "password": "wdewd"
+  "username": "kevap",
+  "name": "Alvaro",
+  "password": "wdsdsd"
 }
 
 ###TRY LOGIN USER
@@ -39,6 +44,6 @@ POST {{url}}/login
 Content-Type: application/json
 
 {
-  "username": "maximMaximus",
-  "password": "wdewd"
+  "username": "kevap",
+  "password": "wdsdsd"
 }

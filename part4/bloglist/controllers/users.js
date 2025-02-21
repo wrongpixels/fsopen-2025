@@ -28,5 +28,15 @@ router.get('/', async (req, res) => {
     res.status(200).json(allUsers)
 })
 
+router.get('/:id', async (req, res) => {
+    const param = req.params.id
+    const user = await User.findById(param).populate('blogs', {user:0, likes:0})
+    if (!user)
+    {
+        return res.status(404).json({error: 'User doesn\'t exist in database'})
+    }
+    res.status(200).json(user)
+})
+
 
 module.exports = router
