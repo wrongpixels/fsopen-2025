@@ -67,23 +67,12 @@ router.get('/:id', async (request, response) => {
         }
 })
 
-const extractToken = (req) => {
-    const auth = req.get('authorization')
-    if (auth)
-    {
-        if (auth.startsWith('Bearer '))
-        {
-            return auth.replace('Bearer ', '')
-        }
-    }
-    return null
-}
 router.post('/', async (request, response) => {
         if (!request.body)
         {
             return response.status(400).json({error: 'Missing blog data'})
         }
-        const token = extractToken(request)
+        const token = request.token
         if (!token)
         {
             return response.status(401).json({error: 'User session is not valid'})

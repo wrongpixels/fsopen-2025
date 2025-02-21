@@ -5,7 +5,17 @@ const morganFilter = (':method :url :status :res[content-length] - :response-tim
 
 const morganLogger = () => morgan(morganFilter);
 
-
+const tokenExtractor = (req, res, next) => {
+    const token = req.get('authorization')
+    if (token)
+    {
+        if (token.startsWith('Bearer '))
+        {
+            req.token = token.replace('Bearer ', '')
+        }
+    }
+    next()
+}
 
 const errorHandler = (error, req, res, next) => {
    // console.log('Current error:', error)
@@ -69,4 +79,4 @@ const unPackErrorsAsString = (error) => {
     return message.trim();
 };
 
-module.exports = { errorHandler, morganLogger, badRequestHandler }
+module.exports = { errorHandler, morganLogger, badRequestHandler, tokenExtractor }
