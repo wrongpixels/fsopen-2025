@@ -4,27 +4,42 @@ morgan.token('body', (req) => req.body ? JSON.stringify(req.body) : '');
 const morganFilter = (':method :url :status :res[content-length] - :response-time ms :body');
 
 const morganLogger = () => morgan(morganFilter);
+
+
+
 const errorHandler = (error, req, res, next) => {
-    //console.log(error)
-    const errorToSend = {code: error.status, message:error.message};
+   // console.log('Current error:', error)
+    const errorToSend = {code: error.status, message:error.message}
+
+    errorToSend.setError = (code, message) => {
+        errorToSend.code = code
+        errorToSend.message = message
+    }
 
     if (error?.name === 'CastError') {
-        errorToSend.message = 'Wrong entry ID format'
-        errorToSend.code = 400
+        errorToSend.setError(400, 'Wrong entry ID format')
     }
     else if (error?.name === 'ReferenceError') {
-       errorToSend.message = 'Entry doesn\'t exist'
-       errorToSend.code = 404
+        errorToSend.setError(404, 'Entry doesn\'t exist')
     }
     else if (error?.name === "MongoServerError" && error?.message.includes('E11000 duplicate key error collection')) {
-        errorToSend.message = 'User already exists'
-        errorToSend.code = 400
+        errorToSend.setError(400, 'User already exists')
     }
     else if (error?.name === 'ValidationError') {
-        errorToSend.message = unPackErrorsAsString(error)
-        errorToSend.code = 400
+        errorToSend.setError(400, unPackErrorsAsString(error))
     }
-    res.status(errorToSend.code).json({error: errorToSend.message})
+    else if (error?.name === 'TokenExpiredError')
+    {
+        errorToSend.setError(401, 'Token expired')
+    }
+    else if (error?.name === 'JsonWebTokenError')
+    {
+        errorToSend.setError(401, 'Invalid token')
+    }
+    if (errorToSend.code && errorToSend.message)
+    {
+        return  res.status(errorToSend.code).json({error: errorToSend.message})
+    }
     next(error);
 };
 

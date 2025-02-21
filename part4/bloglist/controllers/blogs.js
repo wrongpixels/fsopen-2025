@@ -1,6 +1,7 @@
 const router = require("express").Router()
 const Blog = require("../models/blog")
 const User = require('../models/user')
+const jwt = require('jsonwebtoken')
 const {log, error} = require("../utils/logger")
 
 const alreadyExists = async (blog) => {
@@ -65,14 +66,40 @@ router.get('/:id', async (request, response) => {
             return response.status(404).end()
         }
 })
+
+const extractToken = (req) => {
+    const auth = req.get('authorization')
+    if (auth)
+    {
+        if (auth.startsWith('Bearer '))
+        {
+            return auth.replace('Bearer ', '')
+        }
+    }
+    return null
+}
 router.post('/', async (request, response) => {
         if (!request.body)
         {
             return response.status(400).json({error: 'Missing blog data'})
         }
-        const anyUser = await User.findOne({})
+        const token = extractToken(request)
+        if (!token)
+        {
+            return response.status(401).json({error: 'User session is not valid'})
+        }
+        const decodedToken = jwt.verify(token, process.env.SECRET)
+        if (!decodedToken || !decodedToken.id)
+        {
+            return response.status(401).json({error: 'Token was invalid'})
+        }
+        const user = await User.findById(decodedToken.id)
+        if (!user)
+        {
+            return response.status(401).json({error: 'User is not in database'})
+        }
         const blogToAd = request.body
-        blogToAd.user = anyUser._id
+        blogToAd.user = user._id
         const blog = new Blog(blogToAd)
         const existing = await alreadyExists(blog);
         if (existing.blog) {
@@ -81,8 +108,8 @@ router.post('/', async (request, response) => {
             });
         }
         const savedBlog = await blog.save();
-        anyUser.blogs = anyUser.blogs.concat(savedBlog._id)
-        await anyUser.save()
+        user.blogs = user.blogs.concat(savedBlog._id)
+        await user.save()
         response.status(201).json(savedBlog);
     }
 )
