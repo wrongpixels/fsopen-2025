@@ -1,7 +1,7 @@
 const router = require("express").Router()
 const Blog = require("../models/blog")
 const User = require('../models/user')
-const jwt = require('jsonwebtoken')
+const middleware = require('../utils/middleware')
 const {log, error} = require("../utils/logger")
 
 const alreadyExists = async (blog) => {
@@ -65,30 +65,11 @@ router.get('/:id', async (request, response) => {
 
 })
 
-const getUserFromToken = async (request, response) => {
-    const token = request.token
-    if (!token) {
-        response.status(401).json({error: 'User session is not valid'})
-        return
-    }
-    const decodedToken = jwt.verify(token, process.env.SECRET)
-    if (!decodedToken || !decodedToken.id) {
-        response.status(401).json({error: 'Invalid token'})
-        return
-    }
-    const user = await User.findById(decodedToken.id)
-    if (!user) {
-        response.status(401).json({error: 'Requester not in database'})
-        return
-    }
-    return user
-}
-
-router.post('/', async (request, response) => {
+router.post('/', middleware.handleUserExtractorErrors, async (request, response) => {
         if (!request.body) {
             return response.status(400).json({error: 'Missing blog data'})
         }
-        const user = await getUserFromToken(request, response)
+        const user = request.user
         if (!user)
         {
             return response
@@ -109,9 +90,9 @@ router.post('/', async (request, response) => {
     }
 )
 
-router.delete('/:id', async (request, response) => {
+router.delete('/:id', middleware.handleUserExtractorErrors, async (request, response) => {
     const id = request.params.id
-    const user = await getUserFromToken(request, response)
+    const user = request.user
     if (!user)
     {
         return response
@@ -123,7 +104,7 @@ router.delete('/:id', async (request, response) => {
     }
     if (blog.user.toString() !== user._id.toString())
     {
-        return response.status(401).json({error: 'User in not authorized to perform the action'})
+        return response.status(401).json({error: 'User in not authorized to perform the operation'})
     }
     const deletedBlog = await Blog.findByIdAndDelete(blog._id)
 

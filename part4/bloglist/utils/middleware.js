@@ -1,4 +1,6 @@
-const morgan = require("morgan");
+const morgan = require("morgan")
+const jwt = require('jsonwebtoken')
+const User = require('../models/user')
 
 morgan.token('body', (req) => req.body ? JSON.stringify(req.body) : '');
 const morganFilter = (':method :url :status :res[content-length] - :response-time ms :body');
@@ -13,6 +15,46 @@ const tokenExtractor = (req, res, next) => {
         {
             req.token = token.replace('Bearer ', '')
         }
+    }
+    next()
+}
+
+const userExtractor = async (req, res, next) =>
+{
+    const token = req.token
+    if (!token)
+    {
+        next()
+        return
+    }
+    const decodedToken = jwt.verify(token, process.env.SECRET)
+    if (!decodedToken || !decodedToken.id)
+    {
+        next()
+        return
+    }
+    const user = await User.findById(decodedToken.id)
+    if (!user)
+    {
+        next()
+        return
+    }
+    req.user = user
+    next()
+}
+
+const handleUserExtractorErrors = async (request, response, next) => {
+    const token = request.token
+    if (!token) {
+        response.status(401).json({error: 'User session is not valid'})
+        next()
+        return
+    }
+    const user = request.user
+    if (!user) {
+        response.status(401).json({error: 'Operation requester not in database'})
+        next()
+        return
     }
     next()
 }
@@ -79,4 +121,4 @@ const unPackErrorsAsString = (error) => {
     return message.trim();
 };
 
-module.exports = { errorHandler, morganLogger, badRequestHandler, tokenExtractor }
+module.exports = { errorHandler, morganLogger, badRequestHandler, tokenExtractor, userExtractor, handleUserExtractorErrors }
