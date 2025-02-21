@@ -32,3 +32,12 @@ Content-Type: application/json
   "name": "Max Maxime",
   "password": "wdewd"
 }
+
+###TRY LOGIN USER
+POST {{url}}/login
+Content-Type: application/json
+
+{
+  "username": "maximMaximus",
+  "password": "wdewd"
+}

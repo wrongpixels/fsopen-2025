@@ -5,7 +5,7 @@ const morganFilter = (':method :url :status :res[content-length] - :response-tim
 
 const morganLogger = () => morgan(morganFilter);
 const errorHandler = (error, req, res, next) => {
-    console.log(error)
+    //console.log(error)
     const errorToSend = {code: error.status, message:error.message};
 
     if (error?.name === 'CastError') {
