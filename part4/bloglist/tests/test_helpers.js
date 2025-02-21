@@ -11,4 +11,26 @@ const getAllUsersInDB = async () => {
     return allUsers.map(u => u.toJSON())
 }
 
-module.exports = {getAllBlogsInDB, getAllUsersInDB}
+const newBlog = {
+    title: 'Bob Log\'s Blogs Blog',
+    author: 'Bob Log',
+    url: 'http://boblogsblogsblog.ogg'
+}
+
+const rootUser = {
+    loginToken: 0,
+    userData:
+        {
+            username: 'root',
+            name: 'Admin',
+            password: 'verysecure'
+        }
+}
+
+const validUser = {
+    username: 'kevapaereo',
+    name: 'Álvaro Moreno',
+    password: 'passme'
+}
+
+module.exports = {getAllBlogsInDB, getAllUsersInDB, newBlog, rootUser, validUser}
