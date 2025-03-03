@@ -3,7 +3,6 @@ const Notification = ({ message, error }) => {
     if (!message) {
         return (<></>)
     }
-    console.log(message)
 
     const notificationStyle = {
         color: error ? 'red' : 'green',

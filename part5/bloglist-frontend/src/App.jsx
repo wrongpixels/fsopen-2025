@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import blogService from './services/blogs'
+import loginService from './services/login.js'
+
+const USER_KEY = 'activeUser'
 
 const App = () => {
     const [blogs, setBlogs] = useState([])
@@ -26,17 +29,71 @@ const App = () => {
     }
 
     useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
-  }, [])
+        if (!user)
+        {
+            const existingSession = window.localStorage.getItem(USER_KEY)
+            if (existingSession)
+            {
+                const validUser = JSON.parse(existingSession)
+                if (validUser && validUser.token)
+                {
+                    setUser(validUser)
+                }
+                else
+                {
+                    window.localStorage.removeItem(USER_KEY)
+                }
+            }
+        }
+    }, []);
+    useEffect(() => {
+        if (user) {
+            getAllBlogs()
+        }
+  }, [user])
 
-    const doLogin = (event) => {
+    const getAllBlogs = async () => {
+        const allBlogs = await blogService.getAll()
+        if (allBlogs)
+        {
+            setBlogs(allBlogs)
+        }
+    }
+
+    const doLogOut = (event) => {
+        showNotification(`See you soon, ${user.username}!`)
+        setUser(null)
+        window.localStorage.removeItem(USER_KEY)
+        setPassword('')
+        setUsername('')
+    }
+
+    const doLogin = async (event) => {
         event.preventDefault()
         if (!username || !password)
         {
-            showError('Ooops')
+            showError('Username and password can\'t be empty.')
+            return
         }
+        const userData = await loginService.tryLogin(username, password)
+        if (userData === null)
+        {
+            showError('Login failed.')
+            return
+        }
+        if (userData.error)
+        {
+            showError(userData.error)
+            return
+        }
+        if (!userData.token)
+        {
+            showError('Token is not valid.')
+            return
+        }
+        setUser(userData)
+        showNotification(`Welcome back, ${userData.username}!`)
+        window.localStorage.setItem(USER_KEY, JSON.stringify(userData))
     }
 
   const loginForm = () => (
@@ -46,7 +103,7 @@ const App = () => {
               <div>
                   Username
                   <input
-                      onChange={(evt)=> setUsername(evt.target.value)}
+                      onChange={({target})=> setUsername(target.value)}
                       type="text"
                       name="Username"
                       value={username}
@@ -55,7 +112,7 @@ const App = () => {
               <div>
                   Password
                   <input
-                      onChange={(evt) => setPassword(evt.target.value)}
+                      onChange={({target}) => setPassword(target.value)}
                       type="password"
                       name="Password"
                       value={password}
@@ -68,14 +125,17 @@ const App = () => {
 
   const drawBlogs = () => (
       <div>
-        <h2>blogs</h2>
-        {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog}/>
-        )}
+          <h2>Blogs</h2>
+          <p>
+              Logged in as <b> {user.username} </b><button onClick={doLogOut}>Log out</button>
+          </p>
+          {blogs.map(blog =>
+              <Blog key={blog.id} blog={blog}/>
+          )}
       </div>
   )
 
-  return (
+    return (
       <>
           <Notification message={notification?.message} error={notification?.error} />
 
