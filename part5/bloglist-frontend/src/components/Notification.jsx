@@ -1,7 +1,8 @@
-const Notification = ({ message, error }) => {
+const Notification = ({ notification }) => {
+    const { message, error } = notification
 
     if (!message) {
-        return (<></>)
+        return null
     }
 
     const notificationStyle = {
@@ -20,5 +21,5 @@ const Notification = ({ message, error }) => {
         </div>
     )
 }
-export default Notification
 
+export default Notification
