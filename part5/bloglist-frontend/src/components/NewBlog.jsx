@@ -17,15 +17,19 @@ const NewBlog = ({showNotification, getAllBlogs}) => {
        const newBlog = await blogServices.addBlog(title, author, url)
         if (newBlog && newBlog.title === title)
         {
-            showNotification(`${title} was added to the Blog List!`)
+            showNotification(`'${title}' by ${author} was added to the Blog List!`, false)
             getAllBlogs()
             setTitle('')
             setAuthor('')
             setUrl('')
         }
-        else
+        else if (newBlog.error)
         {
             showNotification(newBlog.error)
+        }
+        else
+        {
+            showNotification('There was an error adding the entry')
         }
     }
 

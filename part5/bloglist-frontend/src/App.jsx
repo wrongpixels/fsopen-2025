@@ -25,7 +25,8 @@ const App = () => {
         }
         setNotification({message, error})
         setTimeout(() => {
-            setNotification({message:'', error:true})
+                setNotification({message: '', error: true})
+
         }, 5000)
     }
 
