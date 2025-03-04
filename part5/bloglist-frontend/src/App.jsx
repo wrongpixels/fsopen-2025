@@ -1,18 +1,20 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import NewBlog from './components/NewBlog.jsx'
 import Notification from './components/Notification'
+import LoginForm from './components/LoginForm.jsx'
+import Toggleable from './components/Toggleable.jsx'
 import blogService from './services/blogs'
-import loginService from './services/login.js'
 
 const USER_KEY = 'activeUser'
 
 const App = () => {
     const [blogs, setBlogs] = useState([])
     const [user, setUser] = useState(null)
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
+
     const [notification, setNotification] = useState({message:'', error:true})
+    const newBlogRef = useRef()
+    const loginFormRef = useRef()
 
     const showError = (message) => sendNotification(message, true)
     const showNotification = (message) => sendNotification(message, false)
@@ -67,69 +69,23 @@ const App = () => {
             setBlogs(allBlogs)
         }
     }
-
-    const doLogOut = (event) => {
-        showNotification(`See you soon, ${user.username}!`)
-        setUser(null)
-        window.localStorage.removeItem(USER_KEY)
-        setPassword('')
-        setUsername('')
-    }
-
-    const doLogin = async (event) => {
-        event.preventDefault()
-        if (!username || !password)
-        {
-            showError('Username and password can\'t be empty.')
-            return
-        }
-        const userData = await loginService.tryLogin(username, password)
-        if (userData === null)
-        {
-            showError('Login failed.')
-            return
-        }
-        if (userData.error)
-        {
-            showError(userData.error)
-            return
-        }
-        if (!userData.token)
-        {
-            showError('Token is not valid.')
-            return
-        }
+    const setSession = (userData) => {
         setUser(userData)
         showNotification(`Welcome back, ${userData.username}!`)
         window.localStorage.setItem(USER_KEY, JSON.stringify(userData))
     }
+    const doLogOut = () => {
+        showNotification(`See you soon, ${user.username}!`)
+        setUser(null)
+        window.localStorage.removeItem(USER_KEY)
+        loginFormRef.current?.cleanForm()
+    }
 
-  const loginForm = () => (
-      <>
-        <h2>Login to application</h2>
-          <form>
-              <div>
-                  Username
-                  <input
-                      onChange={({target})=> setUsername(target.value)}
-                      type="text"
-                      name="Username"
-                      value={username}
-                  />
-              </div>
-              <div>
-                  Password
-                  <input
-                      onChange={({target}) => setPassword(target.value)}
-                      type="password"
-                      name="Password"
-                      value={password}
-                  />
-              </div>
-              <button type="submit" onClick={doLogin}>Login</button>
-          </form>
-      </>
-  )
+    const loginForm = () => <><LoginForm
+        showError={showError}
+        setSession={setSession}
+        ref={loginFormRef}
+    /></>
 
   const drawBlogs = () => (
       <div>
@@ -140,17 +96,23 @@ const App = () => {
           {blogs.map(blog =>
               <Blog key={blog.id} blog={blog}/>
           )}
+          <Toggleable
+
+              ref={newBlogRef}
+              labelOnVisible={'Hide new Blog Form'}
+              labelOnInvisible={'Add a new Blog'}
+              initialVisibility={false}>
          <NewBlog
              showNotification={sendNotification}
              getAllBlogs={getAllBlogs}
          />
+          </Toggleable>
       </div>
   )
 
     return (
       <>
           <Notification notification={notification} />
-
           {user?drawBlogs():loginForm()}
       </>
   )
