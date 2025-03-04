@@ -9,10 +9,16 @@ const blogsRouter = require('./controllers/blogs')
 const usersRouter = require('./controllers/users')
 const loginRouter = require('./controllers/login')
 
-mongoose.connect(config.MONGODB_URL)
-    .then(() => log('Connected to Mongoose'))
-    .catch(() => error('Error connecting to Mongoose'));
+const startMongoose = async () => {
+    try {
+        await mongoose.connect(config.MONGODB_URL)
+        log('Connected to Mongoose')
 
+    } catch (error) {
+        error('Error connecting to Mongoose')
+    }
+}
+startMongoose()
 mongoose.set('strictQuery', false);
 
 const app = express();
