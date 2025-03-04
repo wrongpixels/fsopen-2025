@@ -64,9 +64,9 @@ const NewBlog = ({showNotification, getAllBlogs}) => {
                         name="Url"
                     />
                 </div>
-                <div>
+                <p>
                     <button type="submit">Add entry</button>
-                </div>
+                </p>
             </form>
         </>
     )

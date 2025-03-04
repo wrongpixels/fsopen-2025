@@ -96,17 +96,21 @@ const App = () => {
           {blogs.map(blog =>
               <Blog key={blog.id} blog={blog}/>
           )}
+          <div>
           <Toggleable
 
               ref={newBlogRef}
               labelOnVisible={'Hide new Blog Form'}
               labelOnInvisible={'Add a new Blog'}
-              initialVisibility={false}>
+              initialVisibility={false}
+              addSpace={false}
+              showOver={true}
+          >
          <NewBlog
              showNotification={sendNotification}
              getAllBlogs={getAllBlogs}
          />
-          </Toggleable>
+          </Toggleable></div>
       </div>
   )
 
