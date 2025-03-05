@@ -43,4 +43,14 @@ const addBlog = async (title, author, url) => {
   }
 }
 
-export default { getAll, addBlog, addLike ,buildToken }
+const deleteBlog = async (id) => {
+  try
+  {
+    const response = await axios.delete(`${baseUrl}/${id}`, {headers: activeToken})
+    return response.data
+  }catch (e){
+    return e.response.data
+  }
+}
+
+export default { getAll, addBlog, addLike, deleteBlog, buildToken }

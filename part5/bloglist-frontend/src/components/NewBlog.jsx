@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react'
 import blogServices from '../services/blogs.js'
 
-const NewBlog = ({showNotification, getAllBlogs}) => {
+const NewBlog = ({showNotification, addNewBlog}) => {
     const [title, setTitle] = useState('')
     const [author, setAuthor] = useState('')
     const [url, setUrl] = useState('')
@@ -18,7 +18,7 @@ const NewBlog = ({showNotification, getAllBlogs}) => {
         if (newBlog && newBlog.title === title)
         {
             showNotification(`'${title}' by ${author} was added to the Blog List!`, false)
-            getAllBlogs()
+            addNewBlog()
             setTitle('')
             setAuthor('')
             setUrl('')
