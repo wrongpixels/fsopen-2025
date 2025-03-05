@@ -118,19 +118,23 @@ router.delete('/:id', middleware.handleUserExtractorErrors, async (request, resp
 })
 
 router.put('/:id', async (request, response) => {
+
     const id = request.params.id
     const updatedInfo = request.body
     if (!updatedInfo) {
         return response.status(400).json({error: 'Updated data can\'t be empty'})
     }
+
     const updatedBlog = await Blog.findByIdAndUpdate(id, updatedInfo, {
         new: true,
         runValidators: true,
         context: 'query'
     })
     if (updatedBlog) {
+
         return response.status(200).json(updatedBlog)
     }
+
     response.status(404).json({error: `Blog to update was not found.`})
 })
 

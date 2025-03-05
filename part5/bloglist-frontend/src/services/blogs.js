@@ -10,6 +10,26 @@ const getAll = async () => {
   return request.data
 }
 
+const buildBlogData = (blog) =>{
+  return {...blog, likes:blog.likes+1, user:blog.user.id}
+}
+
+const addLike = async (blog, showNotification) => {
+  const modifiedBlog = {likes:blog.likes+1}
+
+  const response = await axios.put(`${baseUrl}/${blog.id}`, modifiedBlog)
+
+  if (response.data)
+  {
+    showNotification('Liked the blog!', false)
+    return response.data
+  }
+  else
+  {
+    showNotification('Error updating blog info')
+  }
+}
+
 const addBlog = async (title, author, url) => {
   if (!activeToken || !activeToken.authorization || activeToken.authorization === 'Bearer ')
   {
@@ -23,4 +43,4 @@ const addBlog = async (title, author, url) => {
   }
 }
 
-export default { getAll, addBlog, buildToken }
+export default { getAll, addBlog, addLike ,buildToken }

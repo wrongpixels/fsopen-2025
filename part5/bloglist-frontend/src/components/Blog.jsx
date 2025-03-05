@@ -1,7 +1,10 @@
 import Toggleable from './Toggleable.jsx'
-import {useRef} from 'react'
-const Blog = ({ blog }) => {
+import {useRef, useState} from 'react'
+import blogServices from '../services/blogs.js'
+const Blog = ({ blog, showNotification }) => {
     const toggleRef = useRef()
+    const [likes, setLikes] = useState(blog.likes)
+
     const blogStyle = {
         paddingTop:5,
         paddingLeft:10,
@@ -21,6 +24,13 @@ const Blog = ({ blog }) => {
         marginTop: 10,
         marginBottom: 10
     }
+    const addLike = async () => {
+       const editedBlog = await blogServices.addLike({...blog, likes:blog.likes++}, showNotification)
+        if (editedBlog)
+        {
+            setLikes(editedBlog.likes)
+        }
+    }
     return(
         <div style={blogStyle}>
         <b>{blog.title}</b> by {blog.author}<Toggleable
@@ -31,8 +41,8 @@ const Blog = ({ blog }) => {
             addSpace={false}
         >
             <div style={expandedBlog} >
-                <b>URL:</b> {blog.url}<br/>
-                <b>Likes:</b> {blog.likes} <button>Like!</button><br/>
+                <b>URL:</b> <a href={blog.url}>{blog.url}</a> <br/>
+                <b>Likes:</b> {likes} <button onClick={addLike}>Like!</button><br/>
                     <b>Added by:</b> {blog.user.username}
             </div>
         </Toggleable>

@@ -94,7 +94,7 @@ const App = () => {
               Logged in as <b> {user.username} </b><button onClick={doLogOut}>Log out</button>
           </p>
           {blogs.map(blog =>
-              <Blog key={blog.id} blog={blog}/>
+              <Blog key={blog.id} blog={blog} showNotification={sendNotification}/>
           )}
           <div>
           <Toggleable
