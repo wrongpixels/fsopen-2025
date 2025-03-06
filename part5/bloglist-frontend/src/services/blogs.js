@@ -3,19 +3,19 @@ const baseUrl = '/api/blogs'
 
 let activeToken = {}
 
-const buildToken = (token) => activeToken = {authorization: `Bearer ${token}`}
+const buildToken = (token) => activeToken = { authorization: `Bearer ${token}` }
 
 const getAll = async () => {
   const request = await axios.get(baseUrl)
   return request.data
 }
 
-const buildBlogData = (blog) =>{
-  return {...blog, likes:blog.likes+1, user:blog.user.id}
+const buildBlogData = (blog) => {
+  return { ...blog, likes:blog.likes+1, user:blog.user.id }
 }
 
 const addLike = async (blog, showNotification) => {
-  const modifiedBlog = {likes:blog.likes+1}
+  const modifiedBlog = { likes:blog.likes+1 }
 
   const response = await axios.put(`${baseUrl}/${blog.id}`, modifiedBlog)
 
@@ -33,10 +33,10 @@ const addLike = async (blog, showNotification) => {
 const addBlog = async (title, author, url) => {
   if (!activeToken || !activeToken.authorization || activeToken.authorization === 'Bearer ')
   {
-    return {error: 'Token is not valid'}
+    return { error: 'Token is not valid' }
   }
   try {
-    const addedBlog = (await axios.post(baseUrl, {title, author, url}, {headers: activeToken}))
+    const addedBlog = (await axios.post(baseUrl, { title, author, url }, { headers: activeToken }))
     return addedBlog.data
   }catch (e){
     return e.response.data
@@ -46,7 +46,7 @@ const addBlog = async (title, author, url) => {
 const deleteBlog = async (id) => {
   try
   {
-    const response = await axios.delete(`${baseUrl}/${id}`, {headers: activeToken})
+    const response = await axios.delete(`${baseUrl}/${id}`, { headers: activeToken })
     return response.data
   }catch (e){
     return e.response.data

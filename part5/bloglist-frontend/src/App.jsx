@@ -9,129 +9,130 @@ import blogService from './services/blogs'
 const USER_KEY = 'activeUser'
 
 const App = () => {
-    const [blogs, setBlogs] = useState([])
-    const [user, setUser] = useState(null)
+  const [blogs, setBlogs] = useState([])
+  const [user, setUser] = useState(null)
 
-    const [notification, setNotification] = useState({message:'', error:true})
-    const newBlogRef = useRef()
-    const loginFormRef = useRef()
+  const [notification, setNotification] = useState({ message:'', error:true })
+  const newBlogRef = useRef()
+  const loginFormRef = useRef()
 
-    const showError = (message) => sendNotification(message, true)
-    const showNotification = (message) => sendNotification(message, false)
+  const showError = (message) => sendNotification(message, true)
+  const showNotification = (message) => sendNotification(message, false)
 
 
-    const sendNotification = (message, error = true) => {
-        if(!message)
-        {
-            return
-        }
-        setNotification({message, error})
-        setTimeout(() => {
-                setNotification({message: '', error: true})
-
-        }, 5000)
+  const sendNotification = (message, error = true) => {
+    if(!message)
+    {
+      return
     }
+    setNotification({ message, error })
+    setTimeout(() => {
+      setNotification({ message: '', error: true })
 
-    useEffect(() => {
-        if (!user)
+    }, 5000)
+  }
+
+
+  useEffect(() => {
+    if (!user)
+    {
+      const existingSession = window.localStorage.getItem(USER_KEY)
+      if (existingSession)
+      {
+        const validUser = JSON.parse(existingSession)
+        if (validUser && validUser.token)
         {
-            const existingSession = window.localStorage.getItem(USER_KEY)
-            if (existingSession)
-            {
-                const validUser = JSON.parse(existingSession)
-                if (validUser && validUser.token)
-                {
-                    setUser(validUser)
-                }
-                else
-                {
-                    window.localStorage.removeItem(USER_KEY)
-                }
-            }
-        }
-    }, []);
-    useEffect(() => {
-        if (user) {
-            getAllBlogs()
-            blogService.buildToken(user.token)
+          setUser(validUser)
         }
         else
         {
-            blogService.buildToken('')
+          window.localStorage.removeItem(USER_KEY)
         }
+      }
+    }
+  }, [])
+  useEffect(() => {
+    if (user) {
+      getAllBlogs()
+      blogService.buildToken(user.token)
+    }
+    else
+    {
+      blogService.buildToken('')
+    }
 
   }, [user])
 
-    const addNewBlog = () => getAllBlogs()
-    const deleteBlog = (id) => orderBlogs(blogs.filter(b => b.id !== id))
+  const addNewBlog = () => getAllBlogs()
+  const deleteBlog = (id) => orderBlogs(blogs.filter(b => b.id !== id))
 
-    const getAllBlogs = async () => {
-        const allBlogs = await blogService.getAll()
-        orderBlogs(allBlogs)
+  const getAllBlogs = async () => {
+    const allBlogs = await blogService.getAll()
+    orderBlogs(allBlogs)
+  }
+  const orderBlogs = (targetBlogs = blogs) => {
+    if (!targetBlogs)
+    {
+      return
     }
-    const orderBlogs = (targetBlogs = blogs) => {
-        if (!targetBlogs)
-        {
-            return
-        }
-        setBlogs([...targetBlogs].sort((a, b) => b.likes - a.likes))
-    }
-    const setSession = (userData) => {
-        setUser(userData)
-        showNotification(`Welcome back, ${userData.username}!`)
-        window.localStorage.setItem(USER_KEY, JSON.stringify(userData))
-    }
-    const doLogOut = () => {
-        showNotification(`See you soon, ${user.username}!`)
-        setUser(null)
-        window.localStorage.removeItem(USER_KEY)
-        loginFormRef.current?.cleanForm()
-    }
+    setBlogs([...targetBlogs].sort((a, b) => b.likes - a.likes))
+  }
+  const setSession = (userData) => {
+    setUser(userData)
+    showNotification(`Welcome back, ${userData.username}!`)
+    window.localStorage.setItem(USER_KEY, JSON.stringify(userData))
+  }
+  const doLogOut = () => {
+    showNotification(`See you soon, ${user.username}!`)
+    setUser(null)
+    window.localStorage.removeItem(USER_KEY)
+    loginFormRef.current?.cleanForm()
+  }
 
-    const loginForm = () => <><LoginForm
-        showError={showError}
-        setSession={setSession}
-        ref={loginFormRef}
-    /></>
+  const loginForm = () => <><LoginForm
+    showError={showError}
+    setSession={setSession}
+    ref={loginFormRef}
+  /></>
 
   const drawBlogs = () => (
-      <div>
-          <h2>Blogs</h2>
-          <p>
+    <div>
+      <h2>Blogs</h2>
+      <p>
               Logged in as <b> {user.username} </b><button onClick={doLogOut}>Log out</button>
-          </p>
-          {blogs.map(blog =>
-              <Blog key={blog.id}
-                    blog={blog}
-                    showNotification={sendNotification}
-                    orderBlogs={orderBlogs}
-                    activeUser={user}
-                    deleteBlog={deleteBlog}
-              />
-          )}
-          <div>
-          <Toggleable
+      </p>
+      {blogs.map(blog =>
+        <Blog key={blog.id}
+          blog={blog}
+          showNotification={sendNotification}
+          orderBlogs={orderBlogs}
+          activeUser={user}
+          deleteBlog={deleteBlog}
+        />
+      )}
+      <div>
+        <Toggleable
 
-              ref={newBlogRef}
-              labelOnVisible={'Hide new Blog Form'}
-              labelOnInvisible={'Add a new Blog'}
-              initialVisibility={false}
-              addSpace={false}
-              showOver={true}
-          >
-         <NewBlog
-             showNotification={sendNotification}
-             addNewBlog={addNewBlog}
-         />
-          </Toggleable></div>
-      </div>
+          ref={newBlogRef}
+          labelOnVisible={'Hide new Blog Form'}
+          labelOnInvisible={'Add a new Blog'}
+          initialVisibility={false}
+          addSpace={false}
+          showOver={true}
+        >
+          <NewBlog
+            showNotification={sendNotification}
+            addNewBlog={addNewBlog}
+          />
+        </Toggleable></div>
+    </div>
   )
 
-    return (
-      <>
-          <Notification notification={notification} />
-          {user?drawBlogs():loginForm()}
-      </>
+  return (
+    <>
+      <Notification notification={notification} />
+      {user?drawBlogs():loginForm()}
+    </>
   )
 }
 
