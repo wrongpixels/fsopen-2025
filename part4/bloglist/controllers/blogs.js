@@ -83,10 +83,11 @@ router.post('/', middleware.handleUserExtractorErrors, async (request, response)
                 error: `Blog already exists with same ${existing.match}`
             });
         }
-        const savedBlog = await blog.save();
+        const savedBlog = await blog.save()
         user.blogs = user.blogs.concat(savedBlog._id)
         await user.save()
-        response.status(201).json(savedBlog);
+        const populatedBlog = await savedBlog.populate('user', {blogs: 0})
+    response.status(201).json(populatedBlog)
     }
 )
 

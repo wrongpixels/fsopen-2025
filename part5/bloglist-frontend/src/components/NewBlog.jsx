@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import blogServices from '../services/blogs.js'
 
 const NewBlog = ({ showNotification, addNewBlog }) => {
   const [title, setTitle] = useState('')
@@ -14,22 +13,12 @@ const NewBlog = ({ showNotification, addNewBlog }) => {
       showNotification('Can\'t add an entry with empty fields!')
       return
     }
-    const newBlog = await blogServices.addBlog(title, author, url)
+    const newBlog = await addNewBlog(title, author, url)
     if (newBlog && newBlog.title === title)
     {
-      showNotification(`'${title}' by ${author} was added to the Blog List!`, false)
-      addNewBlog()
       setTitle('')
       setAuthor('')
       setUrl('')
-    }
-    else if (newBlog.error)
-    {
-      showNotification(newBlog.error)
-    }
-    else
-    {
-      showNotification('There was an error adding the entry')
     }
   }
 

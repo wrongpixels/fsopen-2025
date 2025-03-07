@@ -13,7 +13,6 @@ const replaceBlogData = async (data, id, showNotification) => {
   const response = await axios.put(`${baseUrl}/${id}`, data)
   if (response.data)
   {
-    showNotification('Liked the blog!', false)
     return response.data
   }
   else

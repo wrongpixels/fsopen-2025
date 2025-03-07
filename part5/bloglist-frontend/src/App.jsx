@@ -5,6 +5,7 @@ import Notification from './components/Notification'
 import LoginForm from './components/LoginForm.jsx'
 import Toggleable from './components/Toggleable.jsx'
 import blogService from './services/blogs'
+import blogServices from './services/blogs.js'
 
 const USER_KEY = 'activeUser'
 
@@ -63,14 +64,31 @@ const App = () => {
 
   }, [user])
 
-  const addNewBlog = () => getAllBlogs()
+  const addNewBlog = async (title, author, url) => {
+    const newBlog = await blogServices.addBlog(title, author, url)
+    if (newBlog && newBlog.title === title)
+    {
+      setBlogs(blogs.concat(newBlog))
+      showNotification(`'${title}' by ${author} was added to the Blog List!`, false)
+    }
+    else if (newBlog.error)
+    {
+      showNotification(newBlog.error)
+    }
+    else
+    {
+      showNotification('There was an error adding the entry')
+    }
+    return newBlog
+  }
 
   const deleteBlog = (id) => orderBlogs(blogs.filter(b => b.id !== id))
 
   const addLike = async (blog) => {
-    const editedBlog = await blogService.replaceBlogData({likes: blog.likes + 1}, blog.id, showNotification)
+    const editedBlog = await blogService.replaceBlogData({ likes: blog.likes + 1 }, blog.id, showNotification)
     if (editedBlog)
     {
+      showNotification('Blog was liked!')
       replaceBlog(editedBlog)
     }
   }
