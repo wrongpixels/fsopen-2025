@@ -6,19 +6,11 @@ import blogServices from '../services/blogs.js'
 const Blog = ({
   blog,
   showNotification,
-  orderBlogs,
+  likeBlog,
   activeUser,
   deleteBlog
 }) => {
-  Blog.propTypes = {
-    blog: PropTypes.object.isRequired,
-    showNotification: PropTypes.func.isRequired,
-    orderBlogs: PropTypes.func.isRequired,
-    activeUser: PropTypes.object.isRequired,
-    deleteBlog: PropTypes.func.isRequired
-  }
   const toggleRef = useRef()
-  const [likes, setLikes] = useState(blog.likes)
 
   const blogStyle = {
     paddingTop: 5,
@@ -43,13 +35,6 @@ const Blog = ({
         {
           paddingTop: 5
         }
-  const addLike = async () => {
-    const editedBlog = await blogServices.addLike({ ...blog, likes: blog.likes++ }, showNotification)
-    if (editedBlog) {
-      setLikes(editedBlog.likes)
-      orderBlogs()
-    }
-  }
 
   const handleDeleteBlog = async () => {
     if (window.confirm(`Delete blog '${blog.title}' by ${blog.author}?\n\nThis action is permanent.`)) {
@@ -81,8 +66,8 @@ const Blog = ({
       >
         <div style={expandedBlog} >
           <b>URL:</b> <a href={blog.url}>{blog.url}</a> <br/>
-          <b>Likes:</b> {likes}
-          <button onClick={addLike}>Like!</button>
+          <b>Likes:</b> {blog.likes}
+          <button onClick={() => likeBlog(blog)}>Like!</button>
           <br/>
           <b>Added by:</b> {blog.user.username}
           {deleteButton()}
@@ -90,6 +75,14 @@ const Blog = ({
       </Toggleable>
     </div>
   )
+}
+
+Blog.propTypes = {
+  blog: PropTypes.object.isRequired,
+  showNotification: PropTypes.func.isRequired,
+  likeBlog: PropTypes.func.isRequired,
+  activeUser: PropTypes.object.isRequired,
+  deleteBlog: PropTypes.func.isRequired
 }
 
 export default Blog

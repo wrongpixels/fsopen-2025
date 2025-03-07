@@ -129,7 +129,7 @@ router.put('/:id', async (request, response) => {
         new: true,
         runValidators: true,
         context: 'query'
-    })
+    }).populate('user', {blogs: 0})
     if (updatedBlog) {
 
         return response.status(200).json(updatedBlog)

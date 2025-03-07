@@ -20,14 +20,16 @@ describe('<Blog /> component', () => {
     let toggleableContainer
 
     const hiddenStyle = 'display: none'
-    const fillerMock = vi.fn()
-
+    let fillerMock = vi.fn()
+    let likeMock = vi.fn()
     beforeEach( () => {
+        fillerMock = vi.fn()
+        likeMock = vi.fn()
         const { container } = render(<Blog
             activeUser={activeUser}
             deleteBlog={fillerMock}
             showNotification={fillerMock}
-            orderBlogs={fillerMock}
+            likeBlog={likeMock}
             blog={blog}
         />)
         currentContainer = container
@@ -55,5 +57,12 @@ describe('<Blog /> component', () => {
         expect(url).toBeVisible()
         expect(likes).toBeVisible()
         expect(toggleableContainer).not.toHaveStyle(hiddenStyle)
+    })
+    test('if we hit like 2, thus many calls take place', async () => {
+        const user = userEvent.setup()
+        const likeButton = screen.getByText('Like!')
+        await user.click(likeButton)
+        await user.click(likeButton)
+        expect(likeMock.mock.calls).toHaveLength(2)
     })
 })

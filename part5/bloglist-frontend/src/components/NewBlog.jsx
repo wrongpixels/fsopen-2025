@@ -44,6 +44,7 @@ const NewBlog = ({ showNotification, addNewBlog }) => {
             onChange={({ target }) => setTitle(target.value)}
             value={title}
             name="Title"
+            placeholder="Blog title"
           />
         </div>
         <div>
@@ -53,6 +54,7 @@ const NewBlog = ({ showNotification, addNewBlog }) => {
             value={author}
             onChange={({ target }) => setAuthor(target.value)}
             name="Author"
+            placeholder="Blog author"
           />
         </div>
         <div>
@@ -62,6 +64,7 @@ const NewBlog = ({ showNotification, addNewBlog }) => {
             value={url}
             onChange={({ target }) => setUrl(target.value)}
             name="Url"
+            placeholder="Blog URL"
           />
         </div>
         <p>

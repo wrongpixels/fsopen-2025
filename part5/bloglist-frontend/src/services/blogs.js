@@ -9,16 +9,8 @@ const getAll = async () => {
   const request = await axios.get(baseUrl)
   return request.data
 }
-
-const buildBlogData = (blog) => {
-  return { ...blog, likes:blog.likes+1, user:blog.user.id }
-}
-
-const addLike = async (blog, showNotification) => {
-  const modifiedBlog = { likes:blog.likes+1 }
-
-  const response = await axios.put(`${baseUrl}/${blog.id}`, modifiedBlog)
-
+const replaceBlogData = async (data, id, showNotification) => {
+  const response = await axios.put(`${baseUrl}/${id}`, data)
   if (response.data)
   {
     showNotification('Liked the blog!', false)
@@ -53,4 +45,4 @@ const deleteBlog = async (id) => {
   }
 }
 
-export default { getAll, addBlog, addLike, deleteBlog, buildToken }
+export default { getAll, addBlog, replaceBlogData, deleteBlog, buildToken }

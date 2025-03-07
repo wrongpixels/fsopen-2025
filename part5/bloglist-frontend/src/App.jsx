@@ -64,7 +64,20 @@ const App = () => {
   }, [user])
 
   const addNewBlog = () => getAllBlogs()
+
   const deleteBlog = (id) => orderBlogs(blogs.filter(b => b.id !== id))
+
+  const addLike = async (blog) => {
+    const editedBlog = await blogService.replaceBlogData({likes: blog.likes + 1}, blog.id, showNotification)
+    if (editedBlog)
+    {
+      replaceBlog(editedBlog)
+    }
+  }
+  const replaceBlog = (editedBlog) => {
+    const updatedBlogs = blogs.map(b => b.id === editedBlog.id?editedBlog:b)
+    orderBlogs(updatedBlogs)
+  }
 
   const getAllBlogs = async () => {
     const allBlogs = await blogService.getAll()
@@ -105,7 +118,7 @@ const App = () => {
         <Blog key={blog.id}
           blog={blog}
           showNotification={sendNotification}
-          orderBlogs={orderBlogs}
+          likeBlog={addLike}
           activeUser={user}
           deleteBlog={deleteBlog}
         />
