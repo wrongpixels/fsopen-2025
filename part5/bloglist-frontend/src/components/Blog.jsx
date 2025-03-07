@@ -71,15 +71,15 @@ const Blog = ({
     }
   }
   return (
-    <div style={blogStyle}>
-      <b>{blog.title}</b> by {blog.author}<Toggleable
+    <div style={blogStyle} >
+      <b>{blog.title}</b> {`by ${blog.author}`}<Toggleable
         ref={toggleRef}
         labelOnInvisible='Show details'
         labelOnVisible='Hide details'
         showOver={true}
         addSpace={false}
       >
-        <div style={expandedBlog}>
+        <div style={expandedBlog} >
           <b>URL:</b> <a href={blog.url}>{blog.url}</a> <br/>
           <b>Likes:</b> {likes}
           <button onClick={addLike}>Like!</button>

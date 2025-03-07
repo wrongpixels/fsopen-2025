@@ -26,7 +26,7 @@ const Toggleable = forwardRef((props, refs) => {
   return (
     <>
       {showOver && drawButton()}
-      <div style={visibilityStyle()}>
+      <div style={visibilityStyle()} className="toggleable-content">
         {children}
       </div>
       {!showOver && drawButton()}

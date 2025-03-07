@@ -8,3 +8,4 @@ eslint.config.js
 .idea/
 /Tests/
 node_modules/
+coverage/
