@@ -48,7 +48,57 @@ const showNewBlogEntry = async() =>{
     }
 }
 
-const createBlog = async (blogData = null) => {
+const getBlog = async (blogTitle = null) => {
+    if (!blogTitle)
+    {
+        blogTitle = validBlog.title
+    }
+   return await page.locator('.blog-list').getByText(blogTitle)
+}
+
+const getBlogParent = async (blogTitle = null) => {
+    if (!blogTitle) {
+        blogTitle = validBlog.title
+    }
+    const blog = await getBlog(blogTitle)
+    if (blog)
+    {
+        return await blog.locator('..')
+    }
+}
+
+const getButtonInBlog = async (blogTitle, buttonName) => {
+    const blog = await getBlog(blogTitle)
+    const blogParent = await blog.locator('..')
+    const buttons = await blogParent.getByRole('button', { name: buttonName}).all()
+    if (buttons.length > 0)
+    {
+        return buttons[0]
+    }
+}
+
+const clickButtonInBlog = async (blogTitle, buttonName) => {
+    const button = await getButtonInBlog(blogTitle, buttonName)
+    if (button)
+    {
+        await button.click()
+        return button
+    }
+}
+
+const expandOrCollapse = async (blog = null) =>{
+    if (!blog)
+    {
+        blog = validBlog
+    }
+    const expandButton = await clickButtonInBlog(blog.title, 'Show details')
+    if (!expandButton)
+    {
+        await clickButtonInBlog(blog.title, 'Hide details')
+    }
+}
+
+const createBlog = async (blogData = null, waitFor = true) => {
     if (!blogData)
     {
         blogData = validBlog
@@ -58,6 +108,8 @@ const createBlog = async (blogData = null) => {
     await page.getByTestId('blog-author').fill(blogData.author)
     await page.getByTestId('blog-url').fill(blogData.url)
     await page.getByRole('button', { name: 'Add entry'}).click()
+    await page.locator('.blog-list').getByText(blogData.title).waitFor()
+
 }
 
-module.exports = { setPage, validUser, validBlog, checkNotification, login, createBlog }
+module.exports = { setPage, validUser, validBlog, checkNotification, login, createBlog, getBlog, getBlogParent, expandOrCollapse, clickButtonInBlog }

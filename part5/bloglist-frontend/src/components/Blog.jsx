@@ -70,7 +70,7 @@ const Blog = ({
       >
         <div style={expandedBlog} >
           <b>URL:</b> <a href={blog.url}>{blog.url}</a> <br/>
-          <b>Likes:</b> {blog.likes}
+          <b>Likes:</b> <span className="blog-likes">{blog.likes}</span>
           <button onClick={() => likeBlog(blog)}>Like!</button>
           <br/>
           <b>Added by:</b> {blog.user?.username?blog.user.username:'?'}
