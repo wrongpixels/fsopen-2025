@@ -5,6 +5,11 @@ const validUser = {
     name: 'Pepe Pérez',
     password: 'supersafe'
 }
+const anotherValidUser = {
+    username: 'bestUser2',
+    name: 'Pepe Pérezdos',
+    password: 'supersafedos'
+}
 const invalidUser = {
     username: 'bestestUser',
     name: 'Pepe Pérez',
@@ -15,6 +20,11 @@ const validBlog = {
     title: "Bob Log's Log Blog",
     author: "Bob B. Log",
     url: 'http://bobloglogblob.blog'
+}
+const anotherValidBlog = {
+    title: "Bob Log's Log Blog - EXTREME",
+    author: "Bob B. Log",
+    url: 'http://bobloglogblobextreme.blog'
 }
 
 let page
@@ -31,12 +41,19 @@ const checkNotification = async (text, error = false) => {
     }
 }
 
-const login = async (checkFail = false) => {
-    const userData = checkFail?invalidUser:validUser
+const login = async (checkFail = false,  userData = null) => {
+    if (!userData)
+    {
+        userData = checkFail?invalidUser:validUser
+    }
     await page.getByTestId('username').fill(userData.username)
     await page.getByTestId('password').fill(userData.password)
     await page.getByRole('button', {name: 'Login' }).click()
-    await page.locator('.notification').waitFor()
+    if (!checkFail)
+    {
+        await page.getByText('Logged in as').waitFor()
+    }
+
 }
 
 const showNewBlogEntry = async() =>{
@@ -68,6 +85,10 @@ const getBlogParent = async (blogTitle = null) => {
 }
 
 const getButtonInBlog = async (blogTitle, buttonName) => {
+    if (!blogTitle)
+    {
+        blogTitle = validBlog.title
+    }
     const blog = await getBlog(blogTitle)
     const blogParent = await blog.locator('..')
     const buttons = await blogParent.getByRole('button', { name: buttonName}).all()
@@ -75,9 +96,14 @@ const getButtonInBlog = async (blogTitle, buttonName) => {
     {
         return buttons[0]
     }
+    return null
 }
 
-const clickButtonInBlog = async (blogTitle, buttonName) => {
+const clickButtonInBlog = async (blogTitle = null, buttonName) => {
+    if (!blogTitle)
+    {
+        blogTitle = validBlog.title
+    }
     const button = await getButtonInBlog(blogTitle, buttonName)
     if (button)
     {
@@ -112,4 +138,18 @@ const createBlog = async (blogData = null, waitFor = true) => {
 
 }
 
-module.exports = { setPage, validUser, validBlog, checkNotification, login, createBlog, getBlog, getBlogParent, expandOrCollapse, clickButtonInBlog }
+module.exports = {
+    setPage,
+    validUser,
+    anotherValidUser,
+    validBlog,
+    anotherValidBlog,
+    checkNotification,
+    login,
+    createBlog,
+    getBlog,
+    getBlogParent,
+    expandOrCollapse,
+    getButtonInBlog,
+    clickButtonInBlog
+}
