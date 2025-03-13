@@ -91,7 +91,7 @@ const getButtonInBlog = async (blogTitle, buttonName) => {
     }
     const blog = await getBlog(blogTitle)
     const blogParent = await blog.locator('..')
-    const buttons = await blogParent.getByRole('button', { name: buttonName}).all()
+    const buttons =  await blogParent.getByRole('button', { name: buttonName}).all()
     if (buttons.length > 0)
     {
         return buttons[0]
