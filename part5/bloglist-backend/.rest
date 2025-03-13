@@ -3,6 +3,9 @@
 ###TRY GET ALL
 GET {{url}}
 
+###TRY WIPE ALL
+POST {{url}}testing/reset
+
 ###TRY GET ALL BLOGS
 GET {{url}}blogs
 

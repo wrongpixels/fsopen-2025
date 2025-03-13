@@ -110,16 +110,15 @@ const App = () => {
   }
   const setSession = (userData) => {
     setUser(userData)
-    showNotification(`Welcome back, ${userData.username}!`)
+    showNotification(`Welcome back, ${userData.name}!`)
     window.localStorage.setItem(USER_KEY, JSON.stringify(userData))
   }
   const doLogOut = () => {
-    showNotification(`See you soon, ${user.username}!`)
+    showNotification(`See you soon, ${user.name}!`)
     setUser(null)
     window.localStorage.removeItem(USER_KEY)
     loginFormRef.current?.cleanForm()
   }
-
   const loginForm = () => <><LoginForm
     showError={showError}
     setSession={setSession}

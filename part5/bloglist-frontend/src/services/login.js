@@ -19,7 +19,7 @@ const tryLogin = async (_username, _password) =>
     {
       return loginData.data
     }
-    return { token: loginData.data.userToken, username: loginData.data.username }
+    return { token: loginData.data.userToken, username: loginData.data.username, name: loginData.data.name }
   }catch (e)
   {
     return e.response.data

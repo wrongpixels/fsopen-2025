@@ -8,6 +8,7 @@ const {log, error} = require('./utils/logger')
 const blogsRouter = require('./controllers/blogs')
 const usersRouter = require('./controllers/users')
 const loginRouter = require('./controllers/login')
+const testingRouter = require('./controllers/testing')
 
 const startMongoose = async () => {
     try {
@@ -27,6 +28,10 @@ app.use(express.json())
 app.use(middleware.tokenExtractor)
 if (process.env.NODE_ENV !=='test') {
     app.use(middleware.morganLogger());
+}
+else
+{
+    app.use('/api/testing', testingRouter)
 }
 app.use('/api/blogs', middleware.userExtractor, blogsRouter)
 app.use('/api/users', usersRouter)

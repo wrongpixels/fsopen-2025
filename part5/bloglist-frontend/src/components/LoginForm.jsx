@@ -50,6 +50,7 @@ const LoginForm = forwardRef((props, refs) => {
             type="text"
             name="Username"
             value={username}
+            data-testid="username"
           />
         </div>
         <div>
@@ -59,6 +60,7 @@ const LoginForm = forwardRef((props, refs) => {
             type="password"
             name="Password"
             value={password}
+            data-testid="password"
           />
         </div>
         <button type="submit">Login</button>

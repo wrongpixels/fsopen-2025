@@ -47,6 +47,10 @@ const Blog = ({
     }
   }
   const deleteButton = () => {
+    if (!blog.user)
+    {
+      return
+    }
     if (blog.user.username === activeUser?.username) {
       return (
         <div style={buttonStyle}>
@@ -69,7 +73,7 @@ const Blog = ({
           <b>Likes:</b> {blog.likes}
           <button onClick={() => likeBlog(blog)}>Like!</button>
           <br/>
-          <b>Added by:</b> {blog.user.username}
+          <b>Added by:</b> {blog.user?.username?blog.user.username:'?'}
           {deleteButton()}
         </div>
       </Toggleable>
