@@ -126,7 +126,7 @@ const App = () => {
   /></>
 
   const drawBlogs = () => (
-    <div>
+    <div className="blog-list">
       <h2>Blogs</h2>
       <p>
               Logged in as <b> {user.username} </b><button onClick={doLogOut}>Log out</button>
