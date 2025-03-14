@@ -60,7 +60,7 @@ const Blog = ({
     }
   }
   return (
-    <div style={blogStyle} >
+    <div style={blogStyle} className="blog-entry">
       <b>{blog.title}</b> {`by ${blog.author}`}<Toggleable
         ref={toggleRef}
         labelOnInvisible='Show details'
