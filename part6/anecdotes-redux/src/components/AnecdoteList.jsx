@@ -33,7 +33,7 @@ const AnecdoteList = () => {
         runNotification(`You voted for '${trimmedAnecdote}'`)
     }
     const anecdotes = useSelector(({ anecdotes, filter }) => [...anecdotes]
-        .filter(a => a.content
+        .filter(a => a.content && a.content
             .toLowerCase()
             .includes(filter
                 .toLowerCase()))
