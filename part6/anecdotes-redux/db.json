@@ -44,6 +44,21 @@
       "id": "11d7",
       "content": "Testing is a test indeed to test",
       "votes": 0
+    },
+    {
+      "id": "09cb",
+      "content": "Append also works as expected?",
+      "votes": 0
+    },
+    {
+      "id": "bd6b",
+      "content": "Testing again",
+      "votes": 0
+    },
+    {
+      "id": "affc",
+      "content": "Premature optimization is the root of all evil… strikes back!.",
+      "votes": 0
     }
   ]
 }
