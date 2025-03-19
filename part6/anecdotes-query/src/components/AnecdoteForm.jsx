@@ -15,18 +15,22 @@ const AnecdoteForm = () => {
                 queryClient
                 .getQueryData(['anecdotes'])
                 .concat(newAnecdote))
+            setNotification(dispatchNotification, `Anecdote ${formatTitle(newAnecdote.content)} added!`, 5)
+        },
+        onError: (fullResponse) => {
+            const message = fullResponse.response?.data?.error?fullResponse.response.data.error:'An error occurred'
+            setNotification(dispatchNotification, message, 5)
         }
     })
-
     const onCreate = (event) => {
         event.preventDefault()
         const content = event.target.anecdote.value
         addAnecdoteMutation.mutate({content, votes: 0})
-        event.target.anecdote.value = ''
-        setNotification(dispatchNotification, `Anecdote ${formatTitle(content)} added!`, 5)
-
+        if (content.length >= 5)
+        {
+            event.target.anecdote.value = ''
+        }
     }
-
     return (
         <div>
             <h3>create new</h3>
