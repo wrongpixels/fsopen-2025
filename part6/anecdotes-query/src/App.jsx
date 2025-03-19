@@ -1,12 +1,14 @@
 import AnecdoteForm from './components/AnecdoteForm'
 import Notification from './components/Notification'
+import { setNotification, formatTitle } from './utils/notification.js'
+import { useDispatch } from './NotificationContext.jsx'
 import { getAnecdotes, editAnecdote } from './requests.js'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
 const App = () => {
 
   const queryClient = useQueryClient()
-
+  const dispatchNotification = useDispatch()
   const editAnecdoteMutation = useMutation({
     mutationKey: 'anecdotes',
     mutationFn: editAnecdote,
@@ -37,6 +39,7 @@ const App = () => {
 
   const handleVote = (anecdote) => {
     editAnecdoteMutation.mutate({...anecdote, votes: anecdote.votes + 1})
+    setNotification(dispatchNotification, `Anecdote ${formatTitle(anecdote.content)} voted!`, 5)
   }
 
   return (

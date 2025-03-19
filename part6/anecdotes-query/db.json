@@ -3,42 +3,57 @@
     {
       "content": "If it hurts, do it more often",
       "id": "47145",
-      "votes": 2
+      "votes": 22
     },
     {
       "content": "Adding manpower to a late software project makes it later!",
       "id": "21149",
-      "votes": 4
+      "votes": 10
     },
     {
       "content": "The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.",
       "id": "69581",
-      "votes": 6
+      "votes": 12
     },
     {
       "content": "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.",
       "id": "36975",
-      "votes": 5
+      "votes": 7
     },
     {
       "content": "Premature optimization is the root of all evil.",
       "id": "25170",
-      "votes": 0
+      "votes": 3
     },
     {
       "content": "Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.",
       "id": "98312",
-      "votes": 5
+      "votes": 13
     },
     {
       "content": "Testing new anecdote is an anecdote itself",
-      "votes": 2,
+      "votes": 3,
       "id": "KSjv-6P"
     },
     {
       "content": "Testing new anecdote is another anecdote itself",
-      "votes": 0,
+      "votes": 7,
       "id": "ywkcGX-"
+    },
+    {
+      "content": "Adding new",
+      "votes": 4,
+      "id": "Psy6kqp"
+    },
+    {
+      "content": "Adding another one",
+      "votes": 2,
+      "id": "ovldDMk"
+    },
+    {
+      "content": "Adding yet another one",
+      "votes": 1,
+      "id": "phytChj"
     }
   ]
 }
