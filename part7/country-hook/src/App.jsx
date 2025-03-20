@@ -7,7 +7,6 @@ const useField = (type) => {
   const onChange = (event) => {
     setValue(event.target.value)
   }
-
   return {
     type,
     value,
@@ -16,46 +15,47 @@ const useField = (type) => {
 }
 
 
-const useCountry = () => {
+const useCountry = (name) => {
   const [country, setCountry] = useState(null)
-  const countryStructure = { data: null}
-  let found = false
 
-  const findCountry = async (name) => {
-    console.log('looking for', name)
-    if (!name) {
-      setCountry(null)
-      return null
-    }
-    else {
-      const match = await axios.get(`https://studies.cs.helsinki.fi/restcountries/api/name/${name}`)
-      if (match.data)
-      {
-        countryStructure.data = {
-          name: match.data.name.common,
-          population: match.data.population,
-          capital: match.data.capital[0],
-          flag: match.data.flags.png
+    const findCountry = async (name) => {
+        const countryStructure = { data: null, found:false}
+        if (!name)
+        {
+            setCountry(null)
         }
-        found = true
-        console.log('found ', name, found)
-        setCountry(countryStructure)
-      }
+        else{
+            try {
+                const match = await axios.get(`https://studies.cs.helsinki.fi/restcountries/api/name/${name}`)
+                countryStructure.data = {
+                    name: match.data.name.common,
+                    population: match.data.population,
+                    capital: match.data.capital[0],
+                    flag: match.data.flags.png
+                }
+                countryStructure.found = true
+                setCountry(countryStructure)
+            }catch(e)
+            {
+                countryStructure.found = false
+            }
+            setCountry(countryStructure)
+        }
     }
-  }
-  return { country, findCountry, found: country?.data !== null }
+
+    useEffect(() => {
+        findCountry(name)
+    }, [name]);
+
+  return country
 }
 
 const Country = ({ country }) => {
-  if (!country)
-  {
-    return null
-  }
-
-  if (!country.data) {
+    const message = !country?'please insert a country name':!country.data?'not found...':''
+  if (message) {
     return (
       <div>
-        not found...
+          {message}
       </div>
     )
   }
@@ -72,15 +72,13 @@ const Country = ({ country }) => {
 
 const App = () => {
   const nameInput = useField('text')
-  if (!nameInput)
-  {
-    return null
-  }
-  const { country, findCountry } = useCountry()
+    const [name, setName] = useState('')
+    const country = useCountry(name)
+
 
   const fetch = async (e) => {
     e.preventDefault()
-    await findCountry(nameInput.value)
+      setName(nameInput.value)
   }
 
   return (
