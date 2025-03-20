@@ -94,12 +94,19 @@ const CreateNew = (props) => {
     const handleSubmit = (e) => {
         e.preventDefault()
         props.addNew({
-            content: content.value,
-            author: author.value,
-            info: info.value,
+            content: content.inputFields.value,
+            author: author.inputFields.value,
+            info: info.inputFields.value,
             votes: 0
         })
         navigate('/')
+    }
+
+    const handleClear = (e) => {
+        e.preventDefault()
+        content.reset()
+        author.reset()
+        info.reset()
     }
 
     return (
@@ -108,17 +115,17 @@ const CreateNew = (props) => {
             <form onSubmit={handleSubmit}>
                 <div>
                     content
-                    <input {...content} />
+                    <input {...content.inputFields} />
                 </div>
                 <div>
                     author
-                    <input {...author} />
+                    <input {...author.inputFields} />
                 </div>
                 <div>
                     url for more info
-                    <input {...info} />
+                    <input {...info.inputFields} />
                 </div>
-                <button>create</button>
+                <button type="submit">create</button><button onClick={handleClear}>reset</button>
             </form>
         </div>
     )
