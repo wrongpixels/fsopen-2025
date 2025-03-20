@@ -142,7 +142,7 @@ const App = () => {
     setAnecdotes(anecdotes.map(a => a.id === id ? voted : a))
   }
     const match = useMatch('anecdotes/:id')
-    const currentAnecdote = match?anecdotes.find(a => a.id === Number(match.params.id)):null
+    const currentAnecdote = match?anecdoteById(Number(match.params.id)):null
 
   return (
     <div>
