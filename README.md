@@ -1,7 +1,7 @@
 # Full Stack Open 2025
 Submissions for the Full Stack Open course.
+### Core course
 
-## Parts
 - ✅ [Part 0: Fundamentals of Web apps](./part0)
 - ✅ [Part 1: Introduction to React](./part1)
 - ✅ [Part 2: Communicating with server](./part2)
@@ -10,8 +10,9 @@ Submissions for the Full Stack Open course.
 - ✅ [Part 5: Testing React apps](./part5)
 - ✅ [Part 6: Advanced state management](./part6)
 - ⌛ [Part 7: React router, custom hooks, styling app with CSS and webpack](./part7)
-- Part 8: GraphQL
 ---
+### Expansions
+- _Part 8: GraphQL_
 - _Part 9: TypeScript_
 - _Part 10: React Native_
 - _Part 11: CI/CD_
