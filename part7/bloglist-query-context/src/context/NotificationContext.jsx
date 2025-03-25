@@ -1,9 +1,10 @@
 import { createContext, useReducer, useContext } from "react";
 
 const NotificationContext = createContext();
-const initialState = { message: "", error: false };
 
-const notificationReducer = (state, { type, payload }) => {
+const initialState = { message: "", error: true };
+
+const notificationReducer = (state = initialState, { type, payload }) => {
   switch (type) {
     case "NOTIFICATION_SET":
       return payload;
@@ -13,15 +14,15 @@ const notificationReducer = (state, { type, payload }) => {
       return state;
   }
 };
+export const useNotification = () => useContext(NotificationContext);
+export const useNotificationValue = () => useContext(NotificationContext)[0];
+export const useNotificationDispatch = () => useContext(NotificationContext)[1];
 
-export const useValue = () => useContext(NotificationContext)[0];
-export const useDispatch = () => useContext(NotificationContext)[1];
-
-export const NotificationContextProvider = (props) => {
+export const NotificationContextProvider = ({ children }) => {
   const providerValues = useReducer(notificationReducer, initialState);
   return (
     <NotificationContext.Provider value={providerValues}>
-      {props.children}
+      {children}
     </NotificationContext.Provider>
   );
 };

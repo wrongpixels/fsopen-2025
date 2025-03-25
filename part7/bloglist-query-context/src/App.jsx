@@ -5,10 +5,13 @@ import Notification from "./components/Notification";
 import LoginForm from "./components/LoginForm.jsx";
 import Toggleable from "./components/Toggleable.jsx";
 import blogService from "./services/blogs";
+import { useNotificationDispatch } from "./context/NotificationContext.jsx";
+import { showAlert } from "./actions/notificationActions.js";
 
 const USER_KEY = "activeUser";
 
 const App = () => {
+  const dispatchAlert = useNotificationDispatch();
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
 
@@ -26,10 +29,7 @@ const App = () => {
     if (!message) {
       return;
     }
-    setNotification({ message, error });
-    setTimeout(() => {
-      setNotification({ message: "", error: true });
-    }, 5000);
+    showAlert(dispatchAlert, message, error);
   };
 
   useEffect(() => {
@@ -62,6 +62,7 @@ const App = () => {
         `'${title}' by ${author} was added to the Blog List!`,
         false,
       );
+      newBlogRef.current?.toggleVisibility();
     } else if (newBlog.error) {
       showNotification(newBlog.error);
     } else {
