@@ -1,6 +1,12 @@
-import { legacy_createStore as createStore } from "redux";
+import { configureStore } from "@reduxjs/toolkit";
 import notificationReducer from "./reducers/notificationReducer.js";
+import blogsReducer from "./reducers/blogsReducer.js";
 
-const store = createStore(notificationReducer);
+const store = configureStore({
+  reducer: {
+    notification: notificationReducer,
+    blogs: blogsReducer,
+  },
+});
 
 export default store;

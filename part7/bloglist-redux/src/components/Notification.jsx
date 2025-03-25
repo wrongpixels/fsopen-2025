@@ -1,9 +1,8 @@
 import { useSelector } from "react-redux";
 
 const Notification = () => {
-  const notification = useSelector((s) => s);
+  const { notification } = useSelector((s) => s);
   const { message, error } = notification;
-  console.log(message);
 
   if (!message) {
     return null;

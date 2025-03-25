@@ -5,16 +5,16 @@ import Notification from "./components/Notification";
 import LoginForm from "./components/LoginForm.jsx";
 import Toggleable from "./components/Toggleable.jsx";
 import blogService from "./services/blogs";
-import blogServices from "./services/blogs.js";
-import { useDispatch } from "react-redux";
-import { createAlert, resetAlert } from "./actions/notificationActions.js";
+import { useDispatch, useSelector } from "react-redux";
+import { createAlert } from "./reducers/notificationReducer.js";
+import { getAllBlogs, createBlog } from "./reducers/blogsReducer.js";
 
 const USER_KEY = "activeUser";
 
 const App = () => {
   const dispatch = useDispatch();
+  const { blogs } = useSelector((s) => s);
 
-  const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
 
   const newBlogRef = useRef();
@@ -28,9 +28,6 @@ const App = () => {
       return;
     }
     dispatch(createAlert(message, error));
-    setTimeout(() => {
-      dispatch(resetAlert);
-    }, 5000);
   };
 
   useEffect(() => {
@@ -48,7 +45,7 @@ const App = () => {
   }, []);
   useEffect(() => {
     if (user) {
-      getAllBlogs();
+      dispatch(getAllBlogs());
       blogService.buildToken(user.token);
     } else {
       blogService.buildToken("");
@@ -56,51 +53,13 @@ const App = () => {
   }, [user]);
 
   const addNewBlog = async (title, author, url) => {
-    const newBlog = await blogServices.addBlog(title, author, url);
-    if (newBlog && newBlog.title === title) {
-      setBlogs(blogs.concat(newBlog));
-      showNotification(
-        `'${title}' by ${author} was added to the Blog List!`,
-        false,
-      );
-    } else if (newBlog.error) {
-      showNotification(newBlog.error);
-    } else {
-      showNotification("There was an error adding the entry");
-    }
-    return newBlog;
+    dispatch(createBlog({ title, author, url }));
   };
 
-  const deleteBlog = (id) => orderBlogs(blogs.filter((b) => b.id !== id));
+  const deleteBlog = (id) => null;
 
-  const addLike = async (blog) => {
-    const editedBlog = await blogService.replaceBlogData(
-      { likes: blog.likes + 1 },
-      blog.id,
-      showNotification,
-    );
-    if (editedBlog) {
-      showNotification("Blog was liked!");
-      replaceBlog(editedBlog);
-    }
-  };
-  const replaceBlog = (editedBlog) => {
-    const updatedBlogs = blogs.map((b) =>
-      b.id === editedBlog.id ? editedBlog : b,
-    );
-    orderBlogs(updatedBlogs);
-  };
+  const addLike = (blog) => null;
 
-  const getAllBlogs = async () => {
-    const allBlogs = await blogService.getAll();
-    orderBlogs(allBlogs);
-  };
-  const orderBlogs = (targetBlogs = blogs) => {
-    if (!targetBlogs) {
-      return;
-    }
-    setBlogs([...targetBlogs].sort((a, b) => b.likes - a.likes));
-  };
   const setSession = (userData) => {
     setUser(userData);
     showNotification(`Welcome back, ${userData.name}!`);
@@ -122,41 +81,46 @@ const App = () => {
     </>
   );
 
-  const drawBlogs = () => (
-    <div className="blog-list">
-      <h2>Blogs</h2>
-      <p>
-        Logged in as <b> {user.username} </b>
-        <button onClick={doLogOut}>Log out</button>
-      </p>
-      {blogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          showNotification={sendNotification}
-          likeBlog={addLike}
-          activeUser={user}
-          deleteBlog={deleteBlog}
-        />
-      ))}
-      <div>
-        <Toggleable
-          ref={newBlogRef}
-          labelOnVisible={"Hide new Blog Form"}
-          labelOnInvisible={"Add a new Blog"}
-          initialVisibility={false}
-          addSpace={false}
-          showOver={true}
-        >
-          <NewBlog
+  const drawBlogs = () => {
+    console.log(blogs);
+    if (!blogs) {
+      return <h2>Loading…</h2>;
+    }
+    return (
+      <div className="blog-list">
+        <h2>Blogs</h2>
+        <p>
+          Logged in as <b> {user.username} </b>
+          <button onClick={doLogOut}>Log out</button>
+        </p>
+        {blogs.map((blog) => (
+          <Blog
+            key={blog.id}
+            blog={blog}
             showNotification={sendNotification}
-            addNewBlog={addNewBlog}
+            likeBlog={addLike}
+            activeUser={user}
+            deleteBlog={deleteBlog}
           />
-        </Toggleable>
+        ))}
+        <div>
+          <Toggleable
+            ref={newBlogRef}
+            labelOnVisible={"Hide new Blog Form"}
+            labelOnInvisible={"Add a new Blog"}
+            initialVisibility={false}
+            addSpace={false}
+            showOver={true}
+          >
+            <NewBlog
+              showNotification={sendNotification}
+              addNewBlog={addNewBlog}
+            />
+          </Toggleable>
+        </div>
       </div>
-    </div>
-  );
-
+    );
+  };
   return (
     <>
       <Notification />
