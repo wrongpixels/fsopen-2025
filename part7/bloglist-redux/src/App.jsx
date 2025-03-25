@@ -7,7 +7,12 @@ import Toggleable from "./components/Toggleable.jsx";
 import blogService from "./services/blogs";
 import { useDispatch, useSelector } from "react-redux";
 import { createAlert } from "./reducers/notificationReducer.js";
-import { getAllBlogs, createBlog } from "./reducers/blogsReducer.js";
+import {
+  getAllBlogs,
+  createBlog,
+  likeBlog,
+  removeBlog,
+} from "./reducers/blogsReducer.js";
 
 const USER_KEY = "activeUser";
 
@@ -53,12 +58,22 @@ const App = () => {
   }, [user]);
 
   const addNewBlog = async (title, author, url) => {
-    dispatch(createBlog({ title, author, url }));
+    const blogData = await dispatch(createBlog({ title, author, url }));
+    if (blogData) {
+      newBlogRef.current?.toggleVisibility();
+      return blogData;
+    }
   };
 
-  const deleteBlog = (id) => null;
+  const deleteBlog = (blog) => dispatch(removeBlog(blog));
 
-  const addLike = (blog) => null;
+  const addLike = (blog) => {
+    if (!user) {
+      showError("You need to be logged in to like a blog!");
+    } else {
+      dispatch(likeBlog(blog));
+    }
+  };
 
   const setSession = (userData) => {
     setUser(userData);
@@ -82,7 +97,6 @@ const App = () => {
   );
 
   const drawBlogs = () => {
-    console.log(blogs);
     if (!blogs) {
       return <h2>Loading…</h2>;
     }
