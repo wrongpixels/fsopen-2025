@@ -58,6 +58,7 @@ const App = () => {
     const newBlog = await blogService.addBlog(title, author, url);
     if (newBlog && newBlog.title === title) {
       setBlogs(blogs.concat(newBlog));
+      newBlogRef.current?.toggleVisibility();
       showNotification(
         `'${title}' by ${author} was added to the Blog List!`,
         false,
