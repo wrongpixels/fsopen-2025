@@ -1,10 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import NewBlog from "./components/NewBlog.jsx";
 import Notification from "./components/Notification";
 import LoginForm from "./components/LoginForm.jsx";
 import Toggleable from "./components/Toggleable.jsx";
-import blogService from "./services/blogs";
 import { useDispatch, useSelector } from "react-redux";
 import { createAlert } from "./reducers/notificationReducer.js";
 import {
@@ -13,20 +12,23 @@ import {
   likeBlog,
   removeBlog,
 } from "./reducers/blogsReducer.js";
-
+import {
+  login,
+  logout,
+  userLogin,
+  userLogout,
+} from "./reducers/userReducer.js";
 const USER_KEY = "activeUser";
 
 const App = () => {
   const dispatch = useDispatch();
-  const { blogs } = useSelector((s) => s);
-
-  const [user, setUser] = useState(null);
+  const blogs = useSelector((s) => s.blogs);
+  const user = useSelector((s) => s.user);
 
   const newBlogRef = useRef();
   const loginFormRef = useRef();
 
   const showError = (message) => sendNotification(message, true);
-  const showNotification = (message) => sendNotification(message, false);
 
   const sendNotification = (message, error = true) => {
     if (!message) {
@@ -41,21 +43,18 @@ const App = () => {
       if (existingSession) {
         const validUser = JSON.parse(existingSession);
         if (validUser && validUser.token) {
-          setUser(validUser);
+          dispatch(login(validUser));
         } else {
-          window.localStorage.removeItem(USER_KEY);
+          dispatch(logout());
         }
       }
     }
   }, []);
   useEffect(() => {
-    if (user) {
+    if (user?.token) {
       dispatch(getAllBlogs());
-      blogService.buildToken(user.token);
-    } else {
-      blogService.buildToken("");
     }
-  }, [user]);
+  }, [user?.token]);
 
   const addNewBlog = async (title, author, url) => {
     const blogData = await dispatch(createBlog({ title, author, url }));
@@ -75,31 +74,24 @@ const App = () => {
     }
   };
 
-  const setSession = (userData) => {
-    setUser(userData);
-    showNotification(`Welcome back, ${userData.name}!`);
-    window.localStorage.setItem(USER_KEY, JSON.stringify(userData));
+  const doLogin = async (username, password) => {
+    await dispatch(userLogin(username, password));
+    if (user) {
+      loginFormRef.current?.cleanForm();
+    }
   };
+
   const doLogOut = () => {
-    showNotification(`See you soon, ${user.name}!`);
-    setUser(null);
-    window.localStorage.removeItem(USER_KEY);
+    dispatch(userLogout(user));
     loginFormRef.current?.cleanForm();
   };
   const loginForm = () => (
     <>
-      <LoginForm
-        showError={showError}
-        setSession={setSession}
-        ref={loginFormRef}
-      />
+      <LoginForm showError={showError} doLogin={doLogin} ref={loginFormRef} />
     </>
   );
 
   const drawBlogs = () => {
-    if (!blogs) {
-      return <h2>Loading…</h2>;
-    }
     return (
       <div className="blog-list">
         <h2>Blogs</h2>
@@ -135,6 +127,14 @@ const App = () => {
       </div>
     );
   };
+  if (user && blogs === null) {
+    return (
+      <>
+        <Notification />
+        <h2>Loading…</h2>
+      </>
+    );
+  }
   return (
     <>
       <Notification />

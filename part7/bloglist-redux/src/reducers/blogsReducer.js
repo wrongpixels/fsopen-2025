@@ -4,10 +4,10 @@ import { createAlert } from "./notificationReducer.js";
 
 const blogsSlice = createSlice({
   name: "blogs",
-  initialState: [],
+  initialState: null,
   reducers: {
     setAll: (state, { payload }) => {
-      return orderBlogs(payload);
+      return orderBlogs(payload ? payload : []);
     },
     create: (state, { payload }) => {
       state.push(payload);
@@ -28,9 +28,13 @@ const getBlogInfo = (data) => `'${data.title}' by ${data.author}`;
 
 export const getAllBlogs = () => {
   return async (dispatch) => {
-    const data = await blogService.getAll();
-    if (isValid(data)) {
-      dispatch(setAll(data));
+    try {
+      const data = await blogService.getAll();
+      if (isValid(data)) {
+        dispatch(setAll(data));
+      }
+    } catch {
+      dispatch(createAlert("There was an error accessing the server"));
     }
   };
 };
