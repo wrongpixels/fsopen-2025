@@ -1,121 +1,116 @@
-import { useState, useEffect, useRef } from 'react'
-import Blog from './components/Blog'
-import NewBlog from './components/NewBlog.jsx'
-import Notification from './components/Notification'
-import LoginForm from './components/LoginForm.jsx'
-import Toggleable from './components/Toggleable.jsx'
-import blogService from './services/blogs'
-import { useNotificationDispatch } from './context/NotificationContext.jsx'
-import { showAlert } from './actions/notificationActions.js'
+import { useEffect, useRef } from "react";
+import Blog from "./components/Blog";
+import NewBlog from "./components/NewBlog.jsx";
+import Notification from "./components/Notification";
+import LoginForm from "./components/LoginForm.jsx";
+import Toggleable from "./components/Toggleable.jsx";
+import blogService from "./services/blogs";
+import { useNotificationDispatch } from "./context/NotificationContext.jsx";
+import {
+  useLoginValue,
+  useLoginDispatch,
+} from "./context/UserLoginContext.jsx";
+import { login, logout, restore } from "./actions/userLoginActions.js";
+
+import { showAlert } from "./actions/notificationActions.js";
 import {
   useGetBlogs,
   useCreateBlog,
   useDeleteBlog,
   useReplaceBlog,
-} from './queries/blogQueries.js'
+} from "./queries/blogQueries.js";
 
-const USER_KEY = 'activeUser'
+const USER_KEY = "activeUser";
 
 const App = () => {
-  const dispatchAlert = useNotificationDispatch()
-  const createBlogMutation = useCreateBlog()
-  const replaceBlogMutation = useReplaceBlog()
-  const deleteBlogMutation = useDeleteBlog()
-  const [user, setUser] = useState(null)
+  const dispatchAlert = useNotificationDispatch();
+  const dispatchUser = useLoginDispatch();
+  const user = useLoginValue();
+  const createBlogMutation = useCreateBlog();
+  const replaceBlogMutation = useReplaceBlog();
+  const deleteBlogMutation = useDeleteBlog();
 
-  const newBlogRef = useRef()
-  const loginFormRef = useRef()
+  const newBlogRef = useRef();
+  const loginFormRef = useRef();
 
-  const showError = (message) => sendNotification(message, true)
-  const showNotification = (message) => sendNotification(message, false)
+  const showError = (message) => sendNotification(message, true);
+  const showNotification = (message) => sendNotification(message, false);
 
   const sendNotification = (message, error = true) => {
     if (!message) {
-      return
+      return;
     }
-    showAlert(dispatchAlert, message, error)
-  }
+    showAlert(dispatchAlert, message, error);
+  };
 
   useEffect(() => {
     if (!user) {
-      const existingSession = window.localStorage.getItem(USER_KEY)
-      if (existingSession) {
-        const validUser = JSON.parse(existingSession)
-        if (validUser && validUser.token) {
-          setUser(validUser)
-        } else {
-          window.localStorage.removeItem(USER_KEY)
-        }
-      }
+      dispatchUser(restore);
     }
-  }, [])
+  }, []);
   useEffect(() => {
     if (user) {
-      blogService.buildToken(user.token)
+      blogService.buildToken(user.token);
     } else {
-      blogService.buildToken('')
+      blogService.buildToken("");
     }
-  }, [user])
+  }, [user]);
 
-  const { isLoading, isError, data } = useGetBlogs()
+  const { isLoading, isError, data } = useGetBlogs();
 
   if (isLoading) {
-    return <h2>Loading app…</h2>
+    return <h2>Loading app…</h2>;
   }
   if (isError) {
     return (
       <h2>
         Server not available! <p>Please, try later.</p>
       </h2>
-    )
+    );
   }
-  const blogs = data
-  const addNewBlog = (blog) => {
-    createBlogMutation.mutate(blog, {
-      onSuccess: (newBlog) => {
-        showNotification(
-          `'${newBlog.title}' by ${newBlog.author} was added to the Blog List!`,
-        )
-        newBlogRef.current?.toggleVisibility()
-        return newBlog
-      },
-      onError: (e) => {
-        if (e.response?.data?.error) {
-          showError(e.response.data.error)
-        } else {
-          showError('There was an error adding the entry')
-        }
-      },
-    })
-  }
+  const blogs = data;
+  const addNewBlog = async (blog) => {
+    try {
+      const newBlog = await createBlogMutation.mutateAsync(blog);
+      showNotification(
+        `'${newBlog.title}' by ${newBlog.author} was added to the Blog List!`,
+      );
+      newBlogRef.current?.toggleVisibility();
+      return newBlog;
+    } catch (e) {
+      if (e.response?.data?.error) {
+        showError(e.response.data.error);
+      } else {
+        showError("There was an error adding the entry");
+      }
+    }
+  };
   const deleteBlog = (blog) => {
     deleteBlogMutation.mutate(blog, {
       onSuccess: () => showNotification(`Blog '${blog.title}' was deleted!`),
-      onError: () => showError('There was an error deleting the blog'),
-    })
-  }
+      onError: () => showError("There was an error deleting the blog"),
+    });
+  };
 
   const addLike = (blog) => {
     replaceBlogMutation.mutate(
       { id: blog.id, likes: blog.likes + 1 },
       {
         onSuccess: () => showNotification(`Blog '${blog.title}' was liked!`),
-        onError: () => showError('There was an error adding the like'),
+        onError: () => showError("There was an error adding the like"),
       },
-    )
-  }
+    );
+  };
 
   const setSession = (userData) => {
-    setUser(userData)
-    showNotification(`Welcome back, ${userData.name}!`)
-    window.localStorage.setItem(USER_KEY, JSON.stringify(userData))
-  }
+    dispatchUser(login(userData));
+    showNotification(`Welcome back, ${userData.name}!`);
+  };
   const doLogOut = () => {
-    showNotification(`See you soon, ${user.name}!`)
-    setUser(null)
-    window.localStorage.removeItem(USER_KEY)
-    loginFormRef.current?.cleanForm()
-  }
+    showNotification(`See you soon, ${user.name}!`);
+    dispatchUser(logout);
+    loginFormRef.current?.cleanForm();
+  };
   const loginForm = () => (
     <>
       <LoginForm
@@ -124,7 +119,7 @@ const App = () => {
         ref={loginFormRef}
       />
     </>
-  )
+  );
 
   const drawBlogs = () => (
     <div className="blog-list">
@@ -146,8 +141,8 @@ const App = () => {
       <div>
         <Toggleable
           ref={newBlogRef}
-          labelOnVisible={'Hide new Blog Form'}
-          labelOnInvisible={'Add a new Blog'}
+          labelOnVisible={"Hide new Blog Form"}
+          labelOnInvisible={"Add a new Blog"}
           initialVisibility={false}
           addSpace={false}
           showOver={true}
@@ -159,14 +154,14 @@ const App = () => {
         </Toggleable>
       </div>
     </div>
-  )
+  );
 
   return (
     <>
       <Notification />
       {user ? drawBlogs() : loginForm()}
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;
