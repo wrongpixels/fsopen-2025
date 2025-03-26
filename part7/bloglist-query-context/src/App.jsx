@@ -7,18 +7,15 @@ import Toggleable from "./components/Toggleable.jsx";
 import blogService from "./services/blogs";
 import { useNotificationDispatch } from "./context/NotificationContext.jsx";
 import { showAlert } from "./actions/notificationActions.js";
+import { useGetBlogs, useCreateBlog } from "./queries/blogQueries.js";
 
 const USER_KEY = "activeUser";
 
 const App = () => {
   const dispatchAlert = useNotificationDispatch();
-  const [blogs, setBlogs] = useState([]);
+  const createBlogMutation = useCreateBlog();
   const [user, setUser] = useState(null);
 
-  const [notification, setNotification] = useState({
-    message: "",
-    error: true,
-  });
   const newBlogRef = useRef();
   const loginFormRef = useRef();
 
@@ -47,60 +44,48 @@ const App = () => {
   }, []);
   useEffect(() => {
     if (user) {
-      getAllBlogs();
       blogService.buildToken(user.token);
     } else {
       blogService.buildToken("");
     }
   }, [user]);
 
-  const addNewBlog = async (title, author, url) => {
-    const newBlog = await blogService.addBlog(title, author, url);
-    if (newBlog && newBlog.title === title) {
-      setBlogs(blogs.concat(newBlog));
+  const { isLoading, isError, data } = useGetBlogs();
+
+  if (isLoading) {
+    return <h2>Loading app…</h2>;
+  }
+  if (isError) {
+    return (
+      <h2>
+        Server not available! <p>Please, try later.</p>
+      </h2>
+    );
+  }
+  const blogs = data;
+  const addNewBlog = async (blog) => {
+    try {
+      const newBlog = await createBlogMutation.mutateAsync(blog);
       showNotification(
-        `'${title}' by ${author} was added to the Blog List!`,
-        false,
+        `'${newBlog.title}' by ${newBlog.author} was added to the Blog List!`,
       );
       newBlogRef.current?.toggleVisibility();
-    } else if (newBlog.error) {
-      showNotification(newBlog.error);
-    } else {
-      showNotification("There was an error adding the entry");
-    }
-    return newBlog;
-  };
-
-  const deleteBlog = (id) => orderBlogs(blogs.filter((b) => b.id !== id));
-
-  const addLike = async (blog) => {
-    const editedBlog = await blogService.replaceBlogData(
-      { likes: blog.likes + 1 },
-      blog.id,
-      showNotification,
-    );
-    if (editedBlog) {
-      showNotification("Blog was liked!");
-      replaceBlog(editedBlog);
+      return newBlog;
+    } catch (e) {
+      if (e.response.data?.error) {
+        showError(e.response.data.error);
+      } else {
+        showError("There was an error adding the entry");
+      }
     }
   };
-  const replaceBlog = (editedBlog) => {
-    const updatedBlogs = blogs.map((b) =>
-      b.id === editedBlog.id ? editedBlog : b,
-    );
-    orderBlogs(updatedBlogs);
-  };
 
-  const getAllBlogs = async () => {
-    const allBlogs = await blogService.getAll();
-    orderBlogs(allBlogs);
-  };
-  const orderBlogs = (targetBlogs = blogs) => {
-    if (!targetBlogs) {
-      return;
-    }
-    setBlogs([...targetBlogs].sort((a, b) => b.likes - a.likes));
-  };
+  const deleteBlog = (id) => null;
+
+  const addLike = async (blog) => null;
+
+  const replaceBlog = (editedBlog) => null;
+
   const setSession = (userData) => {
     setUser(userData);
     showNotification(`Welcome back, ${userData.name}!`);
@@ -159,7 +144,7 @@ const App = () => {
 
   return (
     <>
-      <Notification notification={notification} />
+      <Notification />
       {user ? drawBlogs() : loginForm()}
     </>
   );

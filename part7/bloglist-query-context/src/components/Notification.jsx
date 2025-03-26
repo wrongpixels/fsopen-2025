@@ -1,9 +1,7 @@
 import { useNotificationValue } from "../context/NotificationContext.jsx";
 
-const Notification = ({ notification }) => {
+const Notification = () => {
   const { message, error } = useNotificationValue();
-  console.log(message);
-
   if (!message) {
     return null;
   }

@@ -1,33 +1,30 @@
-import { useState } from 'react'
+import { useState } from "react";
 
 const NewBlog = ({ showNotification, addNewBlog }) => {
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [url, setUrl] = useState("");
 
-  const addBlog = async (event) =>
-  {
-    event.preventDefault()
-    if (!title || !author || !url)
-    {
-      showNotification('Can\'t add an entry with empty fields!')
-      return
+  const handleAddBlog = async (event) => {
+    event.preventDefault();
+    if (!title || !author || !url) {
+      showNotification("Can't add an entry with empty fields!");
+      return;
     }
-    const newBlog = await addNewBlog(title, author, url)
-    if (newBlog && newBlog.title === title)
-    {
-      setTitle('')
-      setAuthor('')
-      setUrl('')
+    const newBlog = await addNewBlog({ title, author, url });
+    if (newBlog && newBlog.title === title) {
+      setTitle("");
+      setAuthor("");
+      setUrl("");
     }
-  }
+  };
 
   return (
     <>
       <h3>Add a new Blog</h3>
-      <form onSubmit={addBlog}>
+      <form onSubmit={handleAddBlog}>
         <div>
-                Title:
+          Title:
           <input
             type="text"
             onChange={({ target }) => setTitle(target.value)}
@@ -38,7 +35,7 @@ const NewBlog = ({ showNotification, addNewBlog }) => {
           />
         </div>
         <div>
-                    Author:
+          Author:
           <input
             type="text"
             value={author}
@@ -49,7 +46,7 @@ const NewBlog = ({ showNotification, addNewBlog }) => {
           />
         </div>
         <div>
-                    Url:
+          Url:
           <input
             type="url"
             value={url}
@@ -64,7 +61,6 @@ const NewBlog = ({ showNotification, addNewBlog }) => {
         </p>
       </form>
     </>
-  )
-
-}
-export default NewBlog
+  );
+};
+export default NewBlog;
