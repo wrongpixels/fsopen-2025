@@ -1,9 +1,11 @@
 import { useEffect, useRef } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LoginForm from "./components/LoginForm";
+import Toggleable from "./components/Toggleable";
 import Blog from "./components/Blog";
-import NewBlog from "./components/NewBlog.jsx";
+import NewBlog from "./components/NewBlog";
 import Notification from "./components/Notification";
-import LoginForm from "./components/LoginForm.jsx";
-import Toggleable from "./components/Toggleable.jsx";
+import Users from "./components/Users";
 import blogService from "./services/blogs";
 import { useNotificationDispatch } from "./context/NotificationContext.jsx";
 import {
@@ -11,7 +13,6 @@ import {
   useLoginDispatch,
 } from "./context/UserLoginContext.jsx";
 import { login, logout, restore } from "./actions/userLoginActions.js";
-
 import { showAlert } from "./actions/notificationActions.js";
 import {
   useGetBlogs,
@@ -158,8 +159,13 @@ const App = () => {
 
   return (
     <>
+      <Router>
+        <Routes>
+          <Route path="/" element={user ? drawBlogs() : loginForm()} />
+          <Route path="/users" element={<Users />} />
+        </Routes>
+      </Router>
       <Notification />
-      {user ? drawBlogs() : loginForm()}
     </>
   );
 };
