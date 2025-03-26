@@ -1,23 +1,23 @@
-import { useState } from "react";
+import { useState } from 'react'
 
 const NewBlog = ({ showNotification, addNewBlog }) => {
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
 
   const handleAddBlog = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
     if (!title || !author || !url) {
-      showNotification("Can't add an entry with empty fields!");
-      return;
+      showNotification('Can\'t add an entry with empty fields!')
+      return
     }
-    const newBlog = await addNewBlog({ title, author, url });
+    const newBlog = await addNewBlog({ title, author, url })
     if (newBlog && newBlog.title === title) {
-      setTitle("");
-      setAuthor("");
-      setUrl("");
+      setTitle('')
+      setAuthor('')
+      setUrl('')
     }
-  };
+  }
 
   return (
     <>
@@ -61,6 +61,6 @@ const NewBlog = ({ showNotification, addNewBlog }) => {
         </p>
       </form>
     </>
-  );
-};
-export default NewBlog;
+  )
+}
+export default NewBlog
