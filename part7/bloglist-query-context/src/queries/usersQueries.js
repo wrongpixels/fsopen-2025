@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import usersService from "../services/users.js";
 
 export const useUsersQuery = () =>

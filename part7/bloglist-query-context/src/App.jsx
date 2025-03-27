@@ -3,6 +3,7 @@ import Header from "./components/Header.jsx";
 import Blogs from "./components/Blogs.jsx";
 import Notification from "./components/Notification";
 import Users from "./components/Users";
+import User from "./components/User.jsx";
 import useActiveUser from "./hooks/useActiveUser.js";
 
 const App = () => {
@@ -10,11 +11,12 @@ const App = () => {
   return (
     <>
       <Notification />
-      {<Header user={user} />}
       <Router>
+        {<Header user={user} />}
         <Routes>
           <Route path="/" element={<Blogs user={user} />} />
           <Route path="/users" element={<Users user={user} />} />
+          <Route path="/users/:id" element={<User />} />
         </Routes>
       </Router>
     </>
