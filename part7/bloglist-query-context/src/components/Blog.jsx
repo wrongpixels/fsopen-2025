@@ -1,9 +1,55 @@
-import Toggleable from "./Toggleable.jsx";
 import PropTypes from "prop-types";
-import { useRef } from "react";
+import useNotification from "../hooks/useNotification.js"
+import {useQueryClient} from "@tanstack/react-query"
+import { useMatch } from "react-router-dom"
 
-const Blog = ({ blog, likeBlog, activeUser, deleteBlog }) => {
-  const toggleRef = useRef();
+const Blog = ({ getBlogsQuery, replaceBlogMutation, user, deleteBlogMutation }) => {
+  const {showError, showNotification} = useNotification()
+  const queryClient = useQueryClient()
+  const cachedBlogs = queryClient.getQueryData(["blogs"])
+  const { isLoading, isError, data } = getBlogsQuery()
+
+  const match = useMatch("/blogs/:id")
+  const blogs = cachedBlogs?cachedBlogs:(isError || isLoading)?null:data
+  if (!user)
+  {
+    return null
+  }
+  if (!blogs) {
+    if (isLoading) {
+      return <h3>Loading...</h3>;
+    }
+    if (isError) {
+      return <h3>Error loading blogs data.</h3>;
+    }
+  }
+  if (!blogs)
+    {
+      return <div>No blogs data available.</div>;
+    }
+
+  const targetBlog = blogs.find(b => b.id === match?.params.id)
+  if (!targetBlog)
+  {
+    return <div>Blog data not found in server.</div>
+  }
+
+  const deleteBlog = () => {
+    deleteBlogMutation.mutate(targetBlog, {
+      onSuccess: () => showNotification(`Blog '${targetBlog.title}' was deleted!`),
+      onError: () => showError("There was an error deleting the blog"),
+    });
+  };
+
+  const addLike = () => {
+    replaceBlogMutation.mutate(
+        { id: targetBlog.id, likes: targetBlog.likes + 1 },
+        {
+          onSuccess: () => showNotification(`Blog '${targetBlog.title}' was liked!`),
+          onError: () => showError("There was an error adding the like"),
+        },
+    );
+  };
 
   const blogStyle = {
     paddingTop: 5,
@@ -31,17 +77,17 @@ const Blog = ({ blog, likeBlog, activeUser, deleteBlog }) => {
   const handleDeleteBlog = async () => {
     if (
       window.confirm(
-        `Delete blog '${blog.title}' by ${blog.author}?\n\nThis action is permanent.`,
+        `Delete blog '${targetBlog.title}' by ${targetBlog.author}?\n\nThis action is permanent.`,
       )
     ) {
       deleteBlog(blog);
     }
   };
   const deleteButton = () => {
-    if (!blog.user) {
+    if (!targetBlog.user) {
       return;
     }
-    if (blog.user.username === activeUser?.username) {
+    if (targetBlog.user.username === user?.username) {
       return (
         <div style={buttonStyle}>
           <button onClick={handleDeleteBlog}>Remove</button>
@@ -51,33 +97,23 @@ const Blog = ({ blog, likeBlog, activeUser, deleteBlog }) => {
   };
   return (
     <div style={blogStyle} className="blog-entry">
-      <b>{blog.title}</b> {`by ${blog.author}`}
-      <Toggleable
-        ref={toggleRef}
-        labelOnInvisible="Show details"
-        labelOnVisible="Hide details"
-        showOver={true}
-        addSpace={false}
-      >
+      <b>{targetBlog.title}</b> {`by ${targetBlog.author}`}
         <div style={expandedBlog}>
-          <b>URL:</b> <a href={blog.url}>{blog.url}</a> <br />
-          <b>Likes:</b> <span className="blog-likes">{blog.likes}</span>
-          <button onClick={() => likeBlog(blog)}>Like!</button>
+          <b>URL:</b> <a href={targetBlog.url}>{targetBlog.url}</a> <br />
+          <b>Likes:</b> <span className="blog-likes">{targetBlog.likes}</span>
+          <button onClick={addLike}>Like!</button>
           <br />
-          <b>Added by:</b> {blog.user?.username ? blog.user.username : "?"}
+          <b>Added by:</b> {targetBlog.user?.username ? targetBlog.user.username : "?"}
           {deleteButton()}
         </div>
-      </Toggleable>
     </div>
   );
 };
 
 Blog.propTypes = {
-  blog: PropTypes.object.isRequired,
-  showNotification: PropTypes.func.isRequired,
-  likeBlog: PropTypes.func.isRequired,
-  activeUser: PropTypes.object.isRequired,
-  deleteBlog: PropTypes.func.isRequired,
+  replaceBlogMutation: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired,
+  deleteBlogMutation: PropTypes.object.isRequired,
 };
 
 export default Blog;

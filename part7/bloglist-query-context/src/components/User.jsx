@@ -2,12 +2,16 @@ import { useMatch } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUsersQuery } from "../queries/usersQueries.js";
 
-const User = () => {
+const User = ({user}) => {
   const queryClient = useQueryClient();
   const cachedUsers = queryClient.getQueryData(["users"]);
 
   const match = useMatch("/users/:id");
   const { data, isLoading, isError } = useUsersQuery();
+  if (!user)
+  {
+    return null
+  }
   const users = cachedUsers ? cachedUsers : isLoading || isError ? null : data;
   if (!users) {
     if (isLoading) {

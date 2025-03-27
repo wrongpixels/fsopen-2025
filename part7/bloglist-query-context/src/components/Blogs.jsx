@@ -1,18 +1,12 @@
 import { useRef } from "react";
+import {Link} from "react-router-dom"
 import Toggleable from "../components/Toggleable";
-import Blog from "../components/Blog";
 import NewBlog from "../components/NewBlog";
 import useNotification from "../hooks/useNotification.js";
-import useBlogs from "../hooks/useBlogs.js";
 
-const Blogs = ({ user }) => {
+const Blogs = ({ user, getBlogsQuery, createBlogMutation,  }) => {
   const { showError, showNotification } = useNotification();
-  const {
-    getBlogsQuery,
-    createBlogMutation,
-    replaceBlogMutation,
-    deleteBlogMutation,
-  } = useBlogs();
+
   const newBlogRef = useRef();
   const { isLoading, isError, data } = getBlogsQuery();
   if (!user) {
@@ -46,35 +40,25 @@ const Blogs = ({ user }) => {
       }
     }
   };
-  const deleteBlog = (blog) => {
-    deleteBlogMutation.mutate(blog, {
-      onSuccess: () => showNotification(`Blog '${blog.title}' was deleted!`),
-      onError: () => showError("There was an error deleting the blog"),
-    });
+
+  const blogStyle = {
+    paddingTop: 5,
+    paddingLeft: 10,
+    paddingBottom: 5,
+    border: "solid",
+    borderWidth: 1,
+    marginTop: 5,
+    marginBottom: 5,
   };
 
-  const addLike = (blog) => {
-    replaceBlogMutation.mutate(
-      { id: blog.id, likes: blog.likes + 1 },
-      {
-        onSuccess: () => showNotification(`Blog '${blog.title}' was liked!`),
-        onError: () => showError("There was an error adding the like"),
-      },
-    );
-  };
   return (
     <>
       <div className="blog-list">
-        {blogs.map((blog) => (
-          <Blog
-            key={blog.id}
-            showNotification={showNotification}
-            blog={blog}
-            likeBlog={addLike}
-            activeUser={user}
-            deleteBlog={deleteBlog}
-          />
+        <ul>
+        {blogs.map((b) => (
+          <h4 key={b.id} style={blogStyle}>{<Link to={`/blogs/${b.id}`}>{b.title}</Link>} {` by ${b.author}`}</h4>
         ))}
+        </ul>
         <div>
           <Toggleable
             ref={newBlogRef}
