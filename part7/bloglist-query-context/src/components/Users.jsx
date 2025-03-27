@@ -1,22 +1,41 @@
 import { useEffect, useState } from "react";
-import usersService from "../services/users.js";
+import useNotification from "../hooks/useNotification.js";
+import { useUsersQuery } from "../queries/usersQueries.js";
 
-const Users = () => {
-  const [users, setUsers] = useState([]);
+const Users = ({ user }) => {
+  const { showError } = useNotification();
+  const { isLoading, isError, data } = useUsersQuery();
+  if (!user) {
+    return null;
+  }
+  if (isError) {
+    return <h3>Couldn't load user data.</h3>;
+  }
+  if (isLoading) {
+    return <h3>Loading…</h3>;
+  }
 
-  const getUsers = async () => {
-    const allUsers = await usersService.getAll();
-    setUsers(allUsers);
-  };
-
-  useEffect(() => {
-    getUsers();
-  }, []);
+  const users = data;
 
   return (
     <>
-      <h2>So many users!</h2>
-      <p>{users && users.length}</p>
+      <h2>Users ({users.length})</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Name:</th>
+            <th>Blogs created:</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((u) => (
+            <tr key={u.id}>
+              <td>{u.name}</td>
+              <td>{u.blogs.length}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </>
   );
 };

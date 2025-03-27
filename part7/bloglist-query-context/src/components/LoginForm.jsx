@@ -1,50 +1,48 @@
-import loginService from '../services/login.js'
-import { useState, forwardRef, useImperativeHandle } from 'react'
+import loginService from "../services/login.js";
+import useNotification from "../hooks/useNotification.js";
+import { useState, forwardRef, useImperativeHandle } from "react";
 
 const LoginForm = forwardRef((props, refs) => {
-  LoginForm.displayName = 'LoginForm'
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const{ showError, setSession } = props
+  const { showError } = useNotification();
+  LoginForm.displayName = "LoginForm";
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const { setSession } = props;
 
   const cleanForm = () => {
-    setPassword('')
-    setUsername('')
-  }
-  useImperativeHandle(refs, () => ({ cleanForm }))
+    setPassword("");
+    setUsername("");
+  };
+  useImperativeHandle(refs, () => ({ cleanForm }));
 
   const doLogin = async (event) => {
-    event.preventDefault()
-    if (!username || !password)
-    {
-      showError('Username and password can\'t be empty.')
-      return
+    event.preventDefault();
+    if (!username || !password) {
+      showError("Username and password can't be empty.");
+      return;
     }
-    const userData = await loginService.tryLogin(username, password)
-    if (userData === null)
-    {
-      showError('Login failed.')
-      return
+    const userData = await loginService.tryLogin(username, password);
+    if (userData === null) {
+      showError("Login failed.");
+      return;
     }
-    if (userData.error)
-    {
-      showError(userData.error)
-      return
+    if (userData.error) {
+      showError(userData.error);
+      return;
     }
-    if (!userData.token)
-    {
-      showError('Token is not valid.')
-      return
+    if (!userData.token) {
+      showError("Token is not valid.");
+      return;
     }
-    setSession(userData)
-  }
+    setSession(userData);
+  };
 
   return (
     <>
       <h2>Login to application</h2>
       <form onSubmit={doLogin}>
         <div>
-                    Username
+          Username
           <input
             onChange={({ target }) => setUsername(target.value)}
             type="text"
@@ -54,7 +52,7 @@ const LoginForm = forwardRef((props, refs) => {
           />
         </div>
         <div>
-                    Password
+          Password
           <input
             onChange={({ target }) => setPassword(target.value)}
             type="password"
@@ -66,8 +64,7 @@ const LoginForm = forwardRef((props, refs) => {
         <button type="submit">Login</button>
       </form>
     </>
-  )
+  );
+});
 
-})
-
-export default LoginForm
+export default LoginForm;

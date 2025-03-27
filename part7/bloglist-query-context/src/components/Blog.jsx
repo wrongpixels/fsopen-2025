@@ -1,33 +1,32 @@
-import Toggleable from './Toggleable.jsx'
-import PropTypes from 'prop-types'
-import { useRef, useState } from 'react'
-import blogServices from '../services/blogs.js'
+import Toggleable from "./Toggleable.jsx";
+import PropTypes from "prop-types";
+import { useRef } from "react";
 
-const Blog = ({ blog, showNotification, likeBlog, activeUser, deleteBlog }) => {
-  const toggleRef = useRef()
+const Blog = ({ blog, likeBlog, activeUser, deleteBlog }) => {
+  const toggleRef = useRef();
 
   const blogStyle = {
     paddingTop: 5,
     paddingLeft: 10,
     paddingBottom: 5,
-    border: 'solid',
+    border: "solid",
     borderWidth: 1,
     marginTop: 5,
     marginBottom: 5,
-  }
+  };
   const expandedBlog = {
     paddingTop: 10,
     paddingLeft: 10,
     marginRight: 20,
     paddingBottom: 10,
-    border: 'solid',
+    border: "solid",
     borderWidth: 1,
     marginTop: 10,
     marginBottom: 10,
-  }
+  };
   const buttonStyle = {
     paddingTop: 5,
-  }
+  };
 
   const handleDeleteBlog = async () => {
     if (
@@ -35,21 +34,21 @@ const Blog = ({ blog, showNotification, likeBlog, activeUser, deleteBlog }) => {
         `Delete blog '${blog.title}' by ${blog.author}?\n\nThis action is permanent.`,
       )
     ) {
-      deleteBlog(blog)
+      deleteBlog(blog);
     }
-  }
+  };
   const deleteButton = () => {
     if (!blog.user) {
-      return
+      return;
     }
     if (blog.user.username === activeUser?.username) {
       return (
         <div style={buttonStyle}>
           <button onClick={handleDeleteBlog}>Remove</button>
         </div>
-      )
+      );
     }
-  }
+  };
   return (
     <div style={blogStyle} className="blog-entry">
       <b>{blog.title}</b> {`by ${blog.author}`}
@@ -65,13 +64,13 @@ const Blog = ({ blog, showNotification, likeBlog, activeUser, deleteBlog }) => {
           <b>Likes:</b> <span className="blog-likes">{blog.likes}</span>
           <button onClick={() => likeBlog(blog)}>Like!</button>
           <br />
-          <b>Added by:</b> {blog.user?.username ? blog.user.username : '?'}
+          <b>Added by:</b> {blog.user?.username ? blog.user.username : "?"}
           {deleteButton()}
         </div>
       </Toggleable>
     </div>
-  )
-}
+  );
+};
 
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
@@ -79,6 +78,6 @@ Blog.propTypes = {
   likeBlog: PropTypes.func.isRequired,
   activeUser: PropTypes.object.isRequired,
   deleteBlog: PropTypes.func.isRequired,
-}
+};
 
-export default Blog
+export default Blog;
