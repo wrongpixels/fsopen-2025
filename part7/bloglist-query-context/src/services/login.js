@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseUrl = "/api/setUser";
+const baseUrl = "/api/login";
 
 const tryLogin = async (_username, _password) => {
   if (!_username || !_password) {
