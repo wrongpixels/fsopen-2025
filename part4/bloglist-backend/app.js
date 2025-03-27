@@ -13,7 +13,7 @@ const startMongoose = async () => {
   try {
     await mongoose.connect(config.MONGODB_URL);
     log("Connected to Mongoose");
-  } catch (error) {
+  } catch (e) {
     error("Error connecting to Mongoose");
   }
 };
