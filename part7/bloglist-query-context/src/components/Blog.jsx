@@ -54,15 +54,13 @@ const Blog = ({ user }) => {
   };
 
   const blogStyle = {
-    paddingTop: 5,
     paddingLeft: 10,
-    paddingBottom: 5,
+    paddingBottom: 10,
     border: "solid",
     borderWidth: 1,
-    marginTop: 5,
     marginBottom: 5,
   };
-  const expandedBlog = {
+  const blogSectionStyle = {
     paddingTop: 10,
     paddingLeft: 10,
     marginRight: 20,
@@ -97,10 +95,29 @@ const Blog = ({ user }) => {
       );
     }
   };
+
+  const commentsSection = () => {
+    if (!targetBlog.comments || targetBlog.comments.length === 0) {
+      return null;
+    }
+    return (
+      <div style={blogSectionStyle}>
+        <b>Comments:</b>
+        <ul>
+          {targetBlog.comments.map((c) => (
+            <li key={c.id}>{c.content}</li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
   return (
-    <div style={blogStyle} className="blog-entry">
-      <b>{targetBlog.title}</b> {`by ${targetBlog.author}`}
-      <div style={expandedBlog}>
+    <div className="blog-entry">
+      <h2>
+        <b>{targetBlog.title}</b> - {`by ${targetBlog.author}`}
+      </h2>
+      <div style={blogSectionStyle}>
         <b>URL:</b> <a href={targetBlog.url}>{targetBlog.url}</a> <br />
         <b>Likes:</b> <span className="blog-likes">{targetBlog.likes}</span>
         <button onClick={addLike}>Like!</button>
@@ -109,6 +126,7 @@ const Blog = ({ user }) => {
         {targetBlog.user?.username ? targetBlog.user.username : "?"}
         {deleteButton()}
       </div>
+      {commentsSection()}
       <button onClick={() => navigate("/")}>Go back</button>
     </div>
   );
