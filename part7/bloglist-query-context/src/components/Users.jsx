@@ -1,5 +1,5 @@
-import { Link, Route, Routes } from "react-router-dom";
-import User from "./User.jsx";
+import { Link } from "react-router-dom";
+import {Table} from "react-bootstrap"
 import useNotification from "../hooks/useNotification.js";
 import { useUsersQuery } from "../queries/usersQueries.js";
 
@@ -21,7 +21,7 @@ const Users = ({ user }) => {
   return (
     <>
       <h2>Users ({users.length})</h2>
-      <table>
+      <Table striped>
         <thead>
           <tr>
             <th>Name:</th>
@@ -31,14 +31,14 @@ const Users = ({ user }) => {
         <tbody>
           {users.map((u) => (
             <tr key={u.id}>
-              <td>
-                <Link to={`/users/${u.id}`}> {u.name} </Link>
+              <td><b>
+                <Link to={`/users/${u.id}`}> {u.name} </Link></b>
               </td>
               <td>{u.blogs.length}</td>
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     </>
   );
 };

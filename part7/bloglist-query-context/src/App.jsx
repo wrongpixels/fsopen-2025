@@ -15,18 +15,18 @@ const App = () => {
   const { activeUser: user } = useActiveUser();
 
   return (
-    <>
-      <Router>
-        {<Header user={user} />}
-        <Routes>
-          <Route path="/" element={<Blogs user={user} />} />
-          <Route path="/users" element={<Users user={user} />} />
-          <Route path="/users/:id" element={<User user={user} />} />
-          <Route path="/blogs/:id" element={<Blog user={user} />} />
-          <Route path="*" element={<WrongURL />} />
-        </Routes>
-      </Router>
-    </>
+      <div className="container">
+        <Router>
+          {<Header user={user}/>}
+          <Routes>
+            <Route path="/" element={<Blogs user={user}/>}/>
+            <Route path="/users" element={<Users user={user}/>}/>
+            <Route path="/users/:id" element={<User user={user}/>}/>
+            <Route path="/blogs/:id" element={<Blog user={user}/>}/>
+            <Route path="*" element={<WrongURL/>}/>
+          </Routes>
+        </Router>
+      </div>
   );
 };
 

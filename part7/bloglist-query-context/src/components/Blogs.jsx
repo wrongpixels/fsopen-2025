@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
+import {Table} from "react-bootstrap"
 import Toggleable from "../components/Toggleable";
 import NewBlog from "../components/NewBlog";
 import useNotification from "../hooks/useNotification.js";
@@ -43,25 +44,27 @@ const Blogs = ({ user }) => {
     }
   };
 
-  const blogStyle = {
-    paddingTop: 5,
-    paddingLeft: 10,
-    paddingBottom: 5,
-    border: "solid",
-    borderWidth: 1,
-    marginTop: 5,
-    marginBottom: 5,
-  };
-
   return (
     <>
       <h2>Blogs</h2>
       <div className="blog-list">
-        {blogs.map((b) => (
-          <h4 key={b.id} style={blogStyle}>
-            {<Link to={`/blogs/${b.id}`}>{b.title}</Link>} {` by ${b.author}`}
-          </h4>
+        <Table striped>
+          <thead>
+          <tr>
+            <th>Title:</th>
+            <th>Blog author:</th>
+          </tr>
+          </thead>
+          <tbody>
+          {blogs.map((b) => (
+          <tr key={b.id} >
+
+            <td><b>{<Link to={`/blogs/${b.id}`}>{b.title}</Link>} </b> </td>
+              <td> {`${b.author}`}</td>
+          </tr>
         ))}
+          </tbody>
+        </Table>
         <div>
           <Toggleable
             ref={newBlogRef}

@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import {Table, Button} from "react-bootstrap"
 import BlogComments from "./BlogComments.jsx";
 import useNotification from "../hooks/useNotification.js";
 import { useBlog } from "../hooks/useBlogs.js";
@@ -85,7 +86,7 @@ const Blog = ({ user }) => {
     if (targetBlog.user.username === user?.username) {
       return (
         <div style={buttonStyle}>
-          <button onClick={handleDeleteBlog}>Remove</button>
+          <Button onClick={handleDeleteBlog}>Remove</Button>
         </div>
       );
     }
@@ -99,14 +100,14 @@ const Blog = ({ user }) => {
       <div style={blogSectionStyle}>
         <b>URL:</b> <a href={targetBlog.url}>{targetBlog.url}</a> <br />
         <b>Likes:</b> <span className="blog-likes">{targetBlog.likes}</span>
-        <button onClick={addLike}>Like!</button>
+        <Button onClick={addLike}>Like!</Button>
         <br />
         <b>Added by:</b>{" "}
         {targetBlog.user?.username ? targetBlog.user.username : "?"}
         {deleteButton()}
       </div>
       <BlogComments targetBlog={targetBlog} />
-      <button onClick={() => navigate("/")}>Go back</button>
+      <Button onClick={() => navigate("/")}>Go back</Button>
     </div>
   );
 };
