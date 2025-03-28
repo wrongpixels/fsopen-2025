@@ -112,7 +112,7 @@ const Blog = ({ user }) => {
 };
 
 Blog.propTypes = {
-  user: PropTypes.object.isRequired,
+  user: PropTypes.object,
 };
 
 export default Blog;

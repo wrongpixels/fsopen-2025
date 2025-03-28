@@ -14,7 +14,7 @@ const getBlogs = async () => {
   return orderBlogs(targetBlogs);
 };
 
-const orderBlogs = (targetBlogs) =>
+export const orderBlogs = (targetBlogs) =>
   [...targetBlogs].sort((a, b) => b.likes - a.likes);
 
 export const useCreateBlog = (queryClient) => {
@@ -31,10 +31,10 @@ export const useCreateBlog = (queryClient) => {
 
 const editBlog = (queryClient, edited) =>
   queryClient.setQueryData(
-    ["blogs"],
+    ["blogs"], orderBlogs(
     queryClient
       .getQueryData(["blogs"])
-      .map((b) => (b.id === edited.id ? edited : b)),
+      .map((b) => (b.id === edited.id ? edited : b))),
   );
 
 export const useAddComment = () => {

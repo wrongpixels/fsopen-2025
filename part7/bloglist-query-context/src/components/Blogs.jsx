@@ -72,7 +72,6 @@ const Blogs = ({ user }) => {
             showOver={true}
           >
             <NewBlog
-              showNotification={showNotification}
               addNewBlog={addNewBlog}
             />
           </Toggleable>

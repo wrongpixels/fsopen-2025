@@ -15,12 +15,12 @@ const blogSectionStyle = {
 
 const BlogComments = ({ targetBlog }) => {
   const addCommentMutation = useAddComment();
-  const newCommentField = useInputField("text");
+  const [comment, commentProps, commentFunctions] = useInputField("text", "Comment");
   const { showError, showNotification } = useNotification();
 
   const addComment = (e) => {
     e.preventDefault();
-    const comment = newCommentField.value;
+
     if (!comment) {
       showError("You can't add an empty comment!");
       return;
@@ -36,7 +36,7 @@ const BlogComments = ({ targetBlog }) => {
     addCommentMutation.mutate(commentData, {
       onSuccess: () => {
         showNotification("Your comment was added to blog!");
-        newCommentField.clean();
+        commentFunctions.clean();
       },
       onError: (error) =>
         showError(
@@ -52,7 +52,7 @@ const BlogComments = ({ targetBlog }) => {
       <b>Comments:</b>
       <form onSubmit={addComment}>
         <p>
-          <input {...newCommentField.props} />{" "}
+          <input {...commentProps} />{" "}
           <button type="submit">Add comment</button>
         </p>
       </form>

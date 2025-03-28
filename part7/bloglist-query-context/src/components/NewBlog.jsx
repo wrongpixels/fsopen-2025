@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import useInputField from "../hooks/useInputField.js"
+import useNotification from "../hooks/useNotification.js"
 
-const NewBlog = ({ showNotification, addNewBlog }) => {
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+const NewBlog = ({ addNewBlog }) => {
+  const {showNotification} = useNotification()
+  const [title, titleProps, titleFns] = useInputField("text", "Title", "Blog title", "blog-title")
+  const [author, authorProps, authorFns] = useInputField("text", "Author", "Blog author", "blog-author")
+  const [url, urlProps, urlFns] = useInputField("text", "Url", "Blog URL", "blog-url")
 
   const handleAddBlog = async (event) => {
     event.preventDefault()
@@ -13,9 +15,9 @@ const NewBlog = ({ showNotification, addNewBlog }) => {
     }
     const newBlog = await addNewBlog({ title, author, url })
     if (newBlog && newBlog.title === title) {
-      setTitle('')
-      setAuthor('')
-      setUrl('')
+      titleFns.clean()
+      authorFns.clean()
+      urlFns.clean()
     }
   }
 
@@ -24,36 +26,18 @@ const NewBlog = ({ showNotification, addNewBlog }) => {
       <h3>Add a new Blog</h3>
       <form onSubmit={handleAddBlog}>
         <div>
-          Title:
           <input
-            type="text"
-            onChange={({ target }) => setTitle(target.value)}
-            value={title}
-            name="Title"
-            placeholder="Blog title"
-            data-testid="blog-title"
+              {...titleProps}
           />
         </div>
         <div>
-          Author:
           <input
-            type="text"
-            value={author}
-            onChange={({ target }) => setAuthor(target.value)}
-            name="Author"
-            placeholder="Blog author"
-            data-testid="blog-author"
+              {...authorProps}
           />
         </div>
         <div>
-          Url:
           <input
-            type="url"
-            value={url}
-            onChange={({ target }) => setUrl(target.value)}
-            name="Url"
-            placeholder="Blog URL"
-            data-testid="blog-url"
+              {...urlProps}
           />
         </div>
         <p>

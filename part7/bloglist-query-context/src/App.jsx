@@ -2,7 +2,6 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  useNavigate,
 } from "react-router-dom";
 import Header from "./components/Header.jsx";
 import Blogs from "./components/Blogs.jsx";

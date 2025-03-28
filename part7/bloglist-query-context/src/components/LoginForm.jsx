@@ -1,17 +1,18 @@
 import loginService from "../services/login.js";
 import useNotification from "../hooks/useNotification.js";
+import useInputField from "../hooks/useInputField.js"
 import { useState, forwardRef, useImperativeHandle } from "react";
 
 const LoginForm = forwardRef((props, refs) => {
   const { showError } = useNotification();
   LoginForm.displayName = "LoginForm";
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, userProps, userFunctions] = useInputField("text", "Username", "", "username")
+  const [password, passProps, passFunctions] = useInputField("password", "Password", "", "password")
   const { setSession } = props;
 
   const cleanForm = () => {
-    setPassword("");
-    setUsername("");
+    passFunctions.clean()
+    userFunctions.clean()
   };
   useImperativeHandle(refs, () => ({ cleanForm }));
 
@@ -44,21 +45,13 @@ const LoginForm = forwardRef((props, refs) => {
         <div>
           Username
           <input
-            onChange={({ target }) => setUsername(target.value)}
-            type="text"
-            name="Username"
-            value={username}
-            data-testid="username"
+              {...userProps}
           />
         </div>
         <div>
           Password
           <input
-            onChange={({ target }) => setPassword(target.value)}
-            type="password"
-            name="Password"
-            value={password}
-            data-testid="password"
+              {...passProps}
           />
         </div>
         <p>
