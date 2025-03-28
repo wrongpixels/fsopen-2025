@@ -122,26 +122,32 @@ router.delete(
     }
   },
 );
-router.post("/:id/comments", async (req, res) => {
-  const comment = req.body?.comment;
-  if (!comment) {
-    return res.status(400).json({ error: "Missing comment content" });
-  }
-  const id = req.params.id;
-  const blog = await Blog.findById(id);
-  if (!blog) {
-    return res.status(404).json({ error: "Blog was not found" });
-  }
-  blog.comments = blog.comments.concat({ content: comment.trim() });
-  try {
-    const updatedBlog = await blog.save();
-    return res.status(200).json(updatedBlog);
-  } catch (e) {
-    return res
-      .status(400)
-      .json({ error: e ? e.message : "There was an error adding the comment" });
-  }
-});
+router.post(
+  "/:id/comments",
+  middleware.handleUserExtractorErrors,
+  async (req, res) => {
+    const comment = req.body?.comment;
+    if (!comment) {
+      return res.status(400).json({ error: "Missing comment content" });
+    }
+    const id = req.params.id;
+    const blog = await Blog.findById(id);
+    if (!blog) {
+      return res.status(404).json({ error: "Blog was not found" });
+    }
+    blog.comments = blog.comments.concat({ content: comment.trim() });
+    try {
+      const updatedBlog = await (
+        await blog.save()
+      ).populate("user", { blogs: 0 });
+      return res.status(200).json(updatedBlog);
+    } catch (e) {
+      return res.status(400).json({
+        error: e ? e.message : "There was an error adding the comment",
+      });
+    }
+  },
+);
 router.put("/:id", async (request, response) => {
   const id = request.params.id;
   const updatedInfo = request.body;

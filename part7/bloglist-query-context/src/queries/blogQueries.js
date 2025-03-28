@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import blogService from "../services/blogs.js";
 
 export const useGetBlogs = () =>
@@ -29,19 +29,28 @@ export const useCreateBlog = (queryClient) => {
   });
 };
 
+const editBlog = (queryClient, edited) =>
+  queryClient.setQueryData(
+    ["blogs"],
+    queryClient
+      .getQueryData(["blogs"])
+      .map((b) => (b.id === edited.id ? edited : b)),
+  );
+
+export const useAddComment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ["blogs"],
+    mutationFn: blogService.addComment,
+    onSuccess: (edited) => editBlog(queryClient, edited),
+  });
+};
+
 export const useReplaceBlog = (queryClient) => {
   return useMutation({
     mutationKey: "blogs",
     mutationFn: blogService.replaceBlogData,
-    onSuccess: (edited) =>
-      queryClient.setQueryData(
-        ["blogs"],
-        orderBlogs(
-          queryClient
-            .getQueryData(["blogs"])
-            .map((b) => (b.id === edited.id ? edited : b)),
-        ),
-      ),
+    onSuccess: (edited) => editBlog(queryClient, edited),
   });
 };
 

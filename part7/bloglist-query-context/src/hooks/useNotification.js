@@ -3,11 +3,10 @@ import {
   resetNotification,
 } from "../actions/notificationActions";
 import { useNotificationDispatch } from "../context/NotificationContext";
+let currentTimeOut = null;
 
 const useNotification = () => {
   const dispatch = useNotificationDispatch();
-
-  let currentTimeOut = null;
 
   const showError = (message, time = 5) => {
     showAlert(message, true, time);

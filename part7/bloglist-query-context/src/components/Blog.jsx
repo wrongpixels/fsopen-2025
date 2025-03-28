@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import BlogComments from "./BlogComments.jsx";
 import useNotification from "../hooks/useNotification.js";
 import { useBlog } from "../hooks/useBlogs.js";
 import { useQueryClient } from "@tanstack/react-query";
@@ -36,8 +37,10 @@ const Blog = ({ user }) => {
 
   const deleteBlog = () => {
     deleteBlogMutation.mutate(targetBlog, {
-      onSuccess: () =>
-        showNotification(`Blog '${targetBlog.title}' was deleted!`),
+      onSuccess: () => {
+        showNotification(`Blog '${targetBlog.title}' was deleted!`);
+        navigate("/");
+      },
       onError: () => showError("There was an error deleting the blog"),
     });
   };
@@ -51,14 +54,6 @@ const Blog = ({ user }) => {
         onError: () => showError("There was an error adding the like"),
       },
     );
-  };
-
-  const blogStyle = {
-    paddingLeft: 10,
-    paddingBottom: 10,
-    border: "solid",
-    borderWidth: 1,
-    marginBottom: 5,
   };
   const blogSectionStyle = {
     paddingTop: 10,
@@ -96,22 +91,6 @@ const Blog = ({ user }) => {
     }
   };
 
-  const commentsSection = () => {
-    if (!targetBlog.comments || targetBlog.comments.length === 0) {
-      return null;
-    }
-    return (
-      <div style={blogSectionStyle}>
-        <b>Comments:</b>
-        <ul>
-          {targetBlog.comments.map((c) => (
-            <li key={c.id}>{c.content}</li>
-          ))}
-        </ul>
-      </div>
-    );
-  };
-
   return (
     <div className="blog-entry">
       <h2>
@@ -126,7 +105,7 @@ const Blog = ({ user }) => {
         {targetBlog.user?.username ? targetBlog.user.username : "?"}
         {deleteButton()}
       </div>
-      {commentsSection()}
+      <BlogComments targetBlog={targetBlog} />
       <button onClick={() => navigate("/")}>Go back</button>
     </div>
   );
