@@ -7,18 +7,24 @@ import {
   useGetBlogs,
 } from "../queries/blogQueries.js";
 
-const useBlogs = () => {
+export const useBlogs = () => {
   const queryClient = useQueryClient();
-  const getBlogsQuery = () => useGetBlogs();
+  const blogsQuery = useGetBlogs();
   const createBlogMutation = useCreateBlog(queryClient);
+  return {
+    blogsQuery,
+    createBlogMutation,
+  };
+};
+
+export const useBlog = () => {
+  const queryClient = useQueryClient();
+  const blogsQuery = useGetBlogs();
   const deleteBlogMutation = useDeleteBlog(queryClient);
   const replaceBlogMutation = useReplaceBlog(queryClient);
   return {
-    getBlogsQuery,
-    createBlogMutation,
+    blogsQuery,
     deleteBlogMutation,
     replaceBlogMutation,
   };
 };
-
-export default useBlogs;

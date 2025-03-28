@@ -1,14 +1,16 @@
 import { useRef } from "react";
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom";
 import Toggleable from "../components/Toggleable";
 import NewBlog from "../components/NewBlog";
 import useNotification from "../hooks/useNotification.js";
+import { useBlogs } from "../hooks/useBlogs.js";
 
-const Blogs = ({ user, getBlogsQuery, createBlogMutation,  }) => {
+const Blogs = ({ user }) => {
   const { showError, showNotification } = useNotification();
+  const { blogsQuery, createBlogMutation } = useBlogs();
+  const { isLoading, isError, data } = blogsQuery;
 
   const newBlogRef = useRef();
-  const { isLoading, isError, data } = getBlogsQuery();
   if (!user) {
     return null;
   }
@@ -54,11 +56,11 @@ const Blogs = ({ user, getBlogsQuery, createBlogMutation,  }) => {
   return (
     <>
       <div className="blog-list">
-        <ul>
         {blogs.map((b) => (
-          <h4 key={b.id} style={blogStyle}>{<Link to={`/blogs/${b.id}`}>{b.title}</Link>} {` by ${b.author}`}</h4>
+          <h4 key={b.id} style={blogStyle}>
+            {<Link to={`/blogs/${b.id}`}>{b.title}</Link>} {` by ${b.author}`}
+          </h4>
         ))}
-        </ul>
         <div>
           <Toggleable
             ref={newBlogRef}

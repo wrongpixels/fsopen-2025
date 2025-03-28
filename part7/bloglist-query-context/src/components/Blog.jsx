@@ -1,19 +1,20 @@
 import PropTypes from "prop-types";
-import useNotification from "../hooks/useNotification.js"
-import {useQueryClient} from "@tanstack/react-query"
-import { useMatch } from "react-router-dom"
+import useNotification from "../hooks/useNotification.js";
+import { useBlog } from "../hooks/useBlogs.js";
+import { useQueryClient } from "@tanstack/react-query";
+import { useMatch } from "react-router-dom";
 
-const Blog = ({ getBlogsQuery, replaceBlogMutation, user, deleteBlogMutation }) => {
-  const {showError, showNotification} = useNotification()
-  const queryClient = useQueryClient()
-  const cachedBlogs = queryClient.getQueryData(["blogs"])
-  const { isLoading, isError, data } = getBlogsQuery()
+const Blog = ({ user }) => {
+  const { showError, showNotification } = useNotification();
+  const { blogsQuery, deleteBlogMutation, replaceBlogMutation } = useBlog();
+  const { isLoading, isError, data } = blogsQuery;
+  const queryClient = useQueryClient();
+  const cachedBlogs = queryClient.getQueryData(["blogs"]);
 
-  const match = useMatch("/blogs/:id")
-  const blogs = cachedBlogs?cachedBlogs:(isError || isLoading)?null:data
-  if (!user)
-  {
-    return null
+  const match = useMatch("/blogs/:id");
+  const blogs = cachedBlogs ? cachedBlogs : isError || isLoading ? null : data;
+  if (!user) {
+    return null;
   }
   if (!blogs) {
     if (isLoading) {
@@ -23,31 +24,31 @@ const Blog = ({ getBlogsQuery, replaceBlogMutation, user, deleteBlogMutation }) 
       return <h3>Error loading blogs data.</h3>;
     }
   }
-  if (!blogs)
-    {
-      return <div>No blogs data available.</div>;
-    }
+  if (!blogs) {
+    return <div>No blogs data available.</div>;
+  }
 
-  const targetBlog = blogs.find(b => b.id === match?.params.id)
-  if (!targetBlog)
-  {
-    return <div>Blog data not found in server.</div>
+  const targetBlog = blogs.find((b) => b.id === match?.params.id);
+  if (!targetBlog) {
+    return <div>Blog data not found in server.</div>;
   }
 
   const deleteBlog = () => {
     deleteBlogMutation.mutate(targetBlog, {
-      onSuccess: () => showNotification(`Blog '${targetBlog.title}' was deleted!`),
+      onSuccess: () =>
+        showNotification(`Blog '${targetBlog.title}' was deleted!`),
       onError: () => showError("There was an error deleting the blog"),
     });
   };
 
   const addLike = () => {
     replaceBlogMutation.mutate(
-        { id: targetBlog.id, likes: targetBlog.likes + 1 },
-        {
-          onSuccess: () => showNotification(`Blog '${targetBlog.title}' was liked!`),
-          onError: () => showError("There was an error adding the like"),
-        },
+      { id: targetBlog.id, likes: targetBlog.likes + 1 },
+      {
+        onSuccess: () =>
+          showNotification(`Blog '${targetBlog.title}' was liked!`),
+        onError: () => showError("There was an error adding the like"),
+      },
     );
   };
 
@@ -80,7 +81,7 @@ const Blog = ({ getBlogsQuery, replaceBlogMutation, user, deleteBlogMutation }) 
         `Delete blog '${targetBlog.title}' by ${targetBlog.author}?\n\nThis action is permanent.`,
       )
     ) {
-      deleteBlog(blog);
+      deleteBlog();
     }
   };
   const deleteButton = () => {
@@ -98,22 +99,21 @@ const Blog = ({ getBlogsQuery, replaceBlogMutation, user, deleteBlogMutation }) 
   return (
     <div style={blogStyle} className="blog-entry">
       <b>{targetBlog.title}</b> {`by ${targetBlog.author}`}
-        <div style={expandedBlog}>
-          <b>URL:</b> <a href={targetBlog.url}>{targetBlog.url}</a> <br />
-          <b>Likes:</b> <span className="blog-likes">{targetBlog.likes}</span>
-          <button onClick={addLike}>Like!</button>
-          <br />
-          <b>Added by:</b> {targetBlog.user?.username ? targetBlog.user.username : "?"}
-          {deleteButton()}
-        </div>
+      <div style={expandedBlog}>
+        <b>URL:</b> <a href={targetBlog.url}>{targetBlog.url}</a> <br />
+        <b>Likes:</b> <span className="blog-likes">{targetBlog.likes}</span>
+        <button onClick={addLike}>Like!</button>
+        <br />
+        <b>Added by:</b>{" "}
+        {targetBlog.user?.username ? targetBlog.user.username : "?"}
+        {deleteButton()}
+      </div>
     </div>
   );
 };
 
 Blog.propTypes = {
-  replaceBlogMutation: PropTypes.object.isRequired,
   user: PropTypes.object.isRequired,
-  deleteBlogMutation: PropTypes.object.isRequired,
 };
 
 export default Blog;
