@@ -2,13 +2,14 @@ import PropTypes from "prop-types";
 import useNotification from "../hooks/useNotification.js";
 import { useBlog } from "../hooks/useBlogs.js";
 import { useQueryClient } from "@tanstack/react-query";
-import { useMatch } from "react-router-dom";
+import { useMatch, useNavigate } from "react-router-dom";
 
 const Blog = ({ user }) => {
   const { showError, showNotification } = useNotification();
   const { blogsQuery, deleteBlogMutation, replaceBlogMutation } = useBlog();
   const { isLoading, isError, data } = blogsQuery;
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const cachedBlogs = queryClient.getQueryData(["blogs"]);
 
   const match = useMatch("/blogs/:id");
@@ -108,6 +109,7 @@ const Blog = ({ user }) => {
         {targetBlog.user?.username ? targetBlog.user.username : "?"}
         {deleteButton()}
       </div>
+      <button onClick={() => navigate("/")}>Go back</button>
     </div>
   );
 };

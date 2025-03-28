@@ -55,6 +55,7 @@ const Blogs = ({ user }) => {
 
   return (
     <>
+      <h2>Blogs</h2>
       <div className="blog-list">
         {blogs.map((b) => (
           <h4 key={b.id} style={blogStyle}>

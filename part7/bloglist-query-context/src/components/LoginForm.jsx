@@ -61,7 +61,9 @@ const LoginForm = forwardRef((props, refs) => {
             data-testid="password"
           />
         </div>
-        <button type="submit">Login</button>
+        <p>
+          <button type="submit">Login</button>
+        </p>
       </form>
     </>
   );

@@ -1,16 +1,16 @@
-import { useMatch } from "react-router-dom";
+import { useMatch, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUsersQuery } from "../queries/usersQueries.js";
 
-const User = ({user}) => {
+const User = ({ user }) => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const cachedUsers = queryClient.getQueryData(["users"]);
 
   const match = useMatch("/users/:id");
   const { data, isLoading, isError } = useUsersQuery();
-  if (!user)
-  {
-    return null
+  if (!user) {
+    return null;
   }
   const users = cachedUsers ? cachedUsers : isLoading || isError ? null : data;
   if (!users) {
@@ -40,6 +40,7 @@ const User = ({user}) => {
           <li key={b.id}>{b.title}</li>
         ))}
       </ul>
+      <button onClick={() => navigate("/users")}>Go back</button>
     </>
   );
 };
