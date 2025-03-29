@@ -1,19 +1,14 @@
 import { useRef } from "react";
-import { Link } from "react-router-dom";
-import {Table, Button} from "react-bootstrap"
+import { Link, useNavigate } from "react-router-dom";
+import { Button, Navbar, Nav } from "react-bootstrap";
+import styles from "./styles/componentStyles.js";
 import LoginForm from "./LoginForm.jsx";
 import Notification from "./Notification.jsx";
 import useNotification from "../hooks/useNotification.js";
 import useActiveUser from "../hooks/useActiveUser.js";
 
-const barStyle = {
-  padding: "8px",
-  display: "flex",
-  gap: "0.75rem",
-  background: "#cbdcec",
-};
-
 const Header = ({ user }) => {
+  const navigate = useNavigate();
   const { showNotification } = useNotification();
   const { resetUserData, setUserData } = useActiveUser();
 
@@ -27,29 +22,70 @@ const Header = ({ user }) => {
 
   const setSession = (userData) => {
     setUserData(userData);
+    navigate("/");
     showNotification(`Welcome back, ${userData.name}!`);
   };
 
+  const linkStyle = {
+    paddingRight: "15px",
+    fontStyle: "none",
+    textDecoration: "none",
+    color: "#e1e1e1",
+  };
+  const loggedStyle = {
+    paddingRight: "25px",
+    paddingTop: "4px",
+    color: "#abd1e6",
+  };
+
   return (
-    <div>
-      <p style={barStyle}>
-        <Link to="/">
-          <b>Blogs</b>
-        </Link>
-        <Link to="/users">
-          <b>Users</b>
-        </Link>
-        {user && (
-          <>
-            <span>
-              Logged in as <b> {user.username} </b>
-            </span>{" "}
-            <Button onClick={resetSession}>Log out</Button>
-          </>
-        )}
-      </p>
+    <div className="mb-3">
+      <Navbar
+        collapseOnSelect
+        expand="lg"
+        bg="dark"
+        variant="dark"
+        className="ps-5 pe-5 shadow-sm"
+      >
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav">
+          <Nav className="me-auto">
+            <Nav.Link href="#" as="span">
+              <Link style={linkStyle} to="/">
+                <b>Blogs</b>
+              </Link>
+            </Nav.Link>
+            <Nav.Link href="#" as="span">
+              <Link style={linkStyle} to="/users">
+                <b>Users</b>
+              </Link>
+            </Nav.Link>
+          </Nav>
+          <Nav>
+            {user && (
+              <>
+                <span style={loggedStyle}>
+                  Logged in as <b> {user.username} </b>
+                </span>
+                <Button
+                  variant="danger"
+                  onClick={resetSession}
+                  {...styles.fixedButton}
+                >
+                  Log out
+                </Button>
+              </>
+            )}
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
+
       <Notification />
-      {!user && <LoginForm setSession={setSession} ref={loginFormRef} />}
+      {!user && (
+        <div className="container w-25">
+          <LoginForm setSession={setSession} ref={loginFormRef} />
+        </div>
+      )}
     </div>
   );
 };

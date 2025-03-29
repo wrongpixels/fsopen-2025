@@ -1,7 +1,8 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
-import {Table} from "react-bootstrap"
+import { Table, Button } from "react-bootstrap";
 import Toggleable from "../components/Toggleable";
+import styles from "./styles/componentStyles.js";
 import NewBlog from "../components/NewBlog";
 import useNotification from "../hooks/useNotification.js";
 import { useBlogs } from "../hooks/useBlogs.js";
@@ -45,42 +46,60 @@ const Blogs = ({ user }) => {
   };
 
   return (
-    <>
-      <h2>Blogs</h2>
+    <div>
+      <h1>
+        <b>Blogs</b>
+      </h1>
       <div className="blog-list">
-        <Table striped>
-          <thead>
-          <tr>
-            <th>Title:</th>
-            <th>Blog author:</th>
-          </tr>
-          </thead>
-          <tbody>
-          {blogs.map((b) => (
-          <tr key={b.id} >
-
-            <td><b>{<Link to={`/blogs/${b.id}`}>{b.title}</Link>} </b> </td>
-              <td> {`${b.author}`}</td>
-          </tr>
-        ))}
-          </tbody>
-        </Table>
-        <div>
-          <Toggleable
-            ref={newBlogRef}
-            labelOnVisible={"Hide new Blog Form"}
-            labelOnInvisible={"Add a new Blog"}
-            initialVisibility={false}
-            addSpace={false}
-            showOver={true}
-          >
-            <NewBlog
-              addNewBlog={addNewBlog}
-            />
-          </Toggleable>
+        <div {...styles.bubble}>
+          <Table>
+            <thead>
+              <tr>
+                <th className="bg-transparent">
+                  <h4>
+                    <b>Title</b>:
+                  </h4>
+                </th>
+                <th className="bg-transparent">
+                  <h4>
+                    <b>Author</b>:
+                  </h4>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {blogs.map((b) => (
+                <tr key={b.id}>
+                  <td className="bg-transparent">
+                    <b>
+                      {
+                        <Link to={`/blogs/${b.id}`} {...styles.link}>
+                          {b.title}
+                        </Link>
+                      }{" "}
+                    </b>{" "}
+                  </td>
+                  <td className="bg-transparent"> {`${b.author}`}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
         </div>
       </div>
-    </>
+
+      <div>
+        <Toggleable
+          ref={newBlogRef}
+          labelOnVisible={"Hide new Blog Form"}
+          labelOnInvisible={"Add a new Blog"}
+          initialVisibility={false}
+          addSpace={false}
+          showOver={true}
+        >
+          <NewBlog addNewBlog={addNewBlog} />
+        </Toggleable>
+      </div>
+    </div>
   );
 };
 

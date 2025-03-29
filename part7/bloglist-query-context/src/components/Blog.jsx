@@ -1,10 +1,11 @@
 import PropTypes from "prop-types";
-import {Table, Button} from "react-bootstrap"
+import { Table, Button } from "react-bootstrap";
+import styles from "./styles/componentStyles.js";
 import BlogComments from "./BlogComments.jsx";
 import useNotification from "../hooks/useNotification.js";
 import { useBlog } from "../hooks/useBlogs.js";
 import { useQueryClient } from "@tanstack/react-query";
-import { useMatch, useNavigate } from "react-router-dom";
+import { useMatch, useNavigate, Link } from "react-router-dom";
 
 const Blog = ({ user }) => {
   const { showError, showNotification } = useNotification();
@@ -68,6 +69,7 @@ const Blog = ({ user }) => {
   };
   const buttonStyle = {
     paddingTop: 5,
+    paddingBottom: 7,
   };
 
   const handleDeleteBlog = async () => {
@@ -86,7 +88,13 @@ const Blog = ({ user }) => {
     if (targetBlog.user.username === user?.username) {
       return (
         <div style={buttonStyle}>
-          <Button onClick={handleDeleteBlog}>Remove</Button>
+          <Button
+            onClick={handleDeleteBlog}
+            variant="danger"
+            {...styles.fixedButton}
+          >
+            Remove
+          </Button>
         </div>
       );
     }
@@ -94,20 +102,57 @@ const Blog = ({ user }) => {
 
   return (
     <div className="blog-entry">
-      <h2>
-        <b>{targetBlog.title}</b> - {`by ${targetBlog.author}`}
-      </h2>
-      <div style={blogSectionStyle}>
-        <b>URL:</b> <a href={targetBlog.url}>{targetBlog.url}</a> <br />
+      <h1>
+        <b>Blogs</b>
+      </h1>
+      <h3>
+        <b>{targetBlog.title}</b> <i>{`(by ${targetBlog.author})`}</i>
+      </h3>
+      <div {...styles.bubble}>
+        <div className="mt-2 pb-2">
+          <h4>
+            <b>Blog info:</b>
+          </h4>
+        </div>
+        <div {...styles.tall}>
+          <b>URL: </b>
+          <a href={targetBlog.url} {...styles.link}>
+            {targetBlog.url}
+          </a>
+          <br />
+        </div>
         <b>Likes:</b> <span className="blog-likes">{targetBlog.likes}</span>
-        <Button onClick={addLike}>Like!</Button>
+        <span className="ms-2">
+          <Button
+            variant="success"
+            onClick={addLike}
+            size="sm"
+            {...styles.fixedButton}
+          >
+            Like!
+          </Button>
+        </span>
         <br />
-        <b>Added by:</b>{" "}
-        {targetBlog.user?.username ? targetBlog.user.username : "?"}
+        <div {...styles.tall}>
+          <b>Added by: </b>
+          {targetBlog.user?.username ? (
+            <Link {...styles.link} to={`/users/${targetBlog.user.id}`}>
+              {targetBlog.user.username}
+            </Link>
+          ) : (
+            "?"
+          )}
+        </div>
         {deleteButton()}
       </div>
       <BlogComments targetBlog={targetBlog} />
-      <Button onClick={() => navigate("/")}>Go back</Button>
+      <Button
+        onClick={() => navigate("/")}
+        variant="outline-secondary"
+        {...styles.fixedButton}
+      >
+        Go back
+      </Button>
     </div>
   );
 };

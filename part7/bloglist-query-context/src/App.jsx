@@ -1,8 +1,4 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./components/Header.jsx";
 import Blogs from "./components/Blogs.jsx";
 import Blog from "./components/Blog.jsx";
@@ -15,18 +11,20 @@ const App = () => {
   const { activeUser: user } = useActiveUser();
 
   return (
-      <div className="container">
-        <Router>
-          {<Header user={user}/>}
+    <div>
+      <Router>
+        {<Header user={user} />}
+        <div className="container w-50">
           <Routes>
-            <Route path="/" element={<Blogs user={user}/>}/>
-            <Route path="/users" element={<Users user={user}/>}/>
-            <Route path="/users/:id" element={<User user={user}/>}/>
-            <Route path="/blogs/:id" element={<Blog user={user}/>}/>
-            <Route path="*" element={<WrongURL/>}/>
+            <Route path="/" element={<Blogs user={user} />} />
+            <Route path="/users" element={<Users user={user} />} />
+            <Route path="/users/:id" element={<User user={user} />} />
+            <Route path="/blogs/:id" element={<Blog user={user} />} />
+            <Route path="*" element={<WrongURL />} />
           </Routes>
-        </Router>
-      </div>
+        </div>
+      </Router>
+    </div>
   );
 };
 

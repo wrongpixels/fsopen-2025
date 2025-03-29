@@ -1,50 +1,67 @@
-import useInputField from "../hooks/useInputField.js"
-import useNotification from "../hooks/useNotification.js"
+import useInputField from "../hooks/useInputField.js";
+import useNotification from "../hooks/useNotification.js";
+import { Form, Button } from "react-bootstrap";
+import styles from "./styles/componentStyles.js";
 
 const NewBlog = ({ addNewBlog }) => {
-  const {showNotification} = useNotification()
-  const [title, titleProps, titleFns] = useInputField("text", "Title", "Blog title", "blog-title")
-  const [author, authorProps, authorFns] = useInputField("text", "Author", "Blog author", "blog-author")
-  const [url, urlProps, urlFns] = useInputField("text", "Url", "Blog URL", "blog-url")
+  const { showNotification } = useNotification();
+  const [title, titleProps, titleFns] = useInputField(
+    "text",
+    "Title",
+    "Title",
+    "blog-title",
+  );
+  const [author, authorProps, authorFns] = useInputField(
+    "text",
+    "Author",
+    "Author",
+    "blog-author",
+  );
+  const [url, urlProps, urlFns] = useInputField(
+    "text",
+    "Url",
+    "URL",
+    "blog-url",
+  );
 
   const handleAddBlog = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
     if (!title || !author || !url) {
-      showNotification('Can\'t add an entry with empty fields!')
-      return
+      showNotification("Can't add an entry with empty fields!");
+      return;
     }
-    const newBlog = await addNewBlog({ title, author, url })
+    const newBlog = await addNewBlog({ title, author, url });
     if (newBlog && newBlog.title === title) {
-      titleFns.clean()
-      authorFns.clean()
-      urlFns.clean()
+      titleFns.clean();
+      authorFns.clean();
+      urlFns.clean();
     }
-  }
+  };
 
   return (
-    <>
-      <h3>Add a new Blog</h3>
-      <form onSubmit={handleAddBlog}>
-        <div>
-          <input
-              {...titleProps}
-          />
+    <div className="w-75 mx-auto">
+      <Form onSubmit={handleAddBlog} {...styles.bubble}>
+        <div className="pt-2 pb-1">
+          <h4>
+            <b>New Blog:</b>
+          </h4>
         </div>
-        <div>
-          <input
-              {...authorProps}
-          />
-        </div>
-        <div>
-          <input
-              {...urlProps}
-          />
-        </div>
-        <p>
-          <button type="submit">Add entry</button>
-        </p>
-      </form>
-    </>
-  )
-}
-export default NewBlog
+        <Form.Group>
+          <div>
+            <Form.Control {...titleProps} {...styles.formField} />
+          </div>
+          <div>
+            <Form.Control {...authorProps} {...styles.formField} />
+          </div>
+          <div>
+            <Form.Control {...urlProps} {...styles.formField} />
+          </div>
+        </Form.Group>
+        <Button variant="primary" type="submit" {...styles.normalButton}>
+          Add entry
+        </Button>
+      </Form>
+    </div>
+  );
+};
+export default NewBlog;

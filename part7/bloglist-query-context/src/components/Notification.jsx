@@ -1,26 +1,22 @@
-import { useNotificationValue } from '../context/NotificationContext.jsx'
+import { useNotificationValue } from "../context/NotificationContext.jsx";
+import { Alert } from "react-bootstrap";
 
 const Notification = () => {
-  const { message, error } = useNotificationValue()
+  const { message, error } = useNotificationValue();
   if (!message) {
-    return null
+    return null;
   }
 
-  const notificationStyle = {
-    color: error ? 'red' : 'green',
-    background: 'lightgrey',
-    fontSize: 20,
-    borderStyle: 'solid',
-    borderRadius: 6,
-    padding: 10,
-    margin: 10,
-  }
+  const variant = error ? "danger" : "success";
 
   return (
-    <div style={notificationStyle} className="notification">
+    <Alert
+      variant={variant}
+      className={`notification shadow-sm fs-5 text-${variant}`}
+    >
       {message}
-    </div>
-  )
-}
+    </Alert>
+  );
+};
 
-export default Notification
+export default Notification;
