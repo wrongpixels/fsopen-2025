@@ -9,10 +9,10 @@ Submissions for the Full Stack Open course.
 - ✅ [Part 4: Testing Express servers, user administration](./part4)
 - ✅ [Part 5: Testing React apps](./part5)
 - ✅ [Part 6: Advanced state management](./part6)
-- ⌛ [Part 7: React router, custom hooks, styling app with CSS and webpack](./part7)
+- ✅ [Part 7: React router, custom hooks, styling app with CSS and webpack](./part7)
 ---
 ### Expansions
-- _Part 8: GraphQL_
+- ⌛[_Part 8: GraphQL_](./part8)
 - _Part 9: TypeScript_
 - _Part 10: React Native_
 - _Part 11: CI/CD_
