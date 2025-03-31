@@ -1,3 +1,3 @@
 # Exercises 5.17- 5.23
 
-Playwright testing
+Playwright End-to-end testing
