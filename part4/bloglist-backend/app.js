@@ -29,7 +29,7 @@ if (process.env.NODE_ENV !== "test") {
 }
 app.use("/api/blogs", middleware.userExtractor, blogsRouter);
 app.use("/api/users", usersRouter);
-app.use("/api/setUser", loginRouter);
+app.use("/api/login", loginRouter);
 app.use(middleware.badRequestHandler);
 app.use(middleware.errorHandler);
 
