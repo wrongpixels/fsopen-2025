@@ -61,6 +61,9 @@ const BlogComments = ({ targetBlog }) => {
             <b>Comments:</b>
           </h4>
         </div>
+        {targetBlog.comments && targetBlog.comments.length === 0 && (
+          <div>No comments yet! Why don't you write one?</div>
+        )}
         {targetBlog.comments && (
           <ul>
             {targetBlog.comments.map((c) => (
@@ -71,13 +74,11 @@ const BlogComments = ({ targetBlog }) => {
           </ul>
         )}
         <Form onSubmit={addComment}>
-          <Form.Group>
-            <span>
-              <Form.Control {...commentProps} {...styles.formField} />
-              <Button type="submit" {...styles.normalButton}>
-                Add comment
-              </Button>
-            </span>
+          <Form.Group className="d-flex gap-2">
+            <Form.Control {...commentProps} {...styles.inlineForm} />
+            <Button type="submit" {...styles.normalButton}>
+              Add
+            </Button>
           </Form.Group>
         </Form>
       </div>

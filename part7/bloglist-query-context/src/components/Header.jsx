@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { useUsersQuery } from "../queries/usersQueries.js";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Navbar, Nav } from "react-bootstrap";
 import styles from "./styles/componentStyles.js";
@@ -8,6 +9,12 @@ import useNotification from "../hooks/useNotification.js";
 import useActiveUser from "../hooks/useActiveUser.js";
 
 const Header = ({ user }) => {
+  const { isLoading, isError, data } = useUsersQuery();
+  if (user && data) {
+    user.id = data.find(
+      (u) => u.username === user.username && u.name === user.name,
+    )?.id;
+  }
   const navigate = useNavigate();
   const { showNotification } = useNotification();
   const { resetUserData, setUserData } = useActiveUser();
@@ -32,8 +39,15 @@ const Header = ({ user }) => {
     textDecoration: "none",
     color: "#e1e1e1",
   };
+  const userStyle = {
+    paddingRight: "5px",
+    paddingLeft: "5px",
+    fontStyle: "none",
+    textDecoration: "underline",
+    color: "#e1e1e1",
+  };
   const loggedStyle = {
-    paddingRight: "25px",
+    paddingRight: "20px",
     paddingTop: "4px",
     color: "#abd1e6",
   };
@@ -65,7 +79,14 @@ const Header = ({ user }) => {
             {user && (
               <>
                 <span style={loggedStyle}>
-                  Logged in as <b> {user.username} </b>
+                  Logged in as{" "}
+                  <b>
+                    {user.id && (
+                      <Link to={`/users/${user.id}`} style={userStyle}>
+                        {user.username}
+                      </Link>
+                    )}
+                  </b>
                 </span>
                 <Button
                   variant="danger"

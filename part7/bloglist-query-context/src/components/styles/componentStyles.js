@@ -1,4 +1,5 @@
 const formField = { className: "mt-2 shadow-sm border-info" };
+const inlineForm = { className: "mt-3 mb-2 shadow-sm border-info" };
 const fixedForm = { className: "shadow-sm border-info" };
 const normalButton = { className: "mt-3 mb-2 py-1 shadow-sm" };
 const fixedButton = { className: "py-1 shadow-sm" };
@@ -15,6 +16,7 @@ const tall = { className: "pt-1 pb-1" };
 export default {
   formField,
   fixedForm,
+  inlineForm,
   normalButton,
   fixedButton,
   bubble,
