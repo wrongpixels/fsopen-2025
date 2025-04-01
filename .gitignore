@@ -6,6 +6,7 @@ create-project.bat
 create-TEST-project.bat
 eslint.config.js
 .idea/
+.env
 /Tests/
 node_modules/
 coverage/
