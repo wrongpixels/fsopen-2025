@@ -1,5 +1,7 @@
 const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
+const { GraphQLError } = require('graphql')
+const { v1: uuid } = require('uuid')
 
 let authors = [
   {
@@ -107,17 +109,59 @@ const typeDefs = /* GraphQL */ `
   type Query {
     bookCount: Int!
     authorCount: Int!
-    allBooks(author: String): [Book!]!
+    allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
   }
+  type Mutation {
+    addBook(
+      title: String!
+      author: String!
+      published: Int!
+      genres: [String!]!
+    ): Book
+  }
 `
+const throwError = (message, code = '', invalidArgs = '') => {
+  const extensions =
+    !code && !invalidArgs ? null : { extensions: { code, invalidArgs } }
+  throw new GraphQLError(message, extensions)
+}
+
+const addAuthor = (name, born = null) => {
+  const author = { name, id: uuid(), born }
+  authors = authors.concat(author)
+  return author
+}
+
+const addBook = (title, author, published, genres) => {
+  const book = { title, author, published, id: uuid(), genres }
+  books = books.concat(book)
+  return book
+}
 
 const resolvers = {
+  Mutation: {
+    addBook: (root, { title, author, published, genres }) => {
+      if (!author || !title || !published || !genres) {
+        throwError('Cannot add a book without all basic info', 'MISSING_DATA')
+      }
+      if (books && books.find((b) => b.title === title)) {
+        throwError('Book already exists', 'EXISTING_DATA', title)
+      }
+      if (!authors.find((a) => a.name === author)) {
+        addAuthor(author)
+      }
+      return addBook(title, author, published, genres)
+    },
+  },
   Query: {
     bookCount: () => (books ? books.length : 0),
     authorCount: () => (authors ? authors.length : 0),
-    allBooks: (root, args) =>
-      args.author ? books.filter((b) => b.author === args.author) : books,
+    allBooks: (root, args) => {
+      return (
+        args.author ? books.filter((b) => b.author === args.author) : books
+      ).filter((b) => (args.genre ? b.genres.includes(args.genre) : true))
+    },
     allAuthors: () => authors,
   },
   Author: {
