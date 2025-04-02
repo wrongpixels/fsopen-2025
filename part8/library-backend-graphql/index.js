@@ -118,7 +118,8 @@ const typeDefs = /* GraphQL */ `
       author: String!
       published: Int!
       genres: [String!]!
-    ): Book
+    ): Book!
+    editAuthor(name: String!, setBornTo: Int!): Author
   }
 `
 const throwError = (message, code = '', invalidArgs = '') => {
@@ -145,6 +146,9 @@ const resolvers = {
       if (!author || !title || !published || !genres) {
         throwError('Cannot add a book without all basic info', 'MISSING_DATA')
       }
+      if (genres.length === 0) {
+        throwError('You need to set at least a genre', 'MISSING_DATA')
+      }
       if (books && books.find((b) => b.title === title)) {
         throwError('Book already exists', 'EXISTING_DATA', title)
       }
@@ -152,6 +156,15 @@ const resolvers = {
         addAuthor(author)
       }
       return addBook(title, author, published, genres)
+    },
+    editAuthor: (root, args) => {
+      const author = authors.find((a) => a.name === args.name)
+      if (!author) {
+        return null
+      }
+      const editAuthor = { ...author, born: args.setBornTo }
+      authors = authors.map((a) => (a.id === editAuthor.id ? editAuthor : a))
+      return editAuthor
     },
   },
   Query: {
