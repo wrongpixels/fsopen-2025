@@ -26,3 +26,10 @@ export const ALL_AUTHORS = gql`
         }
     }
 `
+export const ADD_BOOK = gql`
+    mutation newBook ($title: String!, $author: String!, $published: String!, $genres: [String!]!){
+        addBook(author: $author, title: $title, published: $published, genres: $genres){
+            ${bookStructure}
+        }
+    }
+`

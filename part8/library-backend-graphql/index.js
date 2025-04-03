@@ -82,22 +82,12 @@ let books = [
 ]
 
 const typeDefs = /* GraphQL */ `
-  enum Genre {
-    classic
-    revolution
-    crime
-    design
-    refactoring
-    patterns
-    agile
-  }
-
   type Book {
     title: String!
-    published: Int!
+    published: String!
     author: String!
     id: ID
-    genres: [Genre!]!
+    genres: [String!]!
   }
 
   type Author {
@@ -116,7 +106,7 @@ const typeDefs = /* GraphQL */ `
     addBook(
       title: String!
       author: String!
-      published: Int!
+      published: String!
       genres: [String!]!
     ): Book!
     editAuthor(name: String!, setBornTo: Int!): Author
