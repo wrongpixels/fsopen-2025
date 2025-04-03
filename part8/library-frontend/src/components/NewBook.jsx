@@ -1,21 +1,18 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { ADD_BOOK, ALL_BOOKS, ALL_AUTHORS } from '../queries.js'
 
 const NewBook = () => {
   const [addBookMutation, addResult] = useMutation(ADD_BOOK, {
     refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }],
-  })
-
-  useEffect(() => {
-    if (addResult.data) {
+    onCompleted: () => {
       setTitle('')
       setPublished('')
       setAuthor('')
       setGenres([])
       setGenre('')
-    }
-  }, [addResult.data])
+    },
+  })
 
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
