@@ -1,10 +1,14 @@
 import { useQuery, useMutation } from '@apollo/client'
-import { useInputField } from '../hooks/inputField.jsx'
+import { useInputField, useSelectionField } from '../hooks/customFields.jsx'
 import { ALL_AUTHORS, UPDATE_BIRTHYEAR } from '../queries.js'
 
 const Authors = () => {
-  const nameField = useInputField()
+  const result = useQuery(ALL_AUTHORS)
+
   const bornField = useInputField('number')
+  const nameField = useSelectionField(
+    result.data?.allAuthors?.map((a) => a.name) || []
+  )
   const [editYear, editResult] = useMutation(UPDATE_BIRTHYEAR, {
     onCompleted: () => {
       nameField.clean()
@@ -12,7 +16,6 @@ const Authors = () => {
     },
   })
 
-  const result = useQuery(ALL_AUTHORS)
   if (result.loading) {
     return <>Loading data...</>
   }
@@ -22,7 +25,7 @@ const Authors = () => {
     e.preventDefault()
     editYear({
       variables: {
-        name: nameField.value?.trim(),
+        name: nameField.value?.value?.trim(),
         born: Number(bornField.value),
       },
     })
