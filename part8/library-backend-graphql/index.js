@@ -2,90 +2,22 @@ const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
 const { GraphQLError } = require('graphql')
 const { v1: uuid } = require('uuid')
+const config = require('./utils/config')
+const mongoose = require('mongoose')
+const Author = require('./models/author')
+const Book = require('./models/book')
 
-let authors = [
-  {
-    name: 'Robert Martin',
-    id: 'afa51ab0-344d-11e9-a414-719c6709cf3e',
-    born: 1952,
-  },
-  {
-    name: 'Martin Fowler',
-    id: 'afa5b6f0-344d-11e9-a414-719c6709cf3e',
-    born: 1963,
-  },
-  {
-    name: 'Fyodor Dostoevsky',
-    id: 'afa5b6f1-344d-11e9-a414-719c6709cf3e',
-    born: 1821,
-  },
-  {
-    name: 'Joshua Kerievsky', // birthyear not known
-    id: 'afa5b6f2-344d-11e9-a414-719c6709cf3e',
-  },
-  {
-    name: 'Sandi Metz', // birthyear not known
-    id: 'afa5b6f3-344d-11e9-a414-719c6709cf3e',
-  },
-]
-
-let books = [
-  {
-    title: 'Clean Code',
-    published: 2008,
-    author: 'Robert Martin',
-    id: 'afa5b6f4-344d-11e9-a414-719c6709cf3e',
-    genres: ['refactoring'],
-  },
-  {
-    title: 'Agile software development',
-    published: 2002,
-    author: 'Robert Martin',
-    id: 'afa5b6f5-344d-11e9-a414-719c6709cf3e',
-    genres: ['agile', 'patterns', 'design'],
-  },
-  {
-    title: 'Refactoring, edition 2',
-    published: 2018,
-    author: 'Martin Fowler',
-    id: 'afa5de00-344d-11e9-a414-719c6709cf3e',
-    genres: ['refactoring'],
-  },
-  {
-    title: 'Refactoring to patterns',
-    published: 2008,
-    author: 'Joshua Kerievsky',
-    id: 'afa5de01-344d-11e9-a414-719c6709cf3e',
-    genres: ['refactoring', 'patterns'],
-  },
-  {
-    title: 'Practical Object-Oriented Design, An Agile Primer Using Ruby',
-    published: 2012,
-    author: 'Sandi Metz',
-    id: 'afa5de02-344d-11e9-a414-719c6709cf3e',
-    genres: ['refactoring', 'design'],
-  },
-  {
-    title: 'Crime and punishment',
-    published: 1866,
-    author: 'Fyodor Dostoevsky',
-    id: 'afa5de03-344d-11e9-a414-719c6709cf3e',
-    genres: ['classic', 'crime'],
-  },
-  {
-    title: 'Demons',
-    published: 1872,
-    author: 'Fyodor Dostoevsky',
-    id: 'afa5de04-344d-11e9-a414-719c6709cf3e',
-    genres: ['classic', 'revolution'],
-  },
-]
+mongoose.set('strictQuery', false)
+mongoose
+  .connect(config.MONGODB_URI)
+  .then(() => console.log('Connected to Mongoose'))
+  .catch(() => console.log('Error connecting to Mongoose'))
 
 const typeDefs = /* GraphQL */ `
   type Book {
     title: String!
-    published: String!
-    author: String!
+    published: Int!
+    author: Author!
     id: ID
     genres: [String!]!
   }
@@ -106,46 +38,53 @@ const typeDefs = /* GraphQL */ `
     addBook(
       title: String!
       author: String!
-      published: String!
+      published: Int!
       genres: [String!]!
     ): Book!
     editAuthor(name: String!, setBornTo: Int!): Author
   }
 `
-const throwError = (message, code = '', invalidArgs = '') => {
+const throwError = (message, code = '', invalidArgs = '', error = null) => {
   const extensions =
-    !code && !invalidArgs ? null : { extensions: { code, invalidArgs } }
+    !code && !invalidArgs ? null : { extensions: { code, invalidArgs, error } }
   throw new GraphQLError(message, extensions)
 }
-
-const addAuthor = (name, born = null) => {
-  const author = { name, id: uuid(), born }
-  authors = authors.concat(author)
-  return author
+const trySave = async (element, value = 'value') => {
+  try {
+    await element.save()
+    return element
+  } catch (e) {
+    throwError(`Saving ${value} failed`, 'BAD_USER_INPUT', value, e)
+  }
 }
 
-const addBook = (title, author, published, genres) => {
-  const book = { title, author, published, id: uuid(), genres }
-  books = books.concat(book)
-  return book
+const addAuthor = async (name, born = null) => {
+  const author = new Author({ name, born })
+  return trySave(author)
+}
+
+const addBook = async (title, author, published, genres) => {
+  const book = new Book({ title, author, published, genres })
+  return trySave(book)
 }
 
 const resolvers = {
   Mutation: {
-    addBook: (root, { title, author, published, genres }) => {
+    addBook: async (root, { title, author, published, genres }) => {
       if (!author || !title || !published || !genres) {
         throwError('Cannot add a book without all basic info', 'MISSING_DATA')
       }
       if (genres.length === 0) {
         throwError('You need to set at least a genre', 'MISSING_DATA')
       }
-      if (books && books.find((b) => b.title === title)) {
+      if (await Book.findOne({ title })) {
         throwError('Book already exists', 'EXISTING_DATA', title)
       }
-      if (!authors.find((a) => a.name === author)) {
-        addAuthor(author)
+      let bookAuthor = await Author.findOne({ name: author })
+      if (!bookAuthor) {
+        bookAuthor = await addAuthor(author)
       }
-      return addBook(title, author, published, genres)
+      return addBook(title, bookAuthor, published, genres)
     },
     editAuthor: (root, args) => {
       const author = authors.find((a) => a.name === args.name)
@@ -158,14 +97,16 @@ const resolvers = {
     },
   },
   Query: {
-    bookCount: () => (books ? books.length : 0),
-    authorCount: () => (authors ? authors.length : 0),
-    allBooks: (root, args) => {
+    bookCount: () => Book.collection.countDocuments(),
+    authorCount: () => Author.collection.countDocuments(),
+    allBooks: async () => Book.find({}),
+    /*{
       return (
-        args.author ? books.filter((b) => b.author === args.author) : books
+        args.author
+          ? books.filter((b) => b.author === args.author)
+          : Book.find({})
       ).filter((b) => (args.genre ? b.genres.includes(args.genre) : true))
-    },
-    allAuthors: () => authors,
+    }*/ allAuthors: async () => Author.find({}),
   },
   Author: {
     bookCount: (root) =>
@@ -179,7 +120,7 @@ const server = new ApolloServer({
 })
 
 startStandaloneServer(server, {
-  listen: { port: 4000 },
+  listen: { port: config.PORT },
 }).then(({ url }) => {
   console.log(`Server ready at ${url}`)
 })
