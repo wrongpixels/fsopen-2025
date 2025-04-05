@@ -1,7 +1,6 @@
 const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
 const { GraphQLError } = require('graphql')
-const { v1: uuid } = require('uuid')
 const config = require('./utils/config')
 const mongoose = require('mongoose')
 const Author = require('./models/author')
@@ -44,29 +43,6 @@ const typeDefs = /* GraphQL */ `
     editAuthor(name: String!, setBornTo: Int!): Author
   }
 `
-const throwError = (message, code = '', invalidArgs = '', error = null) => {
-  const extensions =
-    !code && !invalidArgs ? null : { extensions: { code, invalidArgs, error } }
-  throw new GraphQLError(message, extensions)
-}
-const trySave = async (element, value = 'value') => {
-  try {
-    await element.save()
-    return element
-  } catch (e) {
-    throwError(`Saving ${value} failed`, 'BAD_USER_INPUT', value, e)
-  }
-}
-
-const addAuthor = async (name, born = null) => {
-  const author = new Author({ name, born })
-  return trySave(author)
-}
-
-const addBook = async (title, author, published, genres) => {
-  const book = new Book({ title, author, published, genres })
-  return trySave(book)
-}
 
 const resolvers = {
   Mutation: {
@@ -86,34 +62,66 @@ const resolvers = {
       }
       return addBook(title, bookAuthor, published, genres)
     },
-    editAuthor: (root, args) => {
-      const author = authors.find((a) => a.name === args.name)
-      if (!author) {
-        return null
-      }
-      const editAuthor = { ...author, born: args.setBornTo }
-      authors = authors.map((a) => (a.id === editAuthor.id ? editAuthor : a))
-      return editAuthor
+    editAuthor: async (root, { name, setBornTo }) => {
+      return Author.findOneAndUpdate(
+        { name },
+        { born: setBornTo },
+        { new: true, runValidators: true, context: 'query' },
+      )
     },
   },
   Query: {
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Author.collection.countDocuments(),
-    allBooks: async () => Book.find({}),
-    /*{
-      return (
-        args.author
-          ? books.filter((b) => b.author === args.author)
-          : Book.find({})
-      ).filter((b) => (args.genre ? b.genres.includes(args.genre) : true))
-    }*/ allAuthors: async () => Author.find({}),
+    allBooks: async (root, { author, genre }) => {
+      if (author || genre) {
+        const filter = {}
+        if (author) {
+          const bookAuthor = await Author.findOne({ name: author })
+          if (bookAuthor) {
+            filter.author = bookAuthor._id
+          } else {
+            return []
+          }
+        }
+        if (genre) {
+          filter.genres = genre
+        }
+        return Book.find(filter).populate('author')
+      }
+      return Book.find({}).populate('author')
+    },
+    allAuthors: async () => Author.find({}),
   },
   Author: {
-    bookCount: (root) =>
-      books ? books.filter((b) => b.author === root.name).length : 0,
+    bookCount: async (root) =>
+      Book.collection.countDocuments({ author: root._id }),
   },
 }
 
+const throwError = (message, code = '', invalidArgs = '', error = null) => {
+  const extensions =
+    !code && !invalidArgs ? null : { extensions: { code, invalidArgs, error } }
+  throw new GraphQLError(message, extensions)
+}
+const trySave = async (element, value = 'value') => {
+  try {
+    await element.save()
+    return element
+  } catch (e) {
+    throwError(e.message, 'MONGOOSE_ERROR', '', e)
+  }
+}
+
+const addAuthor = async (name, born = null) => {
+  const author = new Author({ name, born })
+  return trySave(author)
+}
+
+const addBook = async (title, author, published, genres) => {
+  const book = new Book({ title, author, published, genres })
+  return trySave(book)
+}
 const server = new ApolloServer({
   typeDefs,
   resolvers,
