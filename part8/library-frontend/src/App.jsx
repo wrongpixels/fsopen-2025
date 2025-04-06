@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useApolloClient } from '@apollo/client'
+import LoginForm from './components/LoginForm.jsx'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
@@ -17,21 +18,14 @@ const Header = ({ token, setToken }) => {
     setToken(null)
     localStorage.removeItem('user-token')
     client.resetStore()
+    navigate('/books')
   }
-
   return (
     <header>
       <button onClick={() => navigate('/')}>authors</button>
       <button onClick={() => navigate('/books')}>books</button>
-      <button onClick={() => navigate('/add')}>add book</button>
-      <button
-        onClick={() => {
-          if (token) {
-            return navigate('/login')
-          }
-          return logout
-        }}
-      >
+      {token && <button onClick={() => navigate('/add')}>add book</button>}
+      <button onClick={() => (!token ? navigate('/login') : logout())}>
         {token ? 'log out' : 'login'}
       </button>
     </header>
@@ -43,8 +37,12 @@ const App = () => {
   return (
     <div>
       <Router>
-        <Header />
+        <Header token={token} setToken={setToken} />
         <Routes>
+          <Route
+            path="/login"
+            element={<LoginForm token={token} setToken={setToken} />}
+          />
           <Route path="/" element={<Authors />} />
           <Route path="/books" element={<Books />} />
           <Route path="/add" element={<NewBook />} />

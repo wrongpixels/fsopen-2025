@@ -29,11 +29,19 @@ export const ALL_AUTHORS = gql`
     }
 `
 export const ADD_BOOK = gql`
-    mutation newBook ($title: String!, $author: String!, $published: String!, $genres: [String!]!){
+    mutation newBook ($title: String!, $author: String!, $published: Int!, $genres: [String!]!){
         addBook(author: $author, title: $title, published: $published, genres: $genres){
             ${bookStructure}
         }
     }
+`
+
+export const LOGIN = gql`
+  mutation login($username: String!, $password: String!) {
+    login(username: $username, password: $password) {
+      value
+    }
+  }
 `
 
 export const UPDATE_BIRTHYEAR = gql`

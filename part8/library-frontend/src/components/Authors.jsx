@@ -7,11 +7,10 @@ const Authors = () => {
 
   const bornField = useInputField('number')
   const nameField = useSelectionField(
-    result.data?.allAuthors?.map((a) => a.name) || []
+    result.data?.allAuthors?.map((a) => a.name) || [],
   )
   const [editYear, editResult] = useMutation(UPDATE_BIRTHYEAR, {
     onCompleted: () => {
-      nameField.clean()
       bornField.clean()
     },
   })
