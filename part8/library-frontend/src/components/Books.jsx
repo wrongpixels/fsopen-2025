@@ -6,7 +6,7 @@ const Books = () => {
   if (result.loading) {
     return <>Loading data...</>
   }
-  const books = result.data.allBooks
+  const books = result.data?.allBooks || []
 
   return (
     <div>
@@ -22,7 +22,7 @@ const Books = () => {
           {books.map((a) => (
             <tr key={a.id}>
               <td>{a.title}</td>
-              <td>{a.author}</td>
+              <td>{a.author.name}</td>
               <td>{a.published}</td>
             </tr>
           ))}

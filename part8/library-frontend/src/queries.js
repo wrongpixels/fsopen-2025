@@ -7,7 +7,9 @@ bookCount`
 
 const bookStructure = `title
 published
-author
+author{
+${authorStructure}
+}
 id
 genres`
 
