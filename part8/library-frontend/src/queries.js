@@ -13,6 +13,15 @@ ${authorStructure}
 id
 genres`
 
+export const CURRENT_USER = gql`
+  query {
+    me {
+      username
+      favoriteGenre
+    }
+  }
+`
+
 export const ALL_BOOKS = gql`
 query {
     allBooks {

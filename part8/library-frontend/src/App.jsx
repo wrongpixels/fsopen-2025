@@ -24,6 +24,9 @@ const Header = ({ token, setToken }) => {
     <header>
       <button onClick={() => navigate('/')}>authors</button>
       <button onClick={() => navigate('/books')}>books</button>
+      {token && (
+        <button onClick={() => navigate('/recommended')}>recommended</button>
+      )}
       {token && <button onClick={() => navigate('/add')}>add book</button>}
       <button onClick={() => (!token ? navigate('/login') : logout())}>
         {token ? 'log out' : 'login'}
@@ -45,6 +48,7 @@ const App = () => {
           />
           <Route path="/" element={<Authors />} />
           <Route path="/books" element={<Books />} />
+          <Route path="/recommended" element={<Books recommended={true} />} />
           <Route path="/add" element={<NewBook />} />
         </Routes>
       </Router>
