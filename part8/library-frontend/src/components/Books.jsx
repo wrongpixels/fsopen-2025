@@ -1,8 +1,9 @@
-import { useQuery } from '@apollo/client'
+import { useQuery, useApolloClient } from '@apollo/client'
 import { ALL_BOOKS, CURRENT_USER, ALL_GENRES } from '../queries.js'
 import { useState } from 'react'
 
 const Books = ({ recommended = false }) => {
+  const client = useApolloClient()
   const favQuery = useQuery(CURRENT_USER, { skip: !recommended })
   const [filter, setFilter] = useState(null)
 
@@ -12,14 +13,22 @@ const Books = ({ recommended = false }) => {
       : null
     : filter
 
-  const result = useQuery(ALL_BOOKS, { variables: { genre: actualFilter } })
+  const booksQuery = useQuery(ALL_BOOKS, {
+    variables: { genre: actualFilter },
+  })
   const genresQuery = useQuery(ALL_GENRES)
 
-  if (result.loading || favQuery?.loading || genresQuery?.loading) {
+  if (booksQuery.loading || favQuery?.loading || genresQuery?.loading) {
     return <>Loading data...</>
   }
-  const books = result.data?.allBooks || []
+  const books = booksQuery.data?.allBooks || []
   const genres = genresQuery.data?.allGenres
+
+  const updateFilter = (value) => {
+    setFilter(value)
+    booksQuery.refetch()
+    genresQuery.refetch()
+  }
 
   return (
     <div>
@@ -48,9 +57,9 @@ const Books = ({ recommended = false }) => {
       {!recommended && (
         <div>
           <h3>Genre filter</h3>
-          <button onClick={() => setFilter(null)}>all</button>
+          <button onClick={() => updateFilter(null)}>all</button>
           {genres.map((g) => (
-            <button key={g} onClick={() => setFilter(g)}>
+            <button key={g} onClick={() => updateFilter(g)}>
               {g}
             </button>
           ))}
