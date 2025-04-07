@@ -44,6 +44,7 @@ const typeDefs = /* GraphQL */ `
     bookCount: Int!
     authorCount: Int!
     allBooks(author: String, genre: String): [Book!]!
+    allGenres: [String!]!
     allAuthors: [Author!]!
   }
   type Mutation {
@@ -99,11 +100,15 @@ const resolvers = {
       return Author.findOneAndUpdate(
         { name },
         { born: setBornTo },
-        { new: true, runValidators: true, context: 'query' },
+        { new: true, runValidators: true, context: 'query' }
       )
     },
   },
   Query: {
+    allGenres: async () => {
+      const allBooks = await Book.find({})
+      return [...new Set(allBooks.flatMap((b) => b.genres))]
+    },
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Author.collection.countDocuments(),
     allBooks: async (root, { author, genre }) => {

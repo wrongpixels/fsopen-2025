@@ -21,10 +21,15 @@ export const CURRENT_USER = gql`
     }
   }
 `
+export const ALL_GENRES = gql`
+  query {
+    allGenres
+  }
+`
 
 export const ALL_BOOKS = gql`
-query {
-    allBooks {
+query allBooks($genre: String, $author: String) {
+    allBooks (genre: $genre, author: $author) {
         ${bookStructure}
     }
 }

@@ -1,27 +1,25 @@
 import { useQuery } from '@apollo/client'
-import { ALL_BOOKS, CURRENT_USER } from '../queries.js'
-import { useState, useEffect } from 'react'
+import { ALL_BOOKS, CURRENT_USER, ALL_GENRES } from '../queries.js'
+import { useState } from 'react'
 
 const Books = ({ recommended = false }) => {
   const favQuery = useQuery(CURRENT_USER, { skip: !recommended })
   const [filter, setFilter] = useState(null)
-  const result = useQuery(ALL_BOOKS)
-
-  if (result.loading || favQuery?.loading) {
-    return <>Loading data...</>
-  }
 
   const actualFilter = recommended
-    ? favQuery?.data.me
+    ? favQuery?.data?.me?.favoriteGenre
       ? favQuery.data.me.favoriteGenre
       : null
     : filter
 
+  const result = useQuery(ALL_BOOKS, { variables: { genre: actualFilter } })
+  const genresQuery = useQuery(ALL_GENRES)
+
+  if (result.loading || favQuery?.loading || genresQuery?.loading) {
+    return <>Loading data...</>
+  }
   const books = result.data?.allBooks || []
-  let filteredBooks = actualFilter
-    ? books.filter((b) => b.genres.includes(actualFilter))
-    : books
-  const genres = [...new Set(books.flatMap((b) => b.genres))]
+  const genres = genresQuery.data?.allGenres
 
   return (
     <div>
@@ -38,7 +36,7 @@ const Books = ({ recommended = false }) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {filteredBooks.map((a) => (
+          {books.map((a) => (
             <tr key={a.id}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>
