@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useApolloClient, useSubscription } from '@apollo/client'
-import { BOOK_ADDED } from './queries.js'
+import { BOOK_ADDED, ALL_BOOKS } from './queries.js'
 import LoginForm from './components/LoginForm.jsx'
 import Authors from './components/Authors'
 import Books from './components/Books'
@@ -11,6 +11,21 @@ import {
   Route,
   useNavigate,
 } from 'react-router-dom'
+
+export const updateBookCache = (cache, query, newBook) => {
+  cache.updateQuery(
+    {
+      query,
+      variables: { genre: null },
+    },
+    (currentCache) => {
+      if (!currentCache.allBooks.find((b) => b.title === newBook.title)) {
+        return { allBooks: currentCache.allBooks.concat(newBook) }
+      }
+      return currentCache
+    }
+  )
+}
 
 const Header = ({ token, setToken }) => {
   const client = useApolloClient()
@@ -39,8 +54,10 @@ const Header = ({ token, setToken }) => {
 const App = () => {
   const [token, setToken] = useState(() => localStorage.getItem('user-token'))
   useSubscription(BOOK_ADDED, {
-    onData: ({ data }) =>
-      window.alert(`Book ${data.data.bookAdded.title} has been added`),
+    onData: ({ data, client }) => {
+      console.log(data.data.bookAdded)
+      updateBookCache(client.cache, ALL_BOOKS, data.data.bookAdded)
+    },
   })
   return (
     <div>

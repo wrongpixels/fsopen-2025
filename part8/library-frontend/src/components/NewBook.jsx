@@ -2,11 +2,12 @@ import { useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { ADD_BOOK, ALL_BOOKS, ALL_AUTHORS } from '../queries.js'
 import { useNavigate } from 'react-router-dom'
+import { updateBookCache } from '../App.jsx'
 
 const NewBook = () => {
   const navigate = useNavigate()
   const [addBookMutation, addResult] = useMutation(ADD_BOOK, {
-    refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }],
+    refetchQueries: [{ query: ALL_AUTHORS }],
     onCompleted: () => {
       setTitle('')
       setPublished('')
@@ -15,6 +16,8 @@ const NewBook = () => {
       setGenre('')
       navigate('/books')
     },
+    update: (cache, response) =>
+      updateBookCache(cache, ALL_BOOKS, response.data.addBook),
   })
 
   const [title, setTitle] = useState('')
