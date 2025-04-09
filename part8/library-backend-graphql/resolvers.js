@@ -84,10 +84,6 @@ const resolvers = {
       subscribe: () => pubsub.asyncIterableIterator('BOOK_ADDED'),
     },
   },
-  Author: {
-    bookCount: async (root) =>
-      Book.collection.countDocuments({ author: root._id }),
-  },
 }
 
 const throwError = (message, code = '', invalidArgs = '', error = null) => {
@@ -112,11 +108,17 @@ const checkLogin = (context) => {
 
 const addAuthor = async (name, born = null) => {
   const author = new Author({ name, born })
-  return trySave(author)
+  return await trySave(author)
 }
 
 const addBook = async (title, author, published, genres) => {
-  const book = new Book({ title, author, published, genres })
+  const bookCount = (await Book.countDocuments({ author: author._id })) + 1
+  const editedAuthor = await Author.findByIdAndUpdate(
+    author._id,
+    { bookCount: bookCount },
+    { new: true, runValidators: true }
+  )
+  const book = new Book({ title, author: editedAuthor, published, genres })
   const bookAdded = await trySave(book)
   pubsub.publish('BOOK_ADDED', { bookAdded })
   return bookAdded

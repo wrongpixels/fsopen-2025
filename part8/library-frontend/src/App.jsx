@@ -20,6 +20,7 @@ export const updateBookCache = (cache, query, newBook) => {
     },
     (currentCache) => {
       if (!currentCache.allBooks.find((b) => b.title === newBook.title)) {
+        window.alert(`New book '${newBook.title}' has been added!`)
         return { allBooks: currentCache.allBooks.concat(newBook) }
       }
       return currentCache
