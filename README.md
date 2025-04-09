@@ -12,8 +12,8 @@ Submissions for the Full Stack Open course.
 - ✅ [Part 7: React router, custom hooks, styling app with CSS and webpack](./part7)
 ---
 ### Expansions
-- ⌛[_Part 8: GraphQL_](./part8)
-- _Part 9: TypeScript_
+- ✅ [_Part 8: GraphQL_](./part8)
+- ⌛ [_Part 9: TypeScript_](./part9)
 - _Part 10: React Native_
 - _Part 11: CI/CD_
 - _Part 12: Containers_
