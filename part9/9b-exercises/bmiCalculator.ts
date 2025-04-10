@@ -1,6 +1,6 @@
 import { toPositiveNumber } from './utils';
 
-interface BmiData {
+export interface BmiData {
   height: number;
   weight: number;
 }
@@ -8,7 +8,6 @@ interface BmiData {
 type BmiRange = 'Underweight' | 'Normal' | 'Overweight' | 'Obese';
 
 const getBmiRange = (result: number): BmiRange => {
-  console.log(result);
   if (result < 18.5) {
     return 'Underweight';
   }
@@ -34,15 +33,18 @@ const getArguments = (): BmiData => {
   } as BmiData;
 };
 
-const calculateBmi = (values: BmiData): string => {
+export const calculateBmi = (values: BmiData): string => {
   const result: number = values.weight / (values.height / 100) ** 2;
-  return `${getBmiRange(result)}`;
+  return `${getBmiRange(result)} range`;
 };
-
-try {
-  console.log(calculateBmi(getArguments()));
-} catch (e) {
-  console.log(
-    e instanceof Error ? `Error: ${e.message}` : 'Error: Something went wrong!'
-  );
+if (require.main === module) {
+  try {
+    console.log(calculateBmi(getArguments()));
+  } catch (e) {
+    console.log(
+      e instanceof Error
+        ? `Error: ${e.message}`
+        : 'Error: Something went wrong!'
+    );
+  }
 }
