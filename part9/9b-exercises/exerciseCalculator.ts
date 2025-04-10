@@ -14,7 +14,6 @@ const getDescription = (rating: Rating): string => {
 
 const getRating = (average: number, target: number): Rating => {
   const percent: number = (average * 100) / target;
-  console.log(percent);
   return percent < 75 ? 1 : percent > 100 ? 3 : 2;
 };
 
@@ -48,7 +47,7 @@ const getPeriodFromArgs = (): ExercisePeriod => {
   return { target, dayData } as ExercisePeriod;
 };
 
-const calculateExercises = ({
+export const calculateExercises = ({
   dayData,
   target,
 }: ExercisePeriod): ResultData => {
@@ -67,10 +66,14 @@ const calculateExercises = ({
   } as ResultData;
 };
 
-try {
-  console.log(calculateExercises(getPeriodFromArgs()));
-} catch (e) {
-  console.log(
-    e instanceof Error ? `Error: ${e.message}` : 'Error: Something went wrong!'
-  );
+if (require.main === module) {
+  try {
+    console.log(calculateExercises(getPeriodFromArgs()));
+  } catch (e) {
+    console.log(
+      e instanceof Error
+        ? `Error: ${e.message}`
+        : 'Error: Something went wrong!'
+    );
+  }
 }
