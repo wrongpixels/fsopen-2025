@@ -1,3 +1,10 @@
+import { toPositiveNumber } from './utils';
+
+interface BmiData {
+  height: number;
+  weight: number;
+}
+
 type BmiRange = 'Underweight' | 'Normal' | 'Overweight' | 'Obese';
 
 const getBmiRange = (result: number): BmiRange => {
@@ -14,13 +21,26 @@ const getBmiRange = (result: number): BmiRange => {
   return 'Normal';
 };
 
-const calculateBmi = (height: number, weight: number): string => {
-  const result: number = weight / (height / 100) ** 2;
-  return `${getBmiRange(result)} range`;
+const getArguments = (): BmiData => {
+  const args: string[] = process.argv;
+  if (args.length < 4 || args.length > 4) {
+    throw new Error(
+      args.length < 4 ? 'Error: Missing arguments' : 'Error: Too many arguments'
+    );
+  }
+  return {
+    height: toPositiveNumber(args[2]),
+    weight: toPositiveNumber(args[3]),
+  } as BmiData;
+};
+
+const calculateBmi = (values: BmiData): string => {
+  const result: number = values.weight / (values.height / 100) ** 2;
+  return `${getBmiRange(result)}`;
 };
 
 try {
-  console.log(calculateBmi(180, 74));
+  console.log(calculateBmi(getArguments()));
 } catch (e) {
   console.log(
     e instanceof Error ? `Error: ${e.message}` : 'Error: Something went wrong!'

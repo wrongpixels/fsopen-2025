@@ -1,3 +1,4 @@
+import { toPositiveNumber } from './utils';
 type Rating = 1 | 2 | 3;
 
 const getDescription = (rating: Rating): string => {
@@ -17,7 +18,7 @@ const getRating = (average: number, target: number): Rating => {
   return percent < 75 ? 1 : percent > 100 ? 3 : 2;
 };
 
-interface resultData {
+interface ResultData {
   periodLength: number;
   trainingDays: number;
   success: boolean;
@@ -27,7 +28,30 @@ interface resultData {
   average: number;
 }
 
-const calculateExercises = (dayData: number[], target: number): resultData => {
+interface ExercisePeriod {
+  target: number;
+  dayData: number[];
+}
+
+const getPeriodFromArgs = (): ExercisePeriod => {
+  const args: string[] = process.argv;
+  if (args.length < 4) {
+    throw new Error(
+      `Error: Provide at least 2 arguments to run the program!
+      (Format: 'Target daily hours' 'Day 1 Hours' 'Day 2 Hours'... etc)`
+    );
+  }
+  const target: number = toPositiveNumber(args[2]);
+  const dayData: number[] = args
+    .slice(3, args.length)
+    .map((d) => toPositiveNumber(d));
+  return { target, dayData } as ExercisePeriod;
+};
+
+const calculateExercises = ({
+  dayData,
+  target,
+}: ExercisePeriod): ResultData => {
   const average: number =
     dayData.reduce((a: number, b: number) => a + b, 0) / dayData.length;
   const rating: Rating = getRating(average, target);
@@ -40,11 +64,11 @@ const calculateExercises = (dayData: number[], target: number): resultData => {
     ratingDescription: getDescription(rating),
     target: target,
     average,
-  };
+  } as ResultData;
 };
 
 try {
-  console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2));
+  console.log(calculateExercises(getPeriodFromArgs()));
 } catch (e) {
   console.log(
     e instanceof Error ? `Error: ${e.message}` : 'Error: Something went wrong!'
