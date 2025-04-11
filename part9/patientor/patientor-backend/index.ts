@@ -1,10 +1,14 @@
 import express from 'express';
-const PORT = 4000;
+import cors from 'cors';
+const PORT = 3001;
 
 const app = express();
+// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+app.use(cors());
 app.use(express.json());
 
 app.get('/api/ping', (_req, res) => {
+  console.log('Received ping request!');
   res.send('Pong!');
 });
 
