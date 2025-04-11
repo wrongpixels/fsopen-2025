@@ -1,8 +1,35 @@
 {
   "semi": true,
-  "parser": "typescript",
   "singleQuote": true,
   "trailingComma": "es5",
   "tabWidth": 2,
-  "printWidth": 80
+  "printWidth": 80,
+  "overrides": [
+    {
+      "files": "*.js",
+      "options": {
+        "semi": false,
+        "bracketSpacing": true,
+        "arrowParens": "always"
+      }
+    },
+    {
+      "files": ["*.json"],
+      "options": {
+        "parser": "json"
+      }
+    },
+    {
+      "files": ["*.ts", "*.tsx"],
+      "options": {
+        "parser": "typescript"
+      }
+    },
+    {
+      "files": ["*.jsx"],
+      "options": {
+        "parser": "babel"
+      }
+    }
+  ]
 }
