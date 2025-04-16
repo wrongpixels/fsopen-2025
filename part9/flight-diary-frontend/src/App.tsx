@@ -1,10 +1,16 @@
 import { useState, useEffect } from 'react';
-import { getAllDiaries } from './services/diaryService';
-import { DiaryEntry } from './types';
+import { getAllDiaries, addDiary } from './services/diaryService';
+import { DiaryEntry, NewDiaryEntry } from './types';
+import NewEntryForm from './components/NewEntryForm';
+import DiaryEntries from './components/DiaryEntries';
 
 const App = () => {
   const [diaries, setDiaries] = useState<DiaryEntry[]>();
-  const [newDiary, setNewDiary] = useState<DiaryEntry>();
+
+  const createDiary = async (diaryEntry: NewDiaryEntry) => {
+    const addedDiary: DiaryEntry = await addDiary(diaryEntry);
+    setDiaries(diaries?.concat(addedDiary));
+  };
 
   const getDiaries = async () => {
     const _diaries = await getAllDiaries();
@@ -20,26 +26,8 @@ const App = () => {
   }
   return (
     <>
-      <h1>Diaries</h1>
-      <ul>
-        {diaries.map((d) => (
-          <li key={d.id}>
-            <h3>{d.date}</h3>
-            <b>Visibility: </b>
-            {d.visibility}
-            <div>
-              <b>Weather: </b>
-              {d.weather}
-            </div>
-            {d.comment && (
-              <div>
-                <b>Comment: </b>
-                {d.comment}
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
+      <NewEntryForm createDiary={createDiary} />
+      <DiaryEntries diaries={diaries} />
     </>
   );
 };
