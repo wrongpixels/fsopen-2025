@@ -2,13 +2,13 @@
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:@typescript-eslint/recommended-requiring-type-checking"
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
   ],
   "plugins": ["@typescript-eslint"],
   "env": {
     "browser": true,
     "es6": true,
-    "node": true
+    "node": true,
   },
   "rules": {
     "@typescript-eslint/semi": ["error"],
@@ -19,12 +19,13 @@
     "@typescript-eslint/no-unsafe-member-access": "off",
     "@typescript-eslint/no-unused-vars": [
       "error",
-      { "argsIgnorePattern": "^_" }
+      { "argsIgnorePattern": "^_" },
     ],
-    "no-case-declarations": "off"
+    "no-case-declarations": "off",
   },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": "./flight-diary-backend/tsconfig.json"
-  }
+    "project": true,
+    "tsconfigRootDir": "import.meta.dirname",
+  },
 }
