@@ -1,8 +1,9 @@
-import { useTextField } from '../hooks';
+import { useInputField, useRadioButtonField } from '../hooks';
 import { AxiosError } from 'axios';
 import { NewDiaryEntry } from '../types';
 import Notification from './Notification';
 import { useState } from 'react';
+import { Weather, Visibility } from '../types';
 
 interface NewEntryFormProps {
   createDiary: Function;
@@ -15,10 +16,11 @@ const NewEntryForm = (props: NewEntryFormProps) => {
     setTimeout(() => setNotification(''), 5000);
   };
 
-  const dateField = useTextField('date', 'date');
-  const visField = useTextField('visibility');
-  const weatherField = useTextField('weather');
-  const commentField = useTextField('comment');
+  const dateField = useInputField('date', 'date');
+  const visField = useRadioButtonField('visibility', Object.values(Visibility));
+  const weatherField = useRadioButtonField('weather', Object.values(Weather));
+
+  const commentField = useInputField('comment');
 
   const handleNewEntry = async (e: React.SyntheticEvent) => {
     e.preventDefault();
