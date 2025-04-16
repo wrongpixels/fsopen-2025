@@ -2,7 +2,7 @@ import express, { Response, Request, NextFunction } from 'express';
 import { PatientData, NewPatient, Patient } from '../types';
 import patientServices from '../service/patientService';
 import { toNewPatient } from '../utils';
-import z from 'zod';
+import { ZodError } from 'zod';
 
 const newPatientMiddleware = (
   req: Request,
@@ -23,15 +23,21 @@ const newPatientErrorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  if (error instanceof z.ZodError) {
+  if (error instanceof ZodError) {
     res.status(400).json({ error: error.issues });
   }
   next(error);
 };
 
 const router = express.Router();
+
 router.get('/', (_req, res: Response<PatientData[]>) => {
-  res.send(patientServices.getSecureEntries());
+  res.json(patientServices.getSecureEntries());
+});
+
+router.get('/:id', (req, res) => {
+  const id = req.params.id;
+  res.json(patientServices.getPatientById(id));
 });
 
 router.post(

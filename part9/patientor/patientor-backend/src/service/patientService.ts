@@ -9,14 +9,25 @@ const formatPatient = ({
   dateOfBirth,
   gender,
   occupation,
-}: Patient): PatientData => ({ id, name, dateOfBirth, gender, occupation });
+}: Patient): PatientData => ({
+  id,
+  name,
+  dateOfBirth,
+  gender,
+  occupation,
+});
 
 const getEntries = (): Patient[] => patientEntries;
 const getSecureEntries = () => patientEntries.map((p) => formatPatient(p));
 
 const addPatient = (newPatient: NewPatient): Patient => {
-  const actualPatient: Patient = toPatient(newPatient, uuid());
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+  const id: string = uuid();
+  const actualPatient: Patient = toPatient(newPatient, id);
   return actualPatient;
 };
 
-export default { getEntries, getSecureEntries, addPatient };
+const getPatientById = (id: string): Patient | undefined =>
+  getEntries().find((p) => p.id === id);
+
+export default { getEntries, getSecureEntries, addPatient, getPatientById };
