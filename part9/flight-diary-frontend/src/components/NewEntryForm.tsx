@@ -1,12 +1,20 @@
 import { useTextField } from '../hooks';
 import { AxiosError } from 'axios';
 import { NewDiaryEntry } from '../types';
+import Notification from './Notification';
+import { useState } from 'react';
 
 interface NewEntryFormProps {
   createDiary: Function;
 }
 
 const NewEntryForm = (props: NewEntryFormProps) => {
+  const [notification, setNotification] = useState('');
+  const sendNotification = (message: string) => {
+    setNotification(message);
+    setTimeout(() => setNotification(''), 5000);
+  };
+
   const dateField = useTextField('date', 'date');
   const visField = useTextField('visibility');
   const weatherField = useTextField('weather');
@@ -27,17 +35,25 @@ const NewEntryForm = (props: NewEntryFormProps) => {
       weatherField.clean();
       commentField.clean();
     } catch (error) {
-      console.log(
-        error instanceof AxiosError
-          ? error.response?.data
-          : 'Error adding Diary'
-      );
+      let message: string = 'Error adding Diary Entry';
+      if (error instanceof AxiosError) {
+        const cleanData: string = error.response?.data?.replace(
+          'Something went wrong.',
+          ''
+        );
+        message = cleanData;
+      } else if (error instanceof Error) {
+        message = error.message;
+      }
+      console.log(error);
+      sendNotification(message);
     }
   };
 
   return (
     <>
       <h1>Add new entry</h1>
+      <Notification message={notification} />
       <form onSubmit={handleNewEntry}>
         <div>Date: {dateField.field}</div>
         <div>Visibility: {visField.field}</div>
