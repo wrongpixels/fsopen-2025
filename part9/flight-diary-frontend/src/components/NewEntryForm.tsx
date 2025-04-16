@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Weather, Visibility } from '../types';
 
 interface NewEntryFormProps {
-  createDiary: Function;
+  createDiary: (diaryEntry: NewDiaryEntry) => Promise<void>;
 }
 
 const NewEntryForm = (props: NewEntryFormProps) => {
