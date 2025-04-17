@@ -1,4 +1,4 @@
-import { Patient, Gender } from '../../types';
+import { Patient, Gender, Entry, Diagnosis } from '../../types';
 import { useMatch } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import patientService from '../../services/patients';
@@ -15,6 +15,44 @@ const drawIcon = (gender: Gender) => {
     default:
       return <PersonIcon />;
   }
+};
+
+const drawDiagnosis = (
+  diagnosis: Array<Diagnosis['code']> | undefined,
+  date: string
+) => {
+  if (!diagnosis || diagnosis.length === 0) {
+    return null;
+  }
+  return (
+    <>
+      <h4>Diagnosis:</h4>
+      <ul>
+        {diagnosis.map((d, i) => (
+          <li key={`${date}-${d}-${i}`}>{d}</li>
+        ))}
+      </ul>
+    </>
+  );
+};
+
+const drawEntries = (entries: Entry[] | undefined) => {
+  if (!entries || entries.length === 0) {
+    return null;
+  }
+  return (
+    <>
+      <h3>Entries</h3>
+      <ul>
+        {entries.map((e) => (
+          <li key={e.id}>
+            <b>{e.date}</b> | <i>{e.description}</i>
+            <div>{drawDiagnosis(e.diagnosisCodes, e.date)}</div>
+          </li>
+        ))}
+      </ul>
+    </>
+  );
 };
 
 const PatientView = () => {
@@ -41,22 +79,19 @@ const PatientView = () => {
 
   return (
     <div className="App">
-      <span>
-        <h2>
-          {patient.name} ({drawIcon(patient.gender)})
-        </h2>
-      </span>
-      <p>
-        <div>
-          <b>Date of Birth:</b> {patient.dateOfBirth}
-        </div>
-        <div>
-          <b>SSN:</b> {patient.ssn}
-        </div>
-        <div>
-          <b>Occupation:</b> {patient.occupation}
-        </div>
-      </p>
+      <h2>
+        {patient.name} ({drawIcon(patient.gender)})
+      </h2>
+      <div>
+        <b>Date of Birth:</b> {patient.dateOfBirth}
+      </div>
+      <div>
+        <b>SSN:</b> {patient.ssn}
+      </div>
+      <div>
+        <b>Occupation:</b> {patient.occupation}
+      </div>
+      <div>{drawEntries(patient.entries)}</div>
     </div>
   );
 };
