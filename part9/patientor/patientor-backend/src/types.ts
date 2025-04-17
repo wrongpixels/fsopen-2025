@@ -75,5 +75,11 @@ export const NewPatientSchema = z.object({
   occupation: z.string(),
 });
 
+export const diagnosisSchema = z.object({
+  code: z.string(),
+  name: z.string(),
+  latin: z.string().optional(),
+});
+
 export type PatientData = Omit<Patient, 'ssn' | 'entries'>;
 export type NewPatient = z.infer<typeof NewPatientSchema>;

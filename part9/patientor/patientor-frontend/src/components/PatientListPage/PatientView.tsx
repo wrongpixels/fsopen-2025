@@ -2,6 +2,7 @@ import { Patient, Gender, Entry, Diagnosis } from '../../types';
 import { useMatch } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import patientService from '../../services/patients';
+import diagnosesService from '../../services/diagnoses';
 import FemaleIcon from '@mui/icons-material/Female';
 import MaleIcon from '@mui/icons-material/Male';
 import PersonIcon from '@mui/icons-material/Person';
@@ -17,37 +18,68 @@ const drawIcon = (gender: Gender) => {
   }
 };
 
-const drawDiagnosis = (
-  diagnosis: Array<Diagnosis['code']> | undefined,
-  date: string
-) => {
-  if (!diagnosis || diagnosis.length === 0) {
+interface DiagnosesProps {
+  diagnosisCodes: Array<Diagnosis['code']> | undefined;
+  date: string;
+}
+
+const Diagnoses = (props: DiagnosesProps) => {
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>();
+  useEffect(() => {
+    const getDiagnoses = async () => {
+      const currentDiagnoses: Diagnosis[] = await diagnosesService.getAll();
+      if (currentDiagnoses) {
+        setDiagnoses(currentDiagnoses);
+      }
+    };
+    getDiagnoses();
+  }, []);
+
+  if (!props.diagnosisCodes || props.diagnosisCodes.length === 0) {
     return null;
   }
+
+  if (!diagnoses) {
+    return <>Loading diagnoses...</>;
+  }
+
+  const getDiagnosisFromCode = (code: string): string => {
+    const diagnosis = diagnoses.find((d) => d.code === code);
+    return diagnosis?.name || '';
+  };
+
   return (
     <>
       <h4>Diagnosis:</h4>
       <ul>
-        {diagnosis.map((d, i) => (
-          <li key={`${date}-${d}-${i}`}>{d}</li>
+        {props.diagnosisCodes.map((d, i) => (
+          <li key={`${props.date}-${d}-${i}`}>
+            <b>{d} | </b> <i>{getDiagnosisFromCode(d)}</i>
+          </li>
         ))}
       </ul>
     </>
   );
 };
 
-const drawEntries = (entries: Entry[] | undefined) => {
-  if (!entries || entries.length === 0) {
+interface EntriesProps {
+  entries: Entry[] | undefined;
+}
+
+const Entries = (props: EntriesProps) => {
+  if (!props.entries || props.entries.length === 0) {
     return null;
   }
   return (
     <>
       <h3>Entries</h3>
       <ul>
-        {entries.map((e) => (
+        {props.entries.map((e) => (
           <li key={e.id}>
             <b>{e.date}</b> | <i>{e.description}</i>
-            <div>{drawDiagnosis(e.diagnosisCodes, e.date)}</div>
+            <div>
+              <Diagnoses diagnosisCodes={e.diagnosisCodes} date={e.date} />
+            </div>
           </li>
         ))}
       </ul>
@@ -91,7 +123,7 @@ const PatientView = () => {
       <div>
         <b>Occupation:</b> {patient.occupation}
       </div>
-      <div>{drawEntries(patient.entries)}</div>
+      <Entries entries={patient.entries} />
     </div>
   );
 };
