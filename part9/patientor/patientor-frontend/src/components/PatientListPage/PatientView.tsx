@@ -1,7 +1,21 @@
-import { Patient } from '../../types';
+import { Patient, Gender } from '../../types';
 import { useMatch } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import patientService from '../../services/patients';
+import FemaleIcon from '@mui/icons-material/Female';
+import MaleIcon from '@mui/icons-material/Male';
+import PersonIcon from '@mui/icons-material/Person';
+
+const drawIcon = (gender: Gender) => {
+  switch (gender) {
+    case 'male':
+      return <MaleIcon />;
+    case 'female':
+      return <FemaleIcon />;
+    default:
+      return <PersonIcon />;
+  }
+};
 
 const PatientView = () => {
   const [patient, setPatient] = useState<Patient>();
@@ -29,7 +43,7 @@ const PatientView = () => {
     <div className="App">
       <span>
         <h2>
-          {patient.name} <i>({patient.gender}</i>)
+          {patient.name} ({drawIcon(patient.gender)})
         </h2>
       </span>
       <p>
