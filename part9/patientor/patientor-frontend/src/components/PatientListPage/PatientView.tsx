@@ -9,6 +9,7 @@ import {
 } from '../../types';
 import { useMatch } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import AddEntryForm from './AddEntryForm';
 import patientService from '../../services/patients';
 import diagnosesService from '../../services/diagnoses';
 import HealthRatingBar from '../HealthRatingBar';
@@ -20,6 +21,7 @@ import {
   Person,
   HealthAndSafety,
 } from '@mui/icons-material';
+import { entryStyle, parStyle } from '../../styles';
 
 const drawGenderIcon = (gender: Gender) => {
   switch (gender) {
@@ -102,9 +104,6 @@ const Diagnoses = (props: DiagnosesProps) => {
   );
 };
 
-interface EntriesProps {
-  entries: Entry[] | undefined;
-}
 interface EntryProps {
   entry: Entry;
 }
@@ -190,33 +189,38 @@ const EntryDetails = (props: EntryProps) => {
       return assertNever(props.entry);
   }
 };
-
-const parStyle = { marginTop: '1em', marginBottom: '1em' };
-
-const entryStyle = {
-  border: '2px solid gray',
-  borderRadius: '8px',
-  paddingLeft: '30px',
-  paddingRight: '20px',
-  marginTop: '10px',
-};
-
+interface EntriesProps {
+  patient: Patient;
+}
 const Entries = (props: EntriesProps) => {
-  if (!props.entries || props.entries.length === 0) {
-    return (
-      <>
-        <h3>Entries</h3>
+  const [entries, setEntries] = useState<Entry[]>();
+  useEffect(() => {
+    setEntries(props.patient.entries);
+  }, []);
+
+  const drawEntryForm = (entries: Entry[]) => (
+    <>
+      <h3>Entries</h3>
+      {entries.length === 0 && (
         <p>
           <i>(Patient has no entries.)</i>
         </p>
-      </>
-    );
+      )}
+      <AddEntryForm
+        entries={entries}
+        patientId={props.patient.id}
+        setEntries={setEntries}
+      />
+    </>
+  );
+  if (!entries) {
+    return null;
   }
   return (
     <>
-      <h3>Entries</h3>
+      {drawEntryForm(entries)}
       <div>
-        {props.entries.map((e) => (
+        {entries.map((e) => (
           <div key={e.id} style={entryStyle}>
             <h3>
               {e.date} {drawEntryIcon(e)}
@@ -243,6 +247,7 @@ const Entries = (props: EntriesProps) => {
 
 const PatientView = () => {
   const [patient, setPatient] = useState<Patient>();
+
   const match = useMatch('/patients/:id');
   const id = match?.params.id;
   if (!id) {
@@ -277,7 +282,7 @@ const PatientView = () => {
       <div>
         <b>Occupation:</b> {patient.occupation}
       </div>
-      <Entries entries={patient.entries} />
+      <Entries patient={patient} />
     </div>
   );
 };
