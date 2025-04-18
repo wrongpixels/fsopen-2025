@@ -1,0 +1,47 @@
+
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+  "type": "Hospital",
+  "description": "Routine checkup after surgery",
+  "date": "2024-04-18",
+  "specialist": "Dr. House",
+  "diagnosisCodes": ["M24.2", "M51.2", "S03.5"],
+  "discharge": {
+    "date": "2024-04-19",
+    "criteria": "Patient in stable condition"
+  } 
+}
+
+###
+
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+  "type": "HealthCheck",
+  "description": "Annual physical examination",
+  "date": "2024-04-18",
+  "specialist": "Dr. Wilson",
+  "diagnosisCodes": ["Z00.00", "Z71.3"],
+  "healthCheckRating": 0
+}
+
+###
+
+POST http://localhost:3001/api/patients/d2773336-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+  "type": "OccupationalHealthcare",
+  "description": "Workplace assessment",
+  "date": "2024-04-18",
+  "specialist": "Dr. Cameron",
+  "diagnosisCodes": ["Z56.1", "Z57.1"],
+  "employerName": "FBI",
+  "sickLeave": {
+    "startDate": "2024-04-18",
+    "endDate": "2024-04-25"
+  }
+}

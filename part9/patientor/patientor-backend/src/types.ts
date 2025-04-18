@@ -1,4 +1,4 @@
-import z from 'zod';
+import z, { string } from 'zod';
 export type UnionOmit<T, K extends string | number | symbol> = T extends unknown
   ? Omit<T, K>
   : never;
@@ -34,17 +34,17 @@ export interface BaseEntry {
 }
 export interface HealthCheckEntry extends BaseEntry {
   healthCheckRating: HealthCheckRating;
-  type: 'HealthCheck';
+  type: EntryType.HealthCheck;
 }
 
 export interface OccupationalHealthcareEntry extends BaseEntry {
   employerName: string;
-  type: 'OccupationalHealthcare';
+  type: EntryType.OccupationalHealthcare;
   sickLeave?: SickLeave;
 }
 
 export interface HospitalEntry extends BaseEntry {
-  type: 'Hospital';
+  type: EntryType.Hospital;
   discharge: Discharge;
 }
 
@@ -67,6 +67,12 @@ export enum Gender {
   Female = 'female',
   Other = 'other',
 }
+
+export enum EntryType {
+  Hospital = 'Hospital',
+  OccupationalHealthcare = 'OccupationalHealthcare',
+  HealthCheck = 'HealthCheck',
+}
 export const NewPatientSchema = z.object({
   name: z.string(),
   dateOfBirth: z.string().date(),
@@ -75,11 +81,63 @@ export const NewPatientSchema = z.object({
   occupation: z.string(),
 });
 
-export const diagnosisSchema = z.object({
+export const DiagnosisSchema = z.object({
   code: z.string(),
   name: z.string(),
   latin: z.string().optional(),
 });
 
+const ensureNever = (entry: never) => {
+  throw new Error('Error' + entry);
+};
+
+export const parseNewEntry = (body: unknown): NewEntry => {
+  const entry = NewyEntrySchema.parse(body);
+  console.log('entry is', entry);
+  switch (entry.type) {
+    case EntryType.Hospital:
+      return HospitalEntrySchema.parse(body);
+    case EntryType.HealthCheck:
+      return HealthCheckEntrySchema.parse(body);
+    case EntryType.OccupationalHealthcare:
+      return OccupationaltEntrySchema.parse(body);
+    default:
+      return ensureNever(entry.type);
+  }
+};
+
+const baseEntrySchema = z.object({
+  date: z.string().date(),
+  description: z.string(),
+  specialist: z.string(),
+  diagnosisCodes: z.array(z.string()).optional(),
+});
+
+export const NewyEntrySchema = z.object({
+  type: z.nativeEnum(EntryType),
+});
+
+export const HealthCheckEntrySchema = baseEntrySchema.extend({
+  type: z.literal(EntryType.HealthCheck),
+  healthCheckRating: z.nativeEnum(HealthCheckRating),
+});
+export const HospitalEntrySchema = baseEntrySchema.extend({
+  type: z.literal(EntryType.Hospital),
+  discharge: z.object({ date: z.string().date(), criteria: string() }),
+});
+
+export const OccupationaltEntrySchema = baseEntrySchema.extend({
+  type: z.literal(EntryType.OccupationalHealthcare),
+  employerName: z.string(),
+  sickLeave: z
+    .object({ startDate: string().date(), endDate: string().date() })
+    .optional(),
+});
+
 export type PatientData = Omit<Patient, 'ssn' | 'entries'>;
 export type NewPatient = z.infer<typeof NewPatientSchema>;
+export type NewEntry = z.infer<
+  | typeof HealthCheckEntrySchema
+  | typeof HospitalEntrySchema
+  | typeof OccupationaltEntrySchema
+>;

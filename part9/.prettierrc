@@ -30,6 +30,12 @@
       "options": {
         "parser": "babel"
       }
+    },
+    {
+      "files": ["*.rest", "*.http"],
+      "options": {
+        "parser": "none"
+      }
     }
   ]
 }

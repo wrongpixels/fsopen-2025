@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { Diagnosis } from '../types';
-import { diagnosisSchema } from '../types';
+import { DiagnosisSchema } from '../types';
 import diagnoseService from '../service/diagnoseService';
 import { ZodError } from 'zod';
 
@@ -20,7 +20,7 @@ const newDiagnosisMiddleware = (
   next: NextFunction
 ) => {
   try {
-    req.body = diagnosisSchema.parse(req.body);
+    req.body = DiagnosisSchema.parse(req.body);
   } catch (error) {
     next(error);
   }
