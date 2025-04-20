@@ -5,7 +5,7 @@ import { Button, Divider, Container, Typography } from '@mui/material';
 
 import { apiBaseUrl } from './constants';
 import { Patient } from './types';
-
+import Notification from './components/Notification';
 import patientService from './services/patients';
 import PatientListPage from './components/PatientListPage';
 import PatientView from './components/PatientListPage/PatientView';
@@ -33,6 +33,7 @@ const App = () => {
           <Button component={Link} to="/" variant="contained" color="primary">
             Home
           </Button>
+          <Notification />
           <Divider hidden />
           <Routes>
             <Route

@@ -45,8 +45,15 @@ const ZodErrorHandler = (
   next: NextFunction
 ) => {
   if (error instanceof ZodError) {
-    console.log(error.issues);
-    res.status(400).json({ error: error.issues });
+    const errorDetails = error.issues.map((issue) => ({
+      field: issue.path[0],
+      message: `Error: ${issue.message}'`,
+    }));
+
+    res.status(400).json({
+      error: errorDetails[0].message,
+    });
+    return;
   }
   next(error);
 };
@@ -92,7 +99,6 @@ router.post(
       const id = req.params.id;
       const entry: Entry = patientServices.addPatientEntry(req.body, id);
       res.json(entry);
-      console.log('Received', entry);
     } catch (e) {
       res
         .status(500)

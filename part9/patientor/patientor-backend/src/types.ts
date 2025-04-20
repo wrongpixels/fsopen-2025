@@ -93,7 +93,6 @@ const ensureNever = (entry: never) => {
 
 export const parseNewEntry = (body: unknown): NewEntry => {
   const entry = NewyEntrySchema.parse(body);
-  console.log('entry is', entry);
   switch (entry.type) {
     case EntryType.Hospital:
       return HospitalEntrySchema.parse(body);
@@ -107,9 +106,9 @@ export const parseNewEntry = (body: unknown): NewEntry => {
 };
 
 const baseEntrySchema = z.object({
+  description: z.string().min(1, 'Description cannot be empty'),
   date: z.string().date(),
-  description: z.string(),
-  specialist: z.string(),
+  specialist: z.string().min(1, 'Specialist cannot be empty'),
   diagnosisCodes: z.array(z.string()).optional(),
 });
 

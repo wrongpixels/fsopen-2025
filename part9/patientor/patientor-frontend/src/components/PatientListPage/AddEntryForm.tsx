@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Button, Input } from '@mui/material';
 import { Entry, EntryFormValues } from '../../types';
 import { newEntryStyle, parStyle } from '../../styles';
+import { useNotification } from '../../context/NotificationContext';
+import { AxiosError } from 'axios';
 
 interface Props {
   entries: Entry[];
@@ -12,10 +14,11 @@ interface Props {
 }
 
 interface EntryFormProps {
-  addEntry: (addEntry: EntryFormValues) => void;
+  addEntry: (addEntry: EntryFormValues) => Promise<void>;
 }
 
 const NewEntryForm = ({ addEntry }: EntryFormProps) => {
+  const { showError } = useNotification();
   const descField = useInputField({ placeholder: 'Description' });
   const dateField = useInputField({ type: 'date', placeholder: 'Date' });
   const specialistField = useInputField({ placeholder: 'Specialist' });
@@ -25,15 +28,22 @@ const NewEntryForm = ({ addEntry }: EntryFormProps) => {
   });
   const diagnosisField = useInputField({ placeholder: 'Diagnosis' });
 
-  const handleAddEntry = (e: React.SyntheticEvent) => {
+  const handleAddEntry = async (e: React.SyntheticEvent) => {
     e.preventDefault();
+    if (!healthRatingField.value) {
+      showError('Health rating is required');
+      return;
+    }
     try {
-      addEntry({
+      await addEntry({
         description: descField.value,
         date: dateField.value,
         specialist: specialistField.value,
         healthCheckRating: Number(healthRatingField.value),
-        diagnosisCodes: diagnosisField.value.split(', '),
+        diagnosisCodes:
+          diagnosisField.value.trim().length > 0
+            ? diagnosisField.value.split(', ')
+            : undefined,
         type: 'HealthCheck',
       });
       descField.clean();
@@ -41,7 +51,11 @@ const NewEntryForm = ({ addEntry }: EntryFormProps) => {
       specialistField.clean();
       healthRatingField.clean();
       diagnosisField.clean();
-    } catch (e: unknown) {}
+    } catch (e: unknown) {
+      const errorMessage =
+        e instanceof AxiosError ? e.response?.data.error : 'Error adding Entry';
+      showError(errorMessage);
+    }
   };
 
   return (

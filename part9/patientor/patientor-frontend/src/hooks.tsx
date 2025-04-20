@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 const useDefaultField = () => {
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState<string>('');
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setValue(e.target.value);
   const clean = () => setValue('');
