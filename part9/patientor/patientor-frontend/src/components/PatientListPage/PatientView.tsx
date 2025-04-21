@@ -6,6 +6,7 @@ import {
   HospitalEntry,
   HealthCheckEntry,
   OccupationalHealthcareEntry,
+  EntryType,
 } from '../../types';
 import { useMatch } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -22,6 +23,7 @@ import {
   HealthAndSafety,
 } from '@mui/icons-material';
 import { entryStyle, parStyle } from '../../styles';
+import { assertNever } from '../../utils';
 
 const drawGenderIcon = (gender: Gender) => {
   switch (gender) {
@@ -36,19 +38,19 @@ const drawGenderIcon = (gender: Gender) => {
 
 const drawEntryIcon = (entry: Entry) => {
   switch (entry.type) {
-    case 'Hospital':
+    case EntryType.Hospital:
       return (
         <>
           | <LocalHospital /> <i>Hospital</i>
         </>
       );
-    case 'OccupationalHealthcare':
+    case EntryType.OccupationalHealthcare:
       return (
         <>
           | <Work /> <i>Occ. Healthcare</i>
         </>
       );
-    case 'HealthCheck':
+    case EntryType.HealthCheck:
       return (
         <>
           | <HealthAndSafety /> <i>Health Check</i>
@@ -117,10 +119,6 @@ interface OccupationalHealthcareEntryProps {
   entry: OccupationalHealthcareEntry;
 }
 
-const assertNever = (entry: never) => {
-  throw new Error(entry);
-};
-
 const HospitalEntryComp = ({ entry }: HospitalEntryProps) => {
   return (
     <div style={parStyle}>
@@ -179,11 +177,11 @@ const OccupationalHealthcareEntryComp = ({
 
 const EntryDetails = (props: EntryProps) => {
   switch (props.entry.type) {
-    case 'Hospital':
+    case EntryType.Hospital:
       return <HospitalEntryComp entry={props.entry} />;
-    case 'HealthCheck':
+    case EntryType.HealthCheck:
       return <HealthCheckEntryComp entry={props.entry} />;
-    case 'OccupationalHealthcare':
+    case EntryType.OccupationalHealthcare:
       return <OccupationalHealthcareEntryComp entry={props.entry} />;
     default:
       return assertNever(props.entry);

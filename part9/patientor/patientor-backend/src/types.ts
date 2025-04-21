@@ -122,14 +122,20 @@ export const HealthCheckEntrySchema = baseEntrySchema.extend({
 });
 export const HospitalEntrySchema = baseEntrySchema.extend({
   type: z.literal(EntryType.Hospital),
-  discharge: z.object({ date: z.string().date(), criteria: string() }),
+  discharge: z.object({
+    date: z.string().date(),
+    criteria: string().min(1, 'Criteria cannot be empty'),
+  }),
 });
 
 export const OccupationaltEntrySchema = baseEntrySchema.extend({
   type: z.literal(EntryType.OccupationalHealthcare),
-  employerName: z.string(),
+  employerName: z.string().min(1, 'Employer name cannot be empty'),
   sickLeave: z
-    .object({ startDate: string().date(), endDate: string().date() })
+    .object({
+      startDate: string().date().optional(),
+      endDate: string().date().optional(),
+    })
     .optional(),
 });
 

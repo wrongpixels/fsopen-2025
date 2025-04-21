@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-const useDefaultField = () => {
-  const [value, setValue] = useState<string>('');
+const useDefaultField = (defOption: string = '') => {
+  const [value, setValue] = useState<string>(defOption);
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setValue(e.target.value);
   const clean = () => setValue('');
@@ -15,15 +15,34 @@ interface fieldData {
   label?: string;
 }
 
-export const useInputField = (data: fieldData) => {
+export interface InputField {
+  value: string;
+  field: JSX.Element;
+  props: {
+    name?: string;
+    type?: string | 'text';
+    placeholder?: string;
+    label?: string;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  };
+  setValue: React.Dispatch<React.SetStateAction<string>>;
+  clean: () => void;
+}
+
+export const useInputField = (data: fieldData): InputField => {
   const { value, onChange, clean, setValue } = useDefaultField();
   const props = { value, onChange, ...data };
   const field = <input {...props} />;
   return { value, field, props, setValue, clean };
 };
 
-export const useRadioButtonField = (name: string, options: string[]) => {
-  const { value, onChange, clean, setValue } = useDefaultField();
+export const useRadioButtonField = (
+  name: string,
+  options: string[],
+  defOption: string = ''
+) => {
+  const { value, onChange, clean, setValue } = useDefaultField(defOption);
   const field = options.map((p, i) => (
     <span key={`radio${name}${i}`}>
       <input
