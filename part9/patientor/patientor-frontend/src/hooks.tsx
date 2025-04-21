@@ -1,3 +1,4 @@
+import { Input } from '@mui/material';
 import { useState } from 'react';
 
 const useDefaultField = (defOption: string = '') => {
@@ -56,4 +57,33 @@ export const useRadioButtonField = (
     </span>
   ));
   return { value, field, setValue, clean };
+};
+
+export const useDefaultFields = () => {
+  const descField = useInputField({ placeholder: 'Description' });
+  const dateField = useInputField({ type: 'date', placeholder: 'Date' });
+  const specialistField = useInputField({ placeholder: 'Specialist' });
+  const diagnosisField = useInputField({ placeholder: 'Diagnosis' });
+
+  const drawForm = () => (
+    <>
+      <div>
+        <b>Description: </b>
+        <Input {...descField.props} />
+      </div>
+      <div>
+        <b>Date: </b>
+        <Input {...dateField.props} />
+      </div>
+      <div>
+        <b>Specialist: </b>
+        <Input {...specialistField.props} />
+      </div>
+      <div>
+        <b>Diagnosis codes: </b>
+        <Input {...diagnosisField.props} />
+      </div>
+    </>
+  );
+  return { dateField, descField, specialistField, diagnosisField, drawForm };
 };

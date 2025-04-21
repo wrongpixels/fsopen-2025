@@ -1,3 +1,4 @@
+import { InputField } from './hooks';
 import { EntryType } from './types';
 
 export const splitCamelCase = (str: string) => {
@@ -20,6 +21,9 @@ export const getEntryTypeFromString = (str: string): EntryType => {
       throw new Error(`${str} is not a valid Entry Type`);
   }
 };
+
+export const cleanFields = (fields: InputField[]) =>
+  fields.forEach((f) => f.clean());
 
 export const getStringNameFromType = (type: EntryType): string => {
   switch (type) {
