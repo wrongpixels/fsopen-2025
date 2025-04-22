@@ -65,30 +65,20 @@ const drawEntryIcon = (entry: Entry) => {
 interface DiagnosesProps {
   diagnosisCodes: Array<Diagnosis['code']> | undefined;
   date: string;
+  diagnoses: Diagnosis[] | undefined;
 }
 
 const Diagnoses = (props: DiagnosesProps) => {
-  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>();
-  useEffect(() => {
-    const getDiagnoses = async () => {
-      const currentDiagnoses: Diagnosis[] = await diagnosesService.getAll();
-      if (currentDiagnoses) {
-        setDiagnoses(currentDiagnoses);
-      }
-    };
-    getDiagnoses();
-  }, []);
-
   if (!props.diagnosisCodes || props.diagnosisCodes.length === 0) {
     return null;
   }
 
-  if (!diagnoses) {
+  if (props.diagnoses === undefined) {
     return <>Loading diagnoses...</>;
   }
 
   const getDiagnosisFromCode = (code: string): string => {
-    const diagnosis = diagnoses.find((d) => d.code === code);
+    const diagnosis = props.diagnoses?.find((d) => d.code === code);
     return diagnosis?.name || '';
   };
 
@@ -192,9 +182,17 @@ interface EntriesProps {
 }
 const Entries = (props: EntriesProps) => {
   const [entries, setEntries] = useState<Entry[]>();
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
   useEffect(() => {
+    const getDiagnoses = async () => {
+      const currentDiagnoses: Diagnosis[] = await diagnosesService.getAll();
+      if (currentDiagnoses) {
+        setDiagnoses(currentDiagnoses);
+      }
+    };
+    getDiagnoses();
     setEntries(props.patient.entries);
-  }, []);
+  }, [props.patient.entries]);
 
   const drawEntryForm = (entries: Entry[]) => (
     <>
@@ -208,6 +206,7 @@ const Entries = (props: EntriesProps) => {
         entries={entries}
         patientId={props.patient.id}
         setEntries={setEntries}
+        diagnoses={diagnoses}
       />
     </>
   );
@@ -227,7 +226,11 @@ const Entries = (props: EntriesProps) => {
               <i>{e.description}</i>
             </div>
             <div>
-              <Diagnoses diagnosisCodes={e.diagnosisCodes} date={e.date} />
+              <Diagnoses
+                diagnosisCodes={e.diagnosisCodes}
+                date={e.date}
+                diagnoses={diagnoses}
+              />
             </div>
             <div>
               <EntryDetails entry={e} />
@@ -245,12 +248,9 @@ const Entries = (props: EntriesProps) => {
 
 const PatientView = () => {
   const [patient, setPatient] = useState<Patient>();
-
   const match = useMatch('/patients/:id');
+
   const id = match?.params.id;
-  if (!id) {
-    return <>No valid id!</>;
-  }
 
   useEffect(() => {
     const getPatient = async () => {
@@ -261,6 +261,10 @@ const PatientView = () => {
     };
     getPatient();
   }, [id]);
+
+  if (!id) {
+    return <>No valid id!</>;
+  }
 
   if (!patient) {
     return <>Loading...</>;

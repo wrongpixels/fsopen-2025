@@ -4,6 +4,11 @@ export type UnionOmit<T, K extends string | number | symbol> = T extends unknown
   ? Omit<T, K>
   : never;
 
+export interface Notification {
+  message: string;
+  isError: boolean;
+}
+
 export interface Diagnosis {
   code: string;
   name: string;
@@ -14,7 +19,6 @@ export interface DefaultFields {
   dateField: InputField;
   descField: InputField;
   specialistField: InputField;
-  diagnosisField: InputField;
   drawForm: () => JSX.Element;
   cleanAll: () => void;
   baseEntryData: {

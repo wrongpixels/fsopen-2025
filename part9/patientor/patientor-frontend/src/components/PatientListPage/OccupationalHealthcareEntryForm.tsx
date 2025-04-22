@@ -1,7 +1,6 @@
 import { Button, Input } from '@mui/material';
-import { useInputField } from '../../hooks';
+import { useInputField, useNotification } from '../../hooks';
 import { EntryFormValues, EntryProps, EntryType } from '../../types';
-import { useNotification } from '../../context/NotificationContext';
 import { parStyle } from '../../styles';
 import { manageEntryErrors } from '../../utils';
 

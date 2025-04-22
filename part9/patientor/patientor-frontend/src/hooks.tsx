@@ -1,6 +1,28 @@
-import { Input } from '@mui/material';
-import { useState } from 'react';
-import { DefaultFields } from './types';
+import { Input, MenuItem, Select, SelectChangeEvent } from '@mui/material';
+import { useContext, useState } from 'react';
+import { DefaultFields, Diagnosis, Notification } from './types';
+import NotificationContext from './context/NotificationContext';
+
+export const useNotification = () => {
+  const { notification, setNotification, currentTimeout, setCurrentTimeout } =
+    useContext(NotificationContext);
+  const clearNotification = () =>
+    newNotification({ message: '', isError: false });
+  const newNotification = (not: Notification) => {
+    if (currentTimeout) {
+      clearTimeout(currentTimeout);
+    }
+    setNotification(not);
+    if (not.message) {
+      setCurrentTimeout(setTimeout(() => clearNotification(), 5000));
+    }
+  };
+  const showError = (message: string) =>
+    newNotification({ message, isError: true });
+  const showNotification = (message: string) =>
+    newNotification({ message, isError: false });
+  return { notification, showError, showNotification };
+};
 
 const useDefaultField = (defOption: string = '') => {
   const [value, setValue] = useState<string>(defOption);
@@ -60,11 +82,17 @@ export const useRadioButtonField = (
   return { value, field, setValue, clean };
 };
 
-export const useDefaultFields = (): DefaultFields => {
+export const useDefaultFields = (diagnoses: Diagnosis[]): DefaultFields => {
   const descField = useInputField({ placeholder: 'Description' });
   const dateField = useInputField({ type: 'date', placeholder: 'Date' });
   const specialistField = useInputField({ placeholder: 'Specialist' });
-  const diagnosisField = useInputField({ placeholder: 'Diagnosis' });
+  const [selectedDiagnoses, setSelectedDiagnoses] = useState<Array<string>>([]);
+
+  const onChange = (event: SelectChangeEvent<string[]>) => {
+    if (Array.isArray(event.target.value)) {
+      setSelectedDiagnoses(event.target.value);
+    }
+  };
 
   const drawForm = () => (
     <>
@@ -82,7 +110,15 @@ export const useDefaultFields = (): DefaultFields => {
       </div>
       <div>
         <b>Diagnosis codes: </b>
-        <Input {...diagnosisField.props} />
+        {diagnoses && (
+          <Select multiple value={selectedDiagnoses} onChange={onChange}>
+            {diagnoses.map((c) => (
+              <MenuItem key={c.code} value={c.code}>
+                {c.code}
+              </MenuItem>
+            ))}
+          </Select>
+        )}
       </div>
     </>
   );
@@ -90,22 +126,18 @@ export const useDefaultFields = (): DefaultFields => {
     dateField.clean();
     descField.clean();
     specialistField.clean();
-    diagnosisField.clean();
+    setSelectedDiagnoses([]);
   };
   const baseEntryData = {
     description: descField.value,
     date: dateField.value,
     specialist: specialistField.value,
-    diagnosisCodes:
-      diagnosisField.value.trim().length > 0
-        ? diagnosisField.value.split(', ')
-        : undefined,
+    diagnosisCodes: selectedDiagnoses,
   };
   return {
     dateField,
     descField,
     specialistField,
-    diagnosisField,
     drawForm,
     cleanAll,
     baseEntryData,

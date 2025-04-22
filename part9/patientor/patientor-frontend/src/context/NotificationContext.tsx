@@ -1,9 +1,5 @@
-import { createContext, useContext, useState } from 'react';
-
-interface Notification {
-  message: string;
-  isError: boolean;
-}
+import { createContext, useState } from 'react';
+import { Notification } from '../types';
 
 interface ContextType {
   notification: Notification;
@@ -18,27 +14,6 @@ const NotificationContext = createContext<ContextType>({
   currentTimeout: NaN,
   setCurrentTimeout: () => {},
 });
-
-export const useNotification = () => {
-  const { notification, setNotification, currentTimeout, setCurrentTimeout } =
-    useContext(NotificationContext);
-  const clearNotification = () =>
-    newNotification({ message: '', isError: false });
-  const newNotification = (not: Notification) => {
-    if (currentTimeout) {
-      clearTimeout(currentTimeout);
-    }
-    setNotification(not);
-    if (not.message) {
-      setCurrentTimeout(setTimeout(() => clearNotification(), 5000));
-    }
-  };
-  const showError = (message: string) =>
-    newNotification({ message, isError: true });
-  const showNotification = (message: string) =>
-    newNotification({ message, isError: false });
-  return { notification, showError, showNotification };
-};
 
 export const NotificationContextProvider = ({
   children,
@@ -62,3 +37,4 @@ export const NotificationContextProvider = ({
     </NotificationContext.Provider>
   );
 };
+export default NotificationContext;

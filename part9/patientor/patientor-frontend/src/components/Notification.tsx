@@ -1,4 +1,4 @@
-import { useNotification } from '../context/NotificationContext';
+import { useNotification } from '../hooks';
 import { Alert } from '@mui/material';
 
 const Notification = () => {

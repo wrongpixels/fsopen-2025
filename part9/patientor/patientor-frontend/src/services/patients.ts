@@ -9,7 +9,10 @@ const getAll = async () => {
   return data;
 };
 
-const getById = async (id: string) => {
+const getById = async (id: string | undefined) => {
+  if (!id) {
+    return null;
+  }
   const { data } = await axios.get<Patient>(`${apiBaseUrl}/patients/${id}`);
   return data;
 };

@@ -2,7 +2,13 @@ import { useRadioButtonField, useDefaultFields } from '../../hooks';
 import patientService from '../../services/patients';
 import { useEffect, useState } from 'react';
 import { Button } from '@mui/material';
-import { DefaultFields, Entry, EntryFormValues, EntryType } from '../../types';
+import {
+  DefaultFields,
+  Diagnosis,
+  Entry,
+  EntryFormValues,
+  EntryType,
+} from '../../types';
 import { newEntryStyle } from '../../styles';
 import {
   assertNever,
@@ -17,8 +23,9 @@ interface Props {
   entries: Entry[];
   patientId: string;
   setEntries: React.Dispatch<React.SetStateAction<Entry[] | undefined>>;
+  diagnoses: Diagnosis[];
 }
-const AddEntryForm = ({ entries, patientId, setEntries }: Props) => {
+const AddEntryForm = ({ entries, patientId, setEntries, diagnoses }: Props) => {
   const [visible, setVisible] = useState(false);
   const addEntry = async (entry: EntryFormValues) => {
     const newEntry = await patientService.addEntry(entry, patientId);
@@ -27,7 +34,7 @@ const AddEntryForm = ({ entries, patientId, setEntries }: Props) => {
 
   return (
     <>
-      {visible && <NewEntryForm addEntry={addEntry} />}
+      {visible && <NewEntryForm addEntry={addEntry} diagnoses={diagnoses} />}
       <Button
         variant="contained"
         color={visible ? 'error' : 'success'}
@@ -41,10 +48,11 @@ const AddEntryForm = ({ entries, patientId, setEntries }: Props) => {
 
 interface EntryFormProps {
   addEntry: (addEntry: EntryFormValues) => Promise<void>;
+  diagnoses: Diagnosis[];
 }
 
-const NewEntryForm = ({ addEntry }: EntryFormProps) => {
-  const defaultFields = useDefaultFields();
+const NewEntryForm = ({ addEntry, diagnoses }: EntryFormProps) => {
+  const defaultFields = useDefaultFields(diagnoses);
   const entryTypeField = useRadioButtonField(
     'entryType',
     Object.values(EntryType).map((e) => getStringNameFromType(e)),
