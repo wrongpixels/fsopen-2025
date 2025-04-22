@@ -1,3 +1,3 @@
-# Patientor Frontend
+# Flight Diary Frontend
 
 Frontend exercises in TypeScript
