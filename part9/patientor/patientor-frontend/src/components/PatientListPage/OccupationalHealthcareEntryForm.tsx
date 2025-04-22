@@ -5,29 +5,36 @@ import { useNotification } from '../../context/NotificationContext';
 import { parStyle } from '../../styles';
 import { manageEntryErrors } from '../../utils';
 
-const HospitalEntryForm = ({ addEntry, defaultFields }: EntryProps) => {
-  const dischargeDateField = useInputField({
-    type: 'date',
-    placeholder: 'Date',
-  });
-  const dischargeCriteriaField = useInputField({ placeholder: 'Criteria' });
+const OccupationalHealthcare = ({ addEntry, defaultFields }: EntryProps) => {
   const { showError } = useNotification();
+  const employerField = useInputField({ placeholder: 'Employer' });
+  const sickLeaveStartField = useInputField({
+    type: 'date',
+    placeholder: 'Started',
+  });
+  const sickLeaveEndField = useInputField({
+    type: 'date',
+    placeholder: 'Ended',
+  });
+
   const handleAddEntry = async (e: React.SyntheticEvent) => {
     e.preventDefault();
 
     try {
       const entryData: EntryFormValues = {
         ...defaultFields.baseEntryData,
-        type: EntryType.Hospital,
-        discharge: {
-          date: dischargeDateField.value,
-          criteria: dischargeCriteriaField.value,
+        type: EntryType.OccupationalHealthcare,
+        employerName: employerField.value,
+        sickLeave: {
+          startDate: sickLeaveStartField.value,
+          endDate: sickLeaveEndField.value,
         },
       };
       await addEntry(entryData);
       defaultFields.cleanAll();
-      dischargeDateField.clean();
-      dischargeCriteriaField.clean();
+      employerField.clean();
+      sickLeaveEndField.clean();
+      sickLeaveStartField.clean();
     } catch (e: unknown) {
       showError(manageEntryErrors(e));
     }
@@ -36,18 +43,18 @@ const HospitalEntryForm = ({ addEntry, defaultFields }: EntryProps) => {
     <>
       <form onSubmit={handleAddEntry}>
         {defaultFields.drawForm()}
+        <b>Employer: </b> <Input {...employerField.props} />
         <p>
-          <b>Discharge data:</b>
+          <b>Sick Leave Data:</b>
         </p>
         <ul>
           <li>
-            <b>Date: </b>
-            <Input {...dischargeDateField.props} />
+            <b>Started: </b>
+            <Input {...sickLeaveStartField.props} />
           </li>
           <div>
             <li>
-              <b>Criteria: </b>
-              <Input {...dischargeCriteriaField.props} />
+              <b>Ended: </b> <Input {...sickLeaveEndField.props} />
             </li>
           </div>
         </ul>
@@ -64,4 +71,4 @@ const HospitalEntryForm = ({ addEntry, defaultFields }: EntryProps) => {
   );
 };
 
-export default HospitalEntryForm;
+export default OccupationalHealthcare;

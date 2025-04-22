@@ -1,5 +1,6 @@
 import { Input } from '@mui/material';
 import { useState } from 'react';
+import { DefaultFields } from './types';
 
 const useDefaultField = (defOption: string = '') => {
   const [value, setValue] = useState<string>(defOption);
@@ -59,7 +60,7 @@ export const useRadioButtonField = (
   return { value, field, setValue, clean };
 };
 
-export const useDefaultFields = () => {
+export const useDefaultFields = (): DefaultFields => {
   const descField = useInputField({ placeholder: 'Description' });
   const dateField = useInputField({ type: 'date', placeholder: 'Date' });
   const specialistField = useInputField({ placeholder: 'Specialist' });
@@ -85,5 +86,28 @@ export const useDefaultFields = () => {
       </div>
     </>
   );
-  return { dateField, descField, specialistField, diagnosisField, drawForm };
+  const cleanAll = () => {
+    dateField.clean();
+    descField.clean();
+    specialistField.clean();
+    diagnosisField.clean();
+  };
+  const baseEntryData = {
+    description: descField.value,
+    date: dateField.value,
+    specialist: specialistField.value,
+    diagnosisCodes:
+      diagnosisField.value.trim().length > 0
+        ? diagnosisField.value.split(', ')
+        : undefined,
+  };
+  return {
+    dateField,
+    descField,
+    specialistField,
+    diagnosisField,
+    drawForm,
+    cleanAll,
+    baseEntryData,
+  };
 };

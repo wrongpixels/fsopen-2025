@@ -1,3 +1,5 @@
+import { InputField } from './hooks';
+
 export type UnionOmit<T, K extends string | number | symbol> = T extends unknown
   ? Omit<T, K>
   : never;
@@ -6,6 +8,26 @@ export interface Diagnosis {
   code: string;
   name: string;
   latin?: string;
+}
+
+export interface DefaultFields {
+  dateField: InputField;
+  descField: InputField;
+  specialistField: InputField;
+  diagnosisField: InputField;
+  drawForm: () => JSX.Element;
+  cleanAll: () => void;
+  baseEntryData: {
+    description: string;
+    date: string;
+    specialist: string;
+    diagnosisCodes?: string[];
+  };
+}
+
+export interface EntryProps {
+  addEntry: (entry: EntryFormValues) => Promise<void>;
+  defaultFields: DefaultFields;
 }
 
 export type Entry =

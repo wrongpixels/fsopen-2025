@@ -5,29 +5,28 @@ import { useNotification } from '../../context/NotificationContext';
 import { parStyle } from '../../styles';
 import { manageEntryErrors } from '../../utils';
 
-const HospitalEntryForm = ({ addEntry, defaultFields }: EntryProps) => {
-  const dischargeDateField = useInputField({
-    type: 'date',
-    placeholder: 'Date',
-  });
-  const dischargeCriteriaField = useInputField({ placeholder: 'Criteria' });
+const HealthCheckEntryForm = ({ addEntry, defaultFields }: EntryProps) => {
   const { showError } = useNotification();
+  const healthRatingField = useInputField({
+    placeholder: 'Health rating',
+    type: 'number',
+  });
   const handleAddEntry = async (e: React.SyntheticEvent) => {
     e.preventDefault();
+    if (!healthRatingField.value) {
+      showError('A Health Check Rating value is required.');
+      return;
+    }
 
     try {
       const entryData: EntryFormValues = {
         ...defaultFields.baseEntryData,
-        type: EntryType.Hospital,
-        discharge: {
-          date: dischargeDateField.value,
-          criteria: dischargeCriteriaField.value,
-        },
+        type: EntryType.HealthCheck,
+        healthCheckRating: Number(healthRatingField.value),
       };
       await addEntry(entryData);
       defaultFields.cleanAll();
-      dischargeDateField.clean();
-      dischargeCriteriaField.clean();
+      healthRatingField.clean();
     } catch (e: unknown) {
       showError(manageEntryErrors(e));
     }
@@ -36,21 +35,9 @@ const HospitalEntryForm = ({ addEntry, defaultFields }: EntryProps) => {
     <>
       <form onSubmit={handleAddEntry}>
         {defaultFields.drawForm()}
-        <p>
-          <b>Discharge data:</b>
-        </p>
-        <ul>
-          <li>
-            <b>Date: </b>
-            <Input {...dischargeDateField.props} />
-          </li>
-          <div>
-            <li>
-              <b>Criteria: </b>
-              <Input {...dischargeCriteriaField.props} />
-            </li>
-          </div>
-        </ul>
+        <div>
+          <b>Health Check Rating: </b> <Input {...healthRatingField.props} />
+        </div>
         <Button
           type="submit"
           variant="contained"
@@ -64,4 +51,4 @@ const HospitalEntryForm = ({ addEntry, defaultFields }: EntryProps) => {
   );
 };
 
-export default HospitalEntryForm;
+export default HealthCheckEntryForm;

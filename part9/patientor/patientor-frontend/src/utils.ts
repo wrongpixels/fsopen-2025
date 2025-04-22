@@ -1,3 +1,4 @@
+import { AxiosError } from 'axios';
 import { InputField } from './hooks';
 import { EntryType } from './types';
 
@@ -7,6 +8,16 @@ export const splitCamelCase = (str: string) => {
 
 export const assertNever = (entry: never) => {
   throw new Error(entry);
+};
+
+export const manageEntryErrors = (e: unknown): string => {
+  const errorMessage =
+    e instanceof AxiosError
+      ? e.response?.data.error
+      : e instanceof Error
+      ? e.message
+      : 'Error adding Entry';
+  return errorMessage;
 };
 
 export const getEntryTypeFromString = (str: string): EntryType => {

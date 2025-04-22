@@ -21,8 +21,8 @@ export interface Discharge {
 }
 
 export interface SickLeave {
-  startDate: string;
-  endDate: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 export interface BaseEntry {
@@ -92,14 +92,14 @@ const ensureNever = (entry: never) => {
 };
 
 export const parseNewEntry = (body: unknown): NewEntry => {
-  const entry = NewyEntrySchema.parse(body);
+  const entry = NewEntrySchema.parse(body);
   switch (entry.type) {
     case EntryType.Hospital:
       return HospitalEntrySchema.parse(body);
     case EntryType.HealthCheck:
       return HealthCheckEntrySchema.parse(body);
     case EntryType.OccupationalHealthcare:
-      return OccupationaltEntrySchema.parse(body);
+      return OccupationalEntrySchema.parse(body);
     default:
       return ensureNever(entry.type);
   }
@@ -112,7 +112,7 @@ const baseEntrySchema = z.object({
   diagnosisCodes: z.array(z.string()).optional(),
 });
 
-export const NewyEntrySchema = z.object({
+export const NewEntrySchema = z.object({
   type: z.nativeEnum(EntryType),
 });
 
@@ -128,15 +128,21 @@ export const HospitalEntrySchema = baseEntrySchema.extend({
   }),
 });
 
-export const OccupationaltEntrySchema = baseEntrySchema.extend({
+export const OccupationalEntrySchema = baseEntrySchema.extend({
   type: z.literal(EntryType.OccupationalHealthcare),
   employerName: z.string().min(1, 'Employer name cannot be empty'),
   sickLeave: z
     .object({
-      startDate: string().date().optional(),
-      endDate: string().date().optional(),
+      startDate: string().date().or(z.literal('')).optional(),
+      endDate: string().date().or(z.literal('')).optional(),
     })
-    .optional(),
+    .optional()
+    .refine((data) => {
+      if (!data) {
+        return true;
+      }
+      return data.startDate && data.endDate;
+    }, `A valid start date and end date are required`),
 });
 
 export type PatientData = Omit<Patient, 'ssn' | 'entries'>;
@@ -144,5 +150,5 @@ export type NewPatient = z.infer<typeof NewPatientSchema>;
 export type NewEntry = z.infer<
   | typeof HealthCheckEntrySchema
   | typeof HospitalEntrySchema
-  | typeof OccupationaltEntrySchema
+  | typeof OccupationalEntrySchema
 >;
