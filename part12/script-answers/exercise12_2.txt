@@ -1,0 +1,37 @@
+Script started on 2025-04-30 13:44:57+02:00 [TERM="xterm-256color" TTY="/dev/pts/4" COLUMNS="124" LINES="18"]
+[?2004h]0;kevapaereo@Sarriko: /mnt/c/Users/Desktop Win10[01;32mkevapaereo@Sarriko[00m:[01;34m/mnt/c/Users/Desktop Win10[00m$ ^[[K[7mdocker container run hello-world[27m
+[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[Cdocker container run hello-world
+[K[A[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C[C
+[?2004l
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+
+To generate this message, Docker took the following steps:
+ 1. The Docker client contacted the Docker daemon.
+ 2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
+    (amd64)
+ 3. The Docker daemon created a new container from that image which runs the
+    executable that produces the output you are currently reading.
+ 4. The Docker daemon streamed that output to the Docker client, which sent it
+    to your terminal.
+
+To try something more ambitious, you can run an Ubuntu container with:
+ $ docker run -it ubuntu bash
+
+Share images, automate workflows, and more with a free Docker ID:
+ https://hub.docker.com/
+
+For more examples and ideas, visit:
+ https://docs.docker.com/get-started/
+
+[?2004h]0;kevapaereo@Sarriko: /mnt/c/Users/Desktop Win10[01;32mkevapaereo@Sarriko[00m:[01;34m/mnt/c/Users/Desktop Win10[00m$ [7mdocker run -it ubuntu bash[27mdocker run -it ubuntu bash
+[?2004l[?2004h]0;root@5d0f580cbe12: /root@5d0f580cbe12:/# [7mmkdir -p /usr/src/app[27m
+[Aroot@5d0f580cbe12:/# mkdir -p /usr/src/app
+[K[Aroot@5d0f580cbe12:/# mkdir -p /usr/src/app
+[?2004l[?2004h]0;root@5d0f580cbe12: /root@5d0f580cbe12:/# [7mtouch /usr/src/app/index.js[27mtouch /usr/src/app/index.js
+[?2004l[?2004h]0;root@5d0f580cbe12: /root@5d0f580cbe12:/# [Kexit
+[?2004lexit
+[?2004h]0;kevapaereo@Sarriko: /mnt/c/Users/Desktop Win10[01;32mkevapaereo@Sarriko[00m:[01;34m/mnt/c/Users/Desktop Win10[00m$ exit
+[?2004lexit
+
+Script done on 2025-04-30 13:46:43+02:00 [COMMAND_EXIT_CODE="0"]
