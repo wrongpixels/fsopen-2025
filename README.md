@@ -19,7 +19,7 @@ Submissions for the Full Stack Open course.
 
 - ✅ [_Part 8: GraphQL_](./part8)
 - ✅ [_Part 9: TypeScript_](./part9)
-- ⌛ [_Part 10: React Native_](./part10)
+- _Part 10: React Native_
 - ✅ [_Part 11: CI/CD_](https://github.com/wrongpixels/full-stack-open-pokedex)
 - ⌛ [_Part 12: Containers_](./part12)
 - _Part 13: Using relational databases_
