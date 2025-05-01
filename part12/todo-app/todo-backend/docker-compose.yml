@@ -1,0 +1,6 @@
+services:
+  app:
+    build: .
+    image: todo-express-backend
+    ports:
+      - 3000:3000
