@@ -6,3 +6,11 @@ Content-Type: application/json
     "text": "New todo",
     "done": false
 }
+
+### Put TODO
+PUT http://localhost:3000/todos/68152e9909bf475e4dd861e0
+Content-Type: application/json
+
+{
+  "text": "Try Put"
+}
