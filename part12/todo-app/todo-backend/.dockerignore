@@ -2,3 +2,4 @@
 node_modules
 Dockerfile
 .gitignore
+mongo_data/
