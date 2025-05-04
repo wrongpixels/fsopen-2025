@@ -13,7 +13,7 @@ const TodoList = ({ todos, deleteTodo, completeTodo }) => {
     <>
       {todos.map((todo, i) => (
        
-        <span key={`${i}${todo.text}`}> <hr />
+        <span key={`${todo._id}`}> <hr />
           <Todo todo={todo} onClickDelete={onClickDelete} onClickComplete={onClickComplete} />
         </span>
       ))}
