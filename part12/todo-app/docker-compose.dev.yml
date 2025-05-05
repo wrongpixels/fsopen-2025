@@ -1,0 +1,22 @@
+services:
+  frontend:
+    image: todo-frontend-dev
+    ports:
+      - 5173:5173
+    volumes:
+      - ./todo-frontend:/usr/src/app
+      - node_modules:/usr/src/app/node_modules      
+    container_name: todo-frontend-dev
+  
+  nginx:
+    image: nginx:1.20.1
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - 3000:80
+    container_name: reverse-proxy
+    depends_on:
+      - frontend
+
+volumes:
+  node_modules:

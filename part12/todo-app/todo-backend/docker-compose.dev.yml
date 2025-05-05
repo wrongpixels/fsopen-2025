@@ -32,10 +32,13 @@ services:
       - ./:/usr/src/app
       - node_modules:/usr/src/app/node_modules
     environment:
-      - MONGO_URL=mongodb://the_username:the_password@mongo:27017/the_database
+      - MONGO_URL=mongodb://root:example@mongo:27017/the_database?authSource=admin
       - REDIS_URL=redis://redis:6379
       - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - redis
+      - mongo
 
-volumes:
+volumes: 
   mongo_data:
   node_modules:
