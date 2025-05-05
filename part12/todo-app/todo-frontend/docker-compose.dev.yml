@@ -10,3 +10,5 @@ services:
       - ./src:/usr/src/app/src
       - ./index.html:/usr/app/index.html
     container_name: todo-frontend-dev
+  debug-helper:
+    image: busybox
