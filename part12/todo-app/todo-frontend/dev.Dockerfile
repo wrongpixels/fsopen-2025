@@ -1,11 +1,9 @@
 FROM node:20 
 
-WORKDIR /usr/src/app
+WORKDIR /usr/src/app/frontend
 
 COPY . .
 
 RUN npm install
-
-ENV VITE_BACKEND_URL=http://localhost:3000/
 
 CMD [ "npm", "run", "dev", "--", "--host" ]
