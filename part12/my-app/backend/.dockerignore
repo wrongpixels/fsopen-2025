@@ -12,6 +12,8 @@ bloglist-frontend
 
 #**/dist
 node_modules
+playwright-report
+test-results
 *.local
 .env
 deploy-fly.bat
