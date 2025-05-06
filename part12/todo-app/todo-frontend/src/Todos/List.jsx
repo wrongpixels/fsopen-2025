@@ -8,7 +8,6 @@ const TodoList = ({ todos, deleteTodo, completeTodo }) => {
   const onClickComplete = (todo) => () => {
     completeTodo(todo)
   }
-  console.debug(todos)
   return (
     <>
       {todos.map((todo, i) => (
