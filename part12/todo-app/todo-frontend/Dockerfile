@@ -6,7 +6,7 @@ COPY . .
 
 RUN npm ci
 
-#RUN npm run test
+RUN npm run test
 
 FROM node:20 AS build-stage
 
@@ -18,6 +18,8 @@ ENV VITE_BACKEND_URL=http://localhost:8080/api
 
 RUN npm run build
 
-FROM nginx:1.25-alpine
+FROM alpine
 
-COPY --from=build-stage /usr/src/app/dist /usr/share/nginx/html
+COPY --from=build-stage /usr/src/app/dist /dist
+
+CMD ["tail", "-f", "/dev/null"]

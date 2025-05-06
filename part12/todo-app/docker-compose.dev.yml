@@ -45,8 +45,8 @@ services:
     environment:
       - VITE_BACKEND_URL=http://localhost:8080/api
     volumes:
-      - ./todo-frontend:/usr/src/app/frontend
-      - node_modules_front:/usr/src/app/frontend/node_modules      
+      - ./todo-frontend:/usr/src/app
+      - node_modules_front:/usr/src/app/node_modules      
     container_name: todo-frontend-dev
     depends_on:
       - backend

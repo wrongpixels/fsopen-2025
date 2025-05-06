@@ -13,6 +13,9 @@ export default defineConfig({
     host: true,
     hmr: {
       host: 'localhost'
-    }
+    },
+    
+  },test: {
+    environment: 'jsdom',
   }
 })

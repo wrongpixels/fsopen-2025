@@ -42,11 +42,14 @@ services:
     container_name: todo-frontend
     depends_on:
       - backend
+    volumes:
+      - front_dist:/dist
   
   nginx:
     image: nginx:1.20.1
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - front_dist:/usr/share/nginx/html:ro
     ports:
       - 8080:80
     container_name: reverse-proxy
@@ -55,3 +58,4 @@ services:
       - frontend
 volumes:
   mongo_data_db:
+  front_dist:
