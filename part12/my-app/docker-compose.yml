@@ -1,0 +1,25 @@
+services:
+    backend:
+      build:
+        context: ./backend
+        dockerfile: Dockerfile
+      image: blogs-backend
+      environment:
+        - PORT=3003
+        - SECRET=1ceThereWas1WayToGetBackHome1ceThereWas1WayToGetBackHome
+        - MONGODB_URI=mongodb+srv://kevapaereo:7gUfIwE7@fsopen-2025.voojz.mongodb.net/blogList?retryWrites=true&w=majority&appName=fsopen-2025
+        - TEST_MONGO_URI=mongodb+srv://kevapaereo:7gUfIwE7@fsopen-2025.voojz.mongodb.net/testBlogList?retryWrites=true&w=majority&appName=fsopen-2025
+        - CHOKIDAR_USEPOLLING=true
+      container_name: blogs-backend        
+    nginx-frontend:
+      build:
+        context: ./frontend
+        dockerfile: Dockerfile
+      image: blogs-frontend-nginx
+      volumes:
+        - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      ports:
+        - 8080:80
+      container_name: blogs-reverse-proxy-frontend
+      depends_on:
+        - backend

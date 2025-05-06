@@ -31,6 +31,7 @@ services:
       - MONGO_URL=mongodb://root:example@mongo:27017/the_database?authSource=admin
       - REDIS_URL=redis://redis:6379
       - CHOKIDAR_USEPOLLING=true
+      - DEBUG=todo:backend:*
     depends_on:
       - redis
       - mongo
@@ -44,6 +45,7 @@ services:
     image: todo-frontend-dev
     environment:
       - VITE_BACKEND_URL=http://localhost:8080/api
+      - DEBUG=todo:frontend:*
     volumes:
       - ./todo-frontend:/usr/src/app
       - node_modules_front:/usr/src/app/node_modules      
@@ -57,7 +59,7 @@ services:
       - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
     ports:
       - 8080:80
-    container_name: reverse-proxy
+    container_name: todo-reverse-proxy-dev
     depends_on:
       - backend
       - frontend

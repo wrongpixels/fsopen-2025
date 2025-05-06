@@ -5,6 +5,7 @@ services:
         dockerfile: dev.Dockerfile
       image: blogs-backend-dev
       environment:
+        - DEBUG=bloglist:backend:*
         - PORT=3003
         - SECRET=1ceThereWas1WayToGetBackHome1ceThereWas1WayToGetBackHome
         - MONGODB_URI=mongodb+srv://kevapaereo:7gUfIwE7@fsopen-2025.voojz.mongodb.net/blogList?retryWrites=true&w=majority&appName=fsopen-2025
@@ -21,6 +22,8 @@ services:
         dockerfile: dev.Dockerfile
       image: blogs-frontend-dev
       container_name: blogs-frontend-dev
+      environment:
+        - DEBUG=bloglist:frontend:*
       volumes:
         - ./frontend:/usr/src/app
         - front_modules:/usr/src/app/node_modules
@@ -33,7 +36,7 @@ services:
         - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
       ports:
         - 8080:80
-      container_name: reverse-proxy-blogs
+      container_name: blogs-reverse-proxy-dev
       depends_on:
         - backend
         - frontend
