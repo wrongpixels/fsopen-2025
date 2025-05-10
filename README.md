@@ -1,6 +1,6 @@
 # Full Stack Open 2025
 
-Submissions for the Full Stack Open course.
+Submissions for the Full Stack Open course. 
 
 ### Core course
 
