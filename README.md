@@ -1,6 +1,6 @@
 # Full Stack Open 2025
 
-Submissions for the Full Stack Open course. 
+Submissions for the Full Stack Open course.
 
 ### Core course
 
@@ -19,7 +19,6 @@ Submissions for the Full Stack Open course.
 
 - ✅ [_Part 8: GraphQL_](./part8)
 - ✅ [_Part 9: TypeScript_](./part9)
-- _Part 10: React Native_
-- ✅ [_Part 11: CI/CD_](https://github.com/wrongpixels/full-stack-open-pokedex)
+- ✅ [_Part 11: CI/CD_](./part11)
 - ✅ [_Part 12: Containers_](./part12)
-- ⌛ [_Part 13: Using relational databases_](./part13)
+- ✅ [_Part 13: Using relational databases_](https://github.com/wrongpixels/fsopen-part13)
